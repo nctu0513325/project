@@ -35,11 +35,10 @@ public class playercontroller {
     private Media media = new Media(file.toURI().toString());
     private MediaPlayer mplayer = new MediaPlayer(media);
     FileChooser fileChooser = new FileChooser();
-    
-    public void start(Stage primarytStage){
-        
-        mView.fitWidthProperty().bind(pane.widthProperty());
-        mView.fitHeightProperty().bind(pane.heightProperty());
+
+    int vol=50;
+    double speed=1;
+    public void initialize(){
 
         mplayer.setOnEndOfMedia(() -> { 
             mplayer.stop();
@@ -53,11 +52,6 @@ public class playercontroller {
             new FileChooser.ExtensionFilter("WMV Music", "*.wmv"),
             new FileChooser.ExtensionFilter("All Files", "*.*")
             );
-    }
-
-    int vol=50;
-    double speed=1;
-    public void initialize(){
         slVolume.valueProperty().addListener(
             new ChangeListener<Number>() {
                 @Override
