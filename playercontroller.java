@@ -34,8 +34,11 @@ public class playercontroller {
     private java.io.File file = new java.io.File("init.mp3");
     private Media media = new Media(file.toURI().toString());
     private MediaPlayer mplayer = new MediaPlayer(media);
-    
-    public void start(Stage primarytStage){
+    FileChooser fileChooser = new FileChooser();
+
+    int vol=50;
+    double speed=1;
+    public void initialize(){
 
         mplayer.setOnEndOfMedia(() -> { 
             mplayer.stop();
@@ -49,11 +52,6 @@ public class playercontroller {
             new FileChooser.ExtensionFilter("WMV Music", "*.wmv"),
             new FileChooser.ExtensionFilter("All Files", "*.*")
             );
-    }
-
-    int vol=50;
-    double speed=1;
-    public void initialize(){
         slVolume.valueProperty().addListener(
             new ChangeListener<Number>() {
                 @Override
