@@ -129,9 +129,7 @@ public class playercontroller {
             });
             mplayer.play();
         }
-    }
-
-    
+    }    
 
     private String Seconds2Str(Double seconds){
         Integer count = seconds.intValue();

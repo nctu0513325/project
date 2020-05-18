@@ -11,7 +11,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="playercontroller">
    <children>
-      <Slider fx:id="slTime" layoutX="161.0" layoutY="419.0" AnchorPane.bottomAnchor="25.600000000000023" />
+      <Slider fx:id="slTime" blockIncrement="1.0" layoutX="161.0" layoutY="419.0" AnchorPane.bottomAnchor="25.600000000000023" />
       <Button fx:id="btnStop" layoutX="302.0" layoutY="417.0" mnemonicParsing="false" onAction="#StopClick" text="Stop" AnchorPane.bottomAnchor="25.600000000000023" />
       <Button fx:id="btnPlay" layoutX="355.0" layoutY="398.0" mnemonicParsing="false" onAction="#PlayClick" text="Play" AnchorPane.bottomAnchor="25.600000000000023" />
       <Label layoutX="416.0" layoutY="402.0" text="Volume" AnchorPane.bottomAnchor="29.600000000000023" />
@@ -37,5 +37,6 @@
             </VBox>
          </content>
       </TitledPane>
+      <Button fx:id="save" layoutX="750.0" layoutY="260.0" mnemonicParsing="false" onAction="#saveFile" text="Button" />
    </children>
 </AnchorPane>
