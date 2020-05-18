@@ -37,6 +37,5 @@
             </VBox>
          </content>
       </TitledPane>
-      <Button fx:id="save" layoutX="750.0" layoutY="260.0" mnemonicParsing="false" onAction="#saveFile" text="Button" />
    </children>
 </AnchorPane>

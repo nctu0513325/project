@@ -38,6 +38,7 @@ public class playercontroller {
 
     int vol=50;
     double speed=1;
+    
     public void initialize(){
 
         mplayer.setOnEndOfMedia(() -> { 
@@ -131,6 +132,12 @@ public class playercontroller {
         }
     }    
 
+    @FXML
+    void SoundWaveClick(ActionEvent event) {
+
+    }
+
+
     private String Seconds2Str(Double seconds){
         Integer count = seconds.intValue();
         Integer Hours = count / 3600;
@@ -140,5 +147,4 @@ public class playercontroller {
         String str = Hours.toString()+":"+Minutes.toString()+":"+count.toString();
         return str;
     }
-
 }
