@@ -34,12 +34,8 @@ public class playercontroller {
     private java.io.File file = new java.io.File("init.mp3");
     private Media media = new Media(file.toURI().toString());
     private MediaPlayer mplayer = new MediaPlayer(media);
-    FileChooser fileChooser = new FileChooser();
     
     public void start(Stage primarytStage){
-        
-        mView.fitWidthProperty().bind(pane.widthProperty());
-        mView.fitHeightProperty().bind(pane.heightProperty());
 
         mplayer.setOnEndOfMedia(() -> { 
             mplayer.stop();
