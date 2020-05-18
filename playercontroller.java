@@ -27,7 +27,7 @@ public class playercontroller {
     @FXML private Label lbSpeed;
     @FXML private MediaView mView;
     @FXML private Pane pane;
-
+    @FXML private Button soundwave;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
