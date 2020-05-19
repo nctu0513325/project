@@ -98,20 +98,39 @@ public class WavFile {
             double temp;
             int k;
             int count = 0;
-            double normalizeConstant = Math.pow(2, fmt.getBitsPerSample());
+            double normalizeConstant;
+            if (fmt.getBitsPerSample() == 8) {
+                // if bitsPerSample = 8 => unsigned
+                normalizeConstant = Math.pow(2, fmt.getBitsPerSample());
+            } else {
+                // if bitsPerSample = 16 or 32 => signed
+                normalizeConstant = Math.pow(2, fmt.getBitsPerSample() - 1);
+            }
             // read hex datat from wav file
             while (count < (data.getSubchunk2Size() / fmt.getBlockAlign())) {
                 for (int i = 0; i < fmt.getNumChannels(); i++) {
                     input.read(buffer_signal);
                     k = 0;
                     temp = 0;
-                    for (int j = 0; j < buffer_signal.length; j++) {
-                        temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(16, k);
-                        k += 2;
+                    if (fmt.getBitsPerSample() != 8) {
+                        for (int j = 0; j < buffer_signal.length; j++) {
+                            if (j == buffer_signal.length - 1) {
+                                temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), k);
+                            } else {
+                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
+                                        * Math.pow(fmt.getBitsPerSample(), k);
+                            }
+                            k += 2;
+                        }
+                    } else {
+                        for (int j = 0; j < buffer_signal.length; j++) {
+                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(fmt.getBitsPerSample(), k);
+                            k += 2;
+                        }
                     }
-                    temp = (2 * temp / normalizeConstant) - 1;
+
+                    temp = (temp / normalizeConstant);
                     signal[i].add(Double.valueOf(temp));
-                    signal_dB[i].add(Double.valueOf(20 * Math.log(temp)));
                 }
                 count++;
             }
@@ -127,10 +146,6 @@ public class WavFile {
 
     public ArrayList<Double>[] getSignal() {
         return signal;
-    }
-
-    public ArrayList<Double>[] getdBSignal() {
-        return signal_dB;
     }
 
 }

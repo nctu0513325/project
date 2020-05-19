@@ -58,7 +58,9 @@ public class playercontroller {
     FileChooser fileChooser = new FileChooser();
 
     private WavFile wf;
-    private ArrayList<Double>[] signal_dB;
+    private ArrayList<Double>[] signal;
+    private ArrayList<Double>[] signal_modify;
+    private ArrayList<Double>[] signal_temp;
 
     public void start(Stage primarytStage) {
 
@@ -85,15 +87,15 @@ public class playercontroller {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                 vol = newValue.intValue();
-                signal_dB = wf.getdBSignal();
-                ArrayList<Double>[] temp = new ArrayList[signal_dB.length];
-                for (int channel = 0; channel < signal_dB.length; channel++) {
-                    temp[channel] = new ArrayList(signal_dB[channel]);
-                    for (int x = 0; x < temp[channel].size(); x++) {
-                        temp[channel].set(x, temp[channel].get(x) * ((double) vol / 50));
+                signal = wf.getSignal();
+                signal_temp = new ArrayList[signal.length];
+                for (int channel = 0; channel < signal.length; channel++) {
+                    signal_temp[channel] = new ArrayList(signal[channel]);
+                    for (int x = 0; x < signal_temp[channel].size(); x++) {
+                        signal_temp[channel].set(x, signal_temp[channel].get(x) * ((double) vol / 50));
                     }
                 }
-                drawWaveform(temp);
+                drawWaveform(signal_temp);
                 lbVolume.setText(String.valueOf(vol));
             }
         });
@@ -165,8 +167,11 @@ public class playercontroller {
 
             wf = new WavFile();
             wf.read(file.getAbsolutePath());
-            signal_dB = wf.getdBSignal();
-            drawWaveform(signal_dB);
+            signal = wf.getSignal();
+            // for(int channel=0;channel<signal.length;channel++){
+            // signal_modify[channel] = new A
+            // }
+            drawWaveform(signal);
             mplayer.play();
 
         }
@@ -189,7 +194,7 @@ public class playercontroller {
         gc1.clearRect(0, 0, canvas1.getWidth(), canvas1.getHeight());
         gc2.clearRect(0, 0, canvas2.getWidth(), canvas2.getHeight());
         int interval = input[0].size() / (int) canvas1.getWidth();
-        int max = 5;
+        int max = 100;
         int y_base = (int) canvas1.getHeight() / 2;
         gc1.strokeLine(0, y_base, canvas1.getWidth(), y_base);
         gc1.strokeRect(0, 0, canvas1.getWidth(), canvas1.getHeight());
@@ -200,13 +205,15 @@ public class playercontroller {
                 if (channel % 2 == 0) {
                     gc1.strokeLine(x, y_base - (int) (input[channel].get(x * interval) * max), x + 1,
                             y_base - (int) (input[channel].get((x + 1) * interval) * max));
-                    gc1.strokeLine(x, y_base + (int) (input[channel].get(x * interval) * max), x + 1,
-                            y_base + (int) (input[channel].get((x + 1) * interval) * max));
+                    // gc1.strokeLine(x, y_base + (int) (input[channel].get(x * interval) * max), x
+                    // + 1,
+                    // y_base + (int) (input[channel].get((x + 1) * interval) * max));
                 } else if (channel % 2 != 0) {
                     gc2.strokeLine(x, y_base - (int) (input[channel].get(x * interval) * max), x + 1,
                             y_base - (int) (input[channel].get((x + 1) * interval) * max));
-                    gc2.strokeLine(x, y_base + (int) (input[channel].get(x * interval) * max), x + 1,
-                            y_base + (int) (input[channel].get((x + 1) * interval) * max));
+                    // gc2.strokeLine(x, y_base + (int) (input[channel].get(x * interval) * max), x
+                    // + 1,
+                    // y_base + (int) (input[channel].get((x + 1) * interval) * max));
                 }
             }
         }
