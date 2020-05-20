@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="playercontroller">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="playercontroller">
    <children>
       <Slider fx:id="slTime" blockIncrement="1.0" layoutX="161.0" layoutY="419.0" AnchorPane.bottomAnchor="25.600000000000023" />
       <Button fx:id="btnStop" layoutX="302.0" layoutY="417.0" mnemonicParsing="false" onAction="#StopClick" text="Stop" AnchorPane.bottomAnchor="25.600000000000023" />
