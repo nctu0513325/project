@@ -411,4 +411,4 @@ class Note {
     public long getNoteChunkSize() {
         return noteChunkSize;
     }
-} 
+}
