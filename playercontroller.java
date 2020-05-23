@@ -98,7 +98,7 @@ public class playercontroller{
         final double sp = slSpeed.getValue();
         file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
-            final String name1 = file.getName();
+            final String name = file.getName();
             mplayer.stop();
             btnPlay.setText("Pause");
             media = new Media(file.toURI().toString());
@@ -134,9 +134,15 @@ public class playercontroller{
     }
 
     @FXML
+<<<<<<< HEAD
     void SoundWaveClick(final ActionEvent event) throws Exception {
         final waveform wf = new waveform();
         wf.start(new Stage());
+=======
+    void SoundWaveClick(final ActionEvent event) throws IOException {
+        final waveform wf = new waveform();
+        wf.main();
+>>>>>>> master
     }
 
     private String Seconds2Str(final Double seconds) {
