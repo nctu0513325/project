@@ -2,6 +2,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -21,6 +22,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import java.util.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.*;
 
 public class playercontroller {
 
@@ -51,9 +53,13 @@ public class playercontroller {
     @FXML
     private Canvas waveformCanvas2;
     @FXML
-    private Canvas timeLineCanvas1;
+    private ScrollPane sp1;
     @FXML
-    private Canvas timeLineCanvas2;
+    private ScrollPane sp2;
+    @FXML
+    private Pane sp_pane1;
+    @FXML
+    private Pane sp_pane2;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -92,6 +98,8 @@ public class playercontroller {
     double speed = 1;
 
     public void initialize() {
+        // waveformCanvas1.prefWidthProperty().bind(pane.widthProperty());
+        // waveformCanvas1.isres
         slVolume.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
@@ -187,8 +195,9 @@ public class playercontroller {
         }
     }
 
+    // timeline canvas
     @FXML
-    void timeLine1MousePressed(MouseEvent event) {
+    void sp_pane1MousePressed(MouseEvent event) {
         double x = event.getX();
         // find the time correspond to the x
         double timeClick = (x * interval) / wf.getSampleRate();
@@ -199,7 +208,7 @@ public class playercontroller {
     }
 
     @FXML
-    void timeLine2MousePressed(MouseEvent event) {
+    void sp_pane2MousePressed(MouseEvent event) {
         double x = event.getX();
         // find the time correspond to the x
         double timeClick = (x * interval) / wf.getSampleRate();
@@ -228,8 +237,6 @@ public class playercontroller {
         int max = 100;
         int y_base = (int) waveformCanvas1.getHeight() / 2;
         gc1.strokeLine(0, y_base, waveformCanvas1.getWidth(), y_base);
-        gc1.strokeRect(0, 0, waveformCanvas1.getWidth(), waveformCanvas1.getHeight());
-        gc2.strokeRect(0, 0, waveformCanvas2.getWidth(), waveformCanvas2.getHeight());
         gc2.strokeLine(0, y_base, waveformCanvas2.getWidth(), y_base);
         for (int x = 0; x < waveformCanvas1.getWidth(); x++) {
             for (int channel = 0; channel < input.length; channel++) {
@@ -245,18 +252,19 @@ public class playercontroller {
     }
 
     private void drawCurrentTimeLine(double time) {
-        GraphicsContext gc1 = timeLineCanvas1.getGraphicsContext2D();
-        GraphicsContext gc2 = timeLineCanvas2.getGraphicsContext2D();
-        gc1.clearRect(0, 0, timeLineCanvas1.getWidth(), timeLineCanvas1.getHeight());
-        gc2.clearRect(0, 0, timeLineCanvas2.getWidth(), timeLineCanvas2.getHeight());
         // static double lastTime;
         int sampleRate = wf.getSampleRate();
-        int interval = signal[0].size() / (int) waveformCanvas1.getWidth();
         double x = ((double) sampleRate * time) / (double) interval;
-        gc1.strokeLine(x, 0, x, timeLineCanvas1.getHeight());
-        gc2.strokeLine(x, 0, x, timeLineCanvas2.getHeight());
+        int count = sp_pane1.getChildren().size();
+        if (count > 1) {
+            sp_pane1.getChildren().remove(count - 1);
+            sp_pane2.getChildren().remove(count - 1);
+        }
+        // draw on scroller panel
+        Line newTimeline1 = new Line(x, 0, x, sp1.getHeight());
+        Line newTimeline2 = new Line(x, 0, x, sp1.getHeight());
+        sp_pane1.getChildren().add(newTimeline1);
+        sp_pane2.getChildren().add(newTimeline2);
 
-        // lastTime = time;
     }
-
 }
