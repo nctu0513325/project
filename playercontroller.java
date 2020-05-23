@@ -18,7 +18,6 @@ import java.io.*;
 import java.awt.*;
 import javax.swing.*;
 
-
 public class playercontroller{
 
     @FXML private Slider slTime;
@@ -35,76 +34,71 @@ public class playercontroller{
     @FXML private Button soundwave;
     @FXML private AnchorPane root;
 
-    private Double endTime = new Double(0);
-    private Double currentTime = new Double(0);
+    private final Double endTime = new Double(0);
+    private final Double currentTime = new Double(0);
     private java.io.File file = new java.io.File("init.mp3");
     private Media media = new Media(file.toURI().toString());
     private MediaPlayer mplayer = new MediaPlayer(media);
     FileChooser fileChooser = new FileChooser();
 
-    int vol=50;
-    double speed=1;
+    int vol = 50;
+    double speed = 1;
     private Stage stage;
-    
-    public void initialize(){
-        mplayer.setOnEndOfMedia(() -> { 
+
+    public void initialize() {
+        mplayer.setOnEndOfMedia(() -> {
             mplayer.stop();
             btnPlay.setText("Play");
         });
-        
-        fileChooser.setTitle("Open Media...");
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
-            new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
-            new FileChooser.ExtensionFilter("WMV Music", "*.wmv"),
-            new FileChooser.ExtensionFilter("All Files", "*.*")
-            );
-        slVolume.valueProperty().addListener(
-            new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> ov,Number oldValue, Number newValue) {
-                    vol = newValue.intValue();
-                    lbVolume.setText(String.valueOf(vol));
-                }
-            }
-        );
 
-        slSpeed.valueProperty().addListener(
-            new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> ov,Number oldValue, Number newValue) {
-                    speed = newValue.doubleValue();
-                    speed=Double.parseDouble(String.format("%.2f",speed));
-                    lbSpeed.setText(String.valueOf(speed));
-                }
+        fileChooser.setTitle("Open Media...");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
+                new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
+                new FileChooser.ExtensionFilter("WMV Music", "*.wmv"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        slVolume.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(final ObservableValue<? extends Number> ov, final Number oldValue,
+                    final Number newValue) {
+                vol = newValue.intValue();
+                lbVolume.setText(String.valueOf(vol));
             }
-        );
-    }    
+        });
+
+        slSpeed.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(final ObservableValue<? extends Number> ov, final Number oldValue,
+                    final Number newValue) {
+                speed = newValue.doubleValue();
+                speed = Double.parseDouble(String.format("%.2f", speed));
+                lbSpeed.setText(String.valueOf(speed));
+            }
+        });
+    }
 
     @FXML
-    void PlayClick(ActionEvent event) {
-        if (btnPlay.getText().equals("Play")){
+    void PlayClick(final ActionEvent event) {
+        if (btnPlay.getText().equals("Play")) {
             btnPlay.setText("Pause");
             mplayer.play();
-        }
-        else{
+        } else {
             btnPlay.setText("Play");
             mplayer.pause();
         }
     }
 
     @FXML
-    void StopClick(ActionEvent event) {
+    void StopClick(final ActionEvent event) {
         mplayer.stop();
         btnPlay.setText("Play");
     }
 
     @FXML
-    void btnOpenClick(ActionEvent event) {
-        double sp=slSpeed.getValue();
-        file = fileChooser.showOpenDialog(new Stage()); 
-        if (file != null){
-            String name= file.getName();
+    void btnOpenClick(final ActionEvent event) {
+        final double sp = slSpeed.getValue();
+        file = fileChooser.showOpenDialog(new Stage());
+        if (file != null) {
+            final String name1 = file.getName();
             mplayer.stop();
             btnPlay.setText("Pause");
             media = new Media(file.toURI().toString());
@@ -112,46 +106,46 @@ public class playercontroller{
             mView.setMediaPlayer(mplayer);
             mplayer.setOnReady(() -> {
                 endTime = mplayer.getStopTime().toSeconds();
-            }); 
+            });
             mplayer.setOnEndOfMedia(() -> {
                 mplayer.stop();
                 mplayer.seek(Duration.ZERO);
                 btnPlay.setText("Play");
             });
-            mplayer.currentTimeProperty().addListener(ov->{
-            currentTime = mplayer.getCurrentTime().toSeconds();
-            lbCurrentTime.setText(Seconds2Str(currentTime)+"/"+Seconds2Str(endTime));
-            slTime.setValue(currentTime/endTime*100);
+            mplayer.currentTimeProperty().addListener(ov -> {
+                currentTime = mplayer.getCurrentTime().toSeconds();
+                lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
+                slTime.setValue(currentTime / endTime * 100);
             });
-            slTime.valueProperty().addListener(ov->{
-                if (slTime.isValueChanging()){
-                    mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue()/100));
+            slTime.valueProperty().addListener(ov -> {
+                if (slTime.isValueChanging()) {
+                    mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
                 }
             });
-            mplayer.volumeProperty().bind(slVolume.valueProperty().divide(100)); 
+            mplayer.volumeProperty().bind(slVolume.valueProperty().divide(100));
             mplayer.setRate(1);
-            slSpeed.valueProperty().addListener(ov->{
-                if (slSpeed.isValueChanging()){
+            slSpeed.valueProperty().addListener(ov -> {
+                if (slSpeed.isValueChanging()) {
                     mplayer.setRate(slSpeed.getValue());
                 }
             });
             mplayer.play();
         }
-    }    
-
-    @FXML
-    void SoundWaveClick(ActionEvent event) throws IOException{
-        waveform wf = new waveform ();
-        wf.main();
     }
 
-    private String Seconds2Str(Double seconds){
+    @FXML
+    void SoundWaveClick(final ActionEvent event) throws Exception {
+        final waveform wf = new waveform();
+        wf.start(new Stage());
+    }
+
+    private String Seconds2Str(final Double seconds) {
         Integer count = seconds.intValue();
-        Integer Hours = count / 3600;
+        final Integer Hours = count / 3600;
         count = count % 3600;
-        Integer Minutes = count /60;
+        final Integer Minutes = count / 60;
         count = count % 60;
-        String str = Hours.toString()+":"+Minutes.toString()+":"+count.toString();
+        final String str = Hours.toString() + ":" + Minutes.toString() + ":" + count.toString();
         return str;
     }
 }

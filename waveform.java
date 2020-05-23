@@ -7,8 +7,8 @@ public class waveform extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root =
-        FXMLLoader.load(getClass().getResource("waveform.fxml"));
-
+        FXMLLoader.load(getClass().getResource("drawform.fxml"));
+        
         Scene scene = new Scene(root);
         stage.setTitle("waveform"); // displayed in window's title bar
         stage.setScene(scene);
