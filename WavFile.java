@@ -9,24 +9,29 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class WavFile {
-    private static Riff riff = new Riff();
-    private static Fmt fmt = new Fmt();
-    private static Data data = new Data();
-    private static Note note = new Note();
-    private static InputStream input = null;
-    private static String fileName;
+    private Riff riff = new Riff();
+    private Fmt fmt = new Fmt();
+    private Data data = new Data();
+    private Note note = new Note();
+    private InputStream input = null;
+    private String fileName;
 
     private static ArrayList<Double>[] signal; // normalize between -1~1
+    private static ArrayList<Double>[] signal_dB; // change to dB
 
-    public static int getSampleRate() {
+    public int getSampleRate() {
         return fmt.getSampleRate();
     }
 
-    public static int getnumChannel() {
+    public String getFileName() {
+        return fileName;
+    }
+
+    public int getnumChannel() {
         return fmt.getNumChannels();
     }
 
-    public static void read(String fileNameInput) throws IOException {
+    public void read(String fileNameInput) throws IOException {
         try {
             fileName = fileNameInput;
             byte[] buffer_four = new byte[4];
@@ -85,24 +90,46 @@ public class WavFile {
             // get real data
             buffer_signal = new byte[fmt.getBitsPerSample() / (fmt.getNumChannels() * 4)];
             signal = new ArrayList[fmt.getNumChannels()]; // new with numbers of channel
+            signal_dB = new ArrayList[fmt.getNumChannels()]; // new with numbers of channel
             for (int i = 0; i < fmt.getNumChannels(); i++) {
                 signal[i] = new ArrayList<Double>();
+                signal_dB[i] = new ArrayList<Double>();
             }
             double temp;
             int k;
             int count = 0;
-            double normalizeConstant = Math.pow(2, fmt.getBitsPerSample());
+            double normalizeConstant;
+            if (fmt.getBitsPerSample() == 8) {
+                // if bitsPerSample = 8 => unsigned
+                normalizeConstant = Math.pow(2, fmt.getBitsPerSample());
+            } else {
+                // if bitsPerSample = 16 or 32 => signed
+                normalizeConstant = Math.pow(2, fmt.getBitsPerSample() - 1);
+            }
             // read hex datat from wav file
             while (count < (data.getSubchunk2Size() / fmt.getBlockAlign())) {
                 for (int i = 0; i < fmt.getNumChannels(); i++) {
                     input.read(buffer_signal);
                     k = 0;
                     temp = 0;
-                    for (int j = 0; j < buffer_signal.length; j++) {
-                        temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(16, k);
-                        k += 2;
+                    if (fmt.getBitsPerSample() != 8) {
+                        for (int j = 0; j < buffer_signal.length; j++) {
+                            if (j == buffer_signal.length - 1) {
+                                temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), k);
+                            } else {
+                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
+                                        * Math.pow(fmt.getBitsPerSample(), k);
+                            }
+                            k += 2;
+                        }
+                    } else {
+                        for (int j = 0; j < buffer_signal.length; j++) {
+                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(fmt.getBitsPerSample(), k);
+                            k += 2;
+                        }
                     }
-                    temp = (temp / normalizeConstant) - 0.5;
+
+                    temp = (temp / normalizeConstant);
                     signal[i].add(Double.valueOf(temp));
                 }
                 count++;
@@ -117,7 +144,7 @@ public class WavFile {
 
     }
 
-    public static ArrayList<Double>[] getSignal() {
+    public ArrayList<Double>[] getSignal() {
         return signal;
     }
 
@@ -375,7 +402,7 @@ class Note {
             noteContent_char[i] = (char) (int) Integer.valueOf(noteContent_read[i]);
         }
         noteContent = new String(noteContent_read);
-        System.out.println("note content:\t" + noteContent);
+        // System.out.println("note content:\t" + noteContent);
     }
 
     public String getNoteId() {
