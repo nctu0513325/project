@@ -20,6 +20,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import java.util.*;
+import javafx.scene.input.MouseEvent;
 
 public class playercontroller {
 
@@ -46,9 +47,13 @@ public class playercontroller {
     @FXML
     private Pane pane;
     @FXML
-    private Canvas canvas1;
+    private Canvas waveformCanvas1;
     @FXML
-    private Canvas canvas2;
+    private Canvas waveformCanvas2;
+    @FXML
+    private Canvas timeLineCanvas1;
+    @FXML
+    private Canvas timeLineCanvas2;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -57,10 +62,14 @@ public class playercontroller {
     private MediaPlayer mplayer = new MediaPlayer(media);
     FileChooser fileChooser = new FileChooser();
 
+    // wavfile
     private WavFile wf;
     private ArrayList<Double>[] signal;
     private ArrayList<Double>[] signal_modify;
     private ArrayList<Double>[] signal_temp;
+    // some useful signal properties
+    private int sampleRate;
+    private int interval;
 
     public void start(Stage primarytStage) {
 
@@ -148,6 +157,8 @@ public class playercontroller {
             mplayer.currentTimeProperty().addListener(ov -> {
                 currentTime = mplayer.getCurrentTime().toSeconds();
                 lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
+                // draw current time line
+                drawCurrentTimeLine(currentTime);
                 slTime.setValue(currentTime / endTime * 100);
             });
             slTime.valueProperty().addListener(ov -> {
@@ -168,13 +179,34 @@ public class playercontroller {
             wf = new WavFile();
             wf.read(file.getAbsolutePath());
             signal = wf.getSignal();
-            // for(int channel=0;channel<signal.length;channel++){
-            // signal_modify[channel] = new A
-            // }
+            interval = signal[0].size() / (int) waveformCanvas1.getWidth();
+            sampleRate = wf.getSampleRate();
             drawWaveform(signal);
             mplayer.play();
 
         }
+    }
+
+    @FXML
+    void timeLine1MousePressed(MouseEvent event) {
+        double x = event.getX();
+        // find the time correspond to the x
+        double timeClick = (x * interval) / wf.getSampleRate();
+        slTime.setValue(timeClick / endTime * 100);
+        drawCurrentTimeLine(timeClick);
+        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
+
+    }
+
+    @FXML
+    void timeLine2MousePressed(MouseEvent event) {
+        double x = event.getX();
+        // find the time correspond to the x
+        double timeClick = (x * interval) / wf.getSampleRate();
+        slTime.setValue(timeClick / endTime * 100);
+        drawCurrentTimeLine(timeClick);
+        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
+
     }
 
     private String Seconds2Str(Double seconds) {
@@ -188,35 +220,43 @@ public class playercontroller {
     }
 
     private void drawWaveform(ArrayList<Double>[] input) {
-        GraphicsContext gc1 = canvas1.getGraphicsContext2D();
-        GraphicsContext gc2 = canvas2.getGraphicsContext2D();
         // clear
-        gc1.clearRect(0, 0, canvas1.getWidth(), canvas1.getHeight());
-        gc2.clearRect(0, 0, canvas2.getWidth(), canvas2.getHeight());
-        int interval = input[0].size() / (int) canvas1.getWidth();
+        GraphicsContext gc1 = waveformCanvas1.getGraphicsContext2D();
+        GraphicsContext gc2 = waveformCanvas2.getGraphicsContext2D();
+        gc1.clearRect(0, 0, waveformCanvas1.getWidth(), waveformCanvas1.getHeight());
+        gc2.clearRect(0, 0, waveformCanvas2.getWidth(), waveformCanvas2.getHeight());
         int max = 100;
-        int y_base = (int) canvas1.getHeight() / 2;
-        gc1.strokeLine(0, y_base, canvas1.getWidth(), y_base);
-        gc1.strokeRect(0, 0, canvas1.getWidth(), canvas1.getHeight());
-        gc2.strokeRect(0, 0, canvas2.getWidth(), canvas2.getHeight());
-        gc2.strokeLine(0, y_base, canvas2.getWidth(), y_base);
-        for (int x = 0; x < canvas1.getWidth(); x++) {
+        int y_base = (int) waveformCanvas1.getHeight() / 2;
+        gc1.strokeLine(0, y_base, waveformCanvas1.getWidth(), y_base);
+        gc1.strokeRect(0, 0, waveformCanvas1.getWidth(), waveformCanvas1.getHeight());
+        gc2.strokeRect(0, 0, waveformCanvas2.getWidth(), waveformCanvas2.getHeight());
+        gc2.strokeLine(0, y_base, waveformCanvas2.getWidth(), y_base);
+        for (int x = 0; x < waveformCanvas1.getWidth(); x++) {
             for (int channel = 0; channel < input.length; channel++) {
                 if (channel % 2 == 0) {
                     gc1.strokeLine(x, y_base - (int) (input[channel].get(x * interval) * max), x + 1,
                             y_base - (int) (input[channel].get((x + 1) * interval) * max));
-                    // gc1.strokeLine(x, y_base + (int) (input[channel].get(x * interval) * max), x
-                    // + 1,
-                    // y_base + (int) (input[channel].get((x + 1) * interval) * max));
                 } else if (channel % 2 != 0) {
                     gc2.strokeLine(x, y_base - (int) (input[channel].get(x * interval) * max), x + 1,
                             y_base - (int) (input[channel].get((x + 1) * interval) * max));
-                    // gc2.strokeLine(x, y_base + (int) (input[channel].get(x * interval) * max), x
-                    // + 1,
-                    // y_base + (int) (input[channel].get((x + 1) * interval) * max));
                 }
             }
         }
+    }
+
+    private void drawCurrentTimeLine(double time) {
+        GraphicsContext gc1 = timeLineCanvas1.getGraphicsContext2D();
+        GraphicsContext gc2 = timeLineCanvas2.getGraphicsContext2D();
+        gc1.clearRect(0, 0, timeLineCanvas1.getWidth(), timeLineCanvas1.getHeight());
+        gc2.clearRect(0, 0, timeLineCanvas2.getWidth(), timeLineCanvas2.getHeight());
+        // static double lastTime;
+        int sampleRate = wf.getSampleRate();
+        int interval = signal[0].size() / (int) waveformCanvas1.getWidth();
+        double x = ((double) sampleRate * time) / (double) interval;
+        gc1.strokeLine(x, 0, x, timeLineCanvas1.getHeight());
+        gc2.strokeLine(x, 0, x, timeLineCanvas2.getHeight());
+
+        // lastTime = time;
     }
 
 }
