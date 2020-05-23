@@ -23,6 +23,10 @@ import javafx.scene.paint.Color;
 import java.util.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 
 public class playercontroller{
 
@@ -195,6 +199,7 @@ public class playercontroller{
         }
     }
 
+<<<<<<< HEAD
     void SoundWaveClick(final ActionEvent event) throws IOException {
         final waveform wf = new waveform();
         wf.main();
@@ -231,10 +236,41 @@ public class playercontroller{
         count = count % 3600;
 
         final Integer Minutes = count / 60;
+=======
+    // timeline canvas
+    @FXML
+    void sp_pane1MousePressed(MouseEvent event) {
+        double x = event.getX();
+        // find the time correspond to the x
+        double timeClick = (x * interval) / wf.getSampleRate();
+        slTime.setValue(timeClick / endTime * 100);
+        drawCurrentTimeLine(timeClick);
+        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
+
+    }
+
+    @FXML
+    void sp_pane2MousePressed(MouseEvent event) {
+        double x = event.getX();
+        // find the time correspond to the x
+        double timeClick = (x * interval) / wf.getSampleRate();
+        slTime.setValue(timeClick / endTime * 100);
+        drawCurrentTimeLine(timeClick);
+        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
+
+    }
+
+    private String Seconds2Str(Double seconds) {
+        Integer count = seconds.intValue();
+        final Integer Hours = count / 3600;
+        count = count % 3600;
+        Integer Minutes = count / 60;
+>>>>>>> master
         count = count % 60;
-        final String str = Hours.toString() + ":" + Minutes.toString() + ":" + count.toString();
+        String str = Hours.toString() + ":" + Minutes.toString() + ":" + count.toString();
         return str;
     }
+<<<<<<< HEAD
 }
 
         Integer Minutes = count / 60;
@@ -242,6 +278,8 @@ public class playercontroller{
         String str = Hours.toString() + ":" + Minutes.toString() + ":" + count.toString();
         return str;
     }
+=======
+>>>>>>> master
 
     private void drawWaveform(ArrayList<Double>[] input) {
         // clear
@@ -283,4 +321,7 @@ public class playercontroller{
 
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> master

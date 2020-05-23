@@ -13,12 +13,16 @@
 
 <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="playercontroller">
    <children>
+
+      <Slider fx:id="slTime" blockIncrement="1.0" layoutX="161.0" layoutY="419.0" AnchorPane.bottomAnchor="25.600000000000023" />
+
       <Pane fx:id="pane" layoutX="123.0" layoutY="61.0" prefHeight="363.0" prefWidth="839.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="14.0">
          <children>
             <MediaView fx:id="mView" fitHeight="${pane.height}" fitWidth="${pane.width}" layoutX="1.0" />
          </children>
       </Pane>
       <Slider fx:id="slTime" layoutX="161.0" layoutY="419.0" AnchorPane.bottomAnchor="25.600000000000023" />
+
       <Button fx:id="btnStop" layoutX="302.0" layoutY="417.0" mnemonicParsing="false" onAction="#StopClick" text="Stop" AnchorPane.bottomAnchor="25.600000000000023" />
       <Button fx:id="btnPlay" layoutX="355.0" layoutY="398.0" mnemonicParsing="false" onAction="#PlayClick" text="Play" AnchorPane.bottomAnchor="25.600000000000023" />
       <Label layoutX="416.0" layoutY="402.0" text="Volume" AnchorPane.bottomAnchor="29.600000000000023" />
@@ -30,6 +34,34 @@
       <Label layoutX="649.0" layoutY="392.0" text="speed" AnchorPane.bottomAnchor="29.0" />
       <Slider fx:id="slSpeed" blockIncrement="0.1" layoutX="722.0" layoutY="389.0" majorTickUnit="0.2" max="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" value="1.0" AnchorPane.bottomAnchor="6.600000000000012" />
       <Label fx:id="lbSpeed" layoutX="698.0" layoutY="402.0" text="1" AnchorPane.bottomAnchor="29.0" />
+
+      <ScrollPane fx:id="sp1" layoutX="60.0" layoutY="8.0" prefHeight="170.0" prefWidth="839.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">
+         <content>
+            <Pane fx:id="sp_pane1" onMousePressed="#sp_pane1MousePressed" prefHeight="150.0" prefWidth="1000.0">
+               <children>
+                  <Canvas fx:id="waveformCanvas1" height="150.0" width="1000.0" />
+               </children>
+            </Pane>
+         </content>
+      </ScrollPane>
+      <ScrollPane fx:id="sp2" prefHeight="170.0" prefWidth="839.0" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="10.0">
+
+      <Pane fx:id="pane" layoutX="123.0" layoutY="61.0" prefHeight="363.0" prefWidth="630.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="216.0" AnchorPane.topAnchor="14.0">
+         <children>
+            <MediaView fx:id="mView" fitHeight="${pane.height}" fitWidth="${pane.width}" layoutX="1.0" />
+         </children>
+      </Pane>
+      <TitledPane layoutX="636.0" layoutY="27.0" prefHeight="200.0" prefWidth="101.0" text="soundwave" AnchorPane.rightAnchor="26.0" AnchorPane.topAnchor="27.0">
+
+         <content>
+            <Pane fx:id="sp_pane2" onMousePressed="#sp_pane2MousePressed" prefHeight="150.0" prefWidth="1000.0">
+               <children>
+                  <Canvas fx:id="waveformCanvas2" height="150.0" width="1000.0" />
+               </children>
+            </Pane>
+         </content>
+      </TitledPane>
+
       <ScrollPane fx:id="sp1" layoutX="60.0" layoutY="8.0" prefHeight="170.0" prefWidth="839.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">
          <content>
             <Pane fx:id="sp_pane1" onMousePressed="#sp_pane1MousePressed" prefHeight="150.0" prefWidth="1000.0">
@@ -50,5 +82,6 @@
       </ScrollPane>
       <Label layoutX="10.0" layoutY="105.0" text="Left" AnchorPane.leftAnchor="10.0" />
       <Label layoutX="10.0" layoutY="287.0" text="Right" AnchorPane.leftAnchor="10.0" />
+
    </children>
 </AnchorPane>

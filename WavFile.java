@@ -30,7 +30,7 @@ public class WavFile {
         return fmt.getNumChannels();
     }
 
-    public void read(String fileNameInput) throws IOException {
+    public static void read(String fileNameInput) throws IOException {
         try {
             fileName = fileNameInput;
             byte[] buffer_four = new byte[4];
@@ -143,7 +143,7 @@ public class WavFile {
 
     }
 
-    public ArrayList<Double>[] getSignal() {
+    public static ArrayList<Double>[] getSignal() {
         return signal;
     }
 
