@@ -7,6 +7,8 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class WavFile {
     private Riff riff = new Riff();
@@ -14,7 +16,7 @@ public class WavFile {
     private Data data = new Data();
     private Note note = new Note();
     private InputStream input = null;
-    private String fileName;
+    private static String fileName;
 
     private static ArrayList<Double>[] signal; // normalize between -1~1
     private static ArrayList<Double>[] signal_dB; // change to dB
@@ -148,8 +150,27 @@ public class WavFile {
 
     }
 
-    public static void save(ArrayList<Double>[] input) {
+    public void saveAsWav(ArrayList<Double>[] input) {
+        Stage stage = new Stage();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("save");
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("WAV file", "*.wav");
+        fileChooser.getExtensionFilters().add(filter);
+        File file = fileChooser.showSaveDialog(stage);
 
+        if (file != null) {
+            try {
+                file = new File(file.getAbsolutePath() + ".wav");
+                InputStream oldFile = null;
+                oldFile = new FileInputStream(fileName);
+                OutputStream os = new FileOutputStream(file);
+                byte[] buffer_beforeData = new byte[44 + (int) note.getNoteChunkSize() + 4 + 4];
+                oldFile.read(buffer_beforeData);
+                os.write(buffer_beforeData);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
 }

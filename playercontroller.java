@@ -237,6 +237,9 @@ public class playercontroller {
         stage.setTitle("FFT"); // displayed in window's title bar
         stage.setScene(scene);
         stage.show();
+
+        // WavFile.saveAsWav(signal_temp);
+        wf.saveAsWav(signal_temp);
     }
 
     private String Seconds2Str(Double seconds) {
