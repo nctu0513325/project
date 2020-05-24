@@ -276,12 +276,16 @@ public class playercontroller {
         // static double lastTime;
         int sampleRate = wf.getSampleRate();
         double x = ((double) sampleRate * time) / (double) interval;
-        while (sp_pane1.getChildren().size() > 1) {
-            sp_pane1.getChildren().remove(sp_pane1.getChildren().size() - 1);
-        }
-        while (sp_pane2.getChildren().size() > 1) {
-            sp_pane2.getChildren().remove(sp_pane2.getChildren().size() - 1);
-        }
+        // while (sp_pane1.getChildren().size() != 1) {
+        // sp_pane1.getChildren().remove(sp_pane1.getChildren().size() - 1);
+        // }
+        // while (sp_pane2.getChildren().size() != 1) {
+        // sp_pane2.getChildren().remove(sp_pane2.getChildren().size() - 1);
+        // }
+        sp_pane1.getChildren().clear();
+        sp_pane2.getChildren().clear();
+        sp_pane1.getChildren().add(waveformCanvas1);
+        sp_pane2.getChildren().add(waveformCanvas2);
         // draw on scroller panel
         Line newTimeline1 = new Line(x, 0, x, sp1.getHeight());
         Line newTimeline2 = new Line(x, 0, x, sp2.getHeight());
