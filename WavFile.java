@@ -31,6 +31,10 @@ public class WavFile {
         return fmt.getNumChannels();
     }
 
+    public ArrayList<Double>[] getSignal() {
+        return signal;
+    }
+
     public void read(String fileNameInput) throws IOException {
         try {
             fileName = fileNameInput;
@@ -142,10 +146,6 @@ public class WavFile {
             }
         }
 
-    }
-
-    public ArrayList<Double>[] getSignal() {
-        return signal;
     }
 
 }
