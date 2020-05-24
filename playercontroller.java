@@ -94,11 +94,6 @@ public class playercontroller {
             btnPlay.setText("Play");
         });
 
-        fileChooser.setTitle("Open Media...");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
-                new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
-                new FileChooser.ExtensionFilter("WMV Music", "*.wmv"),
-                new FileChooser.ExtensionFilter("All Files", "*.*"));
     }
 
     int vol = 50;
@@ -130,6 +125,12 @@ public class playercontroller {
                 lbSpeed.setText(String.valueOf(speed));
             }
         });
+
+        fileChooser.setTitle("Open Media...");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
+                new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
+                new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
     }
 
     @FXML
