@@ -25,6 +25,7 @@ import java.util.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
 
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -225,6 +226,17 @@ public class playercontroller {
         drawCurrentTimeLine(timeClick);
         mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
 
+    }
+
+    @FXML
+    void fftClick(ActionEvent event) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        Parent root = FXMLLoader.load(getClass().getResource("fftScene.fxml"));
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("FFT"); // displayed in window's title bar
+        stage.setScene(scene);
+        stage.show();
     }
 
     private String Seconds2Str(Double seconds) {
