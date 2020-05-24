@@ -1,4 +1,5 @@
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -23,12 +24,11 @@ import javafx.scene.paint.Color;
 import java.util.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
-<<<<<<< HEAD
-=======
 
->>>>>>> master
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-public class playercontroller{
+public class playercontroller {
 
     @FXML
     private Slider slTime;
@@ -64,6 +64,8 @@ public class playercontroller{
     private Pane sp_pane1;
     @FXML
     private Pane sp_pane2;
+    @FXML
+    private Button fftbutton;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -102,8 +104,6 @@ public class playercontroller{
     double speed = 1;
 
     public void initialize() {
-        // waveformCanvas1.prefWidthProperty().bind(pane.widthProperty());
-        // waveformCanvas1.isres
         slVolume.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
@@ -186,7 +186,9 @@ public class playercontroller{
                 }
             });
 
-            // draw waveform
+            // read wav file and draw waveform
+            // save in signal arraylist(for original soundtrack) and signal_modify
+            // arraylist(for modify)
 
             wf = new WavFile();
             wf.read(file.getAbsolutePath());
@@ -196,47 +198,12 @@ public class playercontroller{
             drawWaveform(signal);
             mplayer.play();
 
+            // pass to FFTController now
+            FFTController.set(wf);
+
         }
     }
 
-<<<<<<< HEAD
-    void SoundWaveClick(final ActionEvent event) throws IOException {
-        final waveform wf = new waveform();
-        wf.main();
-    }
-
-    private String Seconds2Str(final Double seconds) {
-    // timeline canvas
-    @FXML
-    void sp_pane1MousePressed(MouseEvent event) {
-        double x = event.getX();
-        // find the time correspond to the x
-        double timeClick = (x * interval) / wf.getSampleRate();
-        slTime.setValue(timeClick / endTime * 100);
-        drawCurrentTimeLine(timeClick);
-        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
-
-    }
-
-    @FXML
-    void sp_pane2MousePressed(MouseEvent event) {
-        double x = event.getX();
-        // find the time correspond to the x
-        double timeClick = (x * interval) / wf.getSampleRate();
-        slTime.setValue(timeClick / endTime * 100);
-        drawCurrentTimeLine(timeClick);
-        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
-
-    }
-
-    private String Seconds2Str(Double seconds) {
-
-        Integer count = seconds.intValue();
-        final Integer Hours = count / 3600;
-        count = count % 3600;
-
-        final Integer Minutes = count / 60;
-=======
     // timeline canvas
     @FXML
     void sp_pane1MousePressed(MouseEvent event) {
@@ -265,24 +232,14 @@ public class playercontroller{
         final Integer Hours = count / 3600;
         count = count % 3600;
         Integer Minutes = count / 60;
->>>>>>> master
         count = count % 60;
         String str = Hours.toString() + ":" + Minutes.toString() + ":" + count.toString();
         return str;
     }
-<<<<<<< HEAD
-}
 
-        Integer Minutes = count / 60;
-        count = count % 60;
-        String str = Hours.toString() + ":" + Minutes.toString() + ":" + count.toString();
-        return str;
-    }
-=======
->>>>>>> master
-
+    // use to draw waveform
     private void drawWaveform(ArrayList<Double>[] input) {
-        // clear
+        // clean canvas
         GraphicsContext gc1 = waveformCanvas1.getGraphicsContext2D();
         GraphicsContext gc2 = waveformCanvas2.getGraphicsContext2D();
         gc1.clearRect(0, 0, waveformCanvas1.getWidth(), waveformCanvas1.getHeight());
@@ -304,24 +261,28 @@ public class playercontroller{
         }
     }
 
+    // use to draw current timeline
     private void drawCurrentTimeLine(double time) {
         // static double lastTime;
         int sampleRate = wf.getSampleRate();
         double x = ((double) sampleRate * time) / (double) interval;
-        int count = sp_pane1.getChildren().size();
-        if (count > 1) {
-            sp_pane1.getChildren().remove(count - 1);
-            sp_pane2.getChildren().remove(count - 1);
-        }
+        sp_pane1.getChildren().clear();
+        sp_pane2.getChildren().clear();
+        sp_pane1.getChildren().add(waveformCanvas1);
+        sp_pane2.getChildren().add(waveformCanvas2);
         // draw on scroller panel
         Line newTimeline1 = new Line(x, 0, x, sp1.getHeight());
-        Line newTimeline2 = new Line(x, 0, x, sp1.getHeight());
+        Line newTimeline2 = new Line(x, 0, x, sp2.getHeight());
         sp_pane1.getChildren().add(newTimeline1);
         sp_pane2.getChildren().add(newTimeline2);
 
     }
-}
-<<<<<<< HEAD
 
-=======
->>>>>>> master
+    //
+    public void tempArrayList() {
+        signal_modify = new ArrayList[signal.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_modify[channel] = new ArrayList(signal[channel]);
+        }
+    }
+}
