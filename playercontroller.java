@@ -187,7 +187,9 @@ public class playercontroller {
                 }
             });
 
-            // draw waveform
+            // read wav file and draw waveform
+            // save in signal arraylist(for original soundtrack) and signal_modify
+            // arraylist(for modify)
 
             wf = new WavFile();
             wf.read(file.getAbsolutePath());
@@ -276,12 +278,6 @@ public class playercontroller {
         // static double lastTime;
         int sampleRate = wf.getSampleRate();
         double x = ((double) sampleRate * time) / (double) interval;
-        // while (sp_pane1.getChildren().size() != 1) {
-        // sp_pane1.getChildren().remove(sp_pane1.getChildren().size() - 1);
-        // }
-        // while (sp_pane2.getChildren().size() != 1) {
-        // sp_pane2.getChildren().remove(sp_pane2.getChildren().size() - 1);
-        // }
         sp_pane1.getChildren().clear();
         sp_pane2.getChildren().clear();
         sp_pane1.getChildren().add(waveformCanvas1);
@@ -292,5 +288,13 @@ public class playercontroller {
         sp_pane1.getChildren().add(newTimeline1);
         sp_pane2.getChildren().add(newTimeline2);
 
+    }
+
+    //
+    public void tempArrayList() {
+        signal_modify = new ArrayList[signal.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_modify[channel] = new ArrayList(signal[channel]);
+        }
     }
 }

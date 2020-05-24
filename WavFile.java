@@ -148,6 +148,10 @@ public class WavFile {
 
     }
 
+    public static void save(ArrayList<Double>[] input) {
+
+    }
+
 }
 
 class Riff {
