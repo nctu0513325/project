@@ -120,8 +120,7 @@ public class WavFile {
                             if (j == buffer_signal.length - 1) {
                                 temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), k);
                             } else {
-                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
-                                        * Math.pow(fmt.getBitsPerSample(), k);
+                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)* Math.pow(fmt.getBitsPerSample(), k);
                             }
                             k += 2;
                         }
