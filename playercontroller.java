@@ -42,7 +42,7 @@ public class playercontroller {
     @FXML private Label lbSpeed;
     @FXML private MediaView mView;
     @FXML private Pane pane;
-    @FXML private Canvas waveformCanvas1;
+    @FXML private java.awt.Canvas waveformCanvas1;
     @FXML private Canvas waveformCanvas2;
     @FXML private ScrollPane sp1;
     @FXML private ScrollPane sp2;
@@ -191,18 +191,7 @@ public class playercontroller {
 
     // timeline canvas
     @FXML
-    void sp_pane1MousePressed(MouseEvent event) {
-        double x = event.getX();
-        // find the time correspond to the x
-        double timeClick = (x * interval) / wf.getSampleRate();
-        slTime.setValue(timeClick / endTime * 100);
-        drawCurrentTimeLine(timeClick);
-        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
-
-    }
-
-    @FXML
-    void sp_pane2MousePressed(MouseEvent event) {
+    void sp_paneMousePressed(MouseEvent event) {
         double x = event.getX();
         // find the time correspond to the x
         double timeClick = (x * interval) / wf.getSampleRate();
@@ -279,6 +268,17 @@ public class playercontroller {
         sp_pane2.getChildren().add(newTimeline2);
 
     }
+    /*private void drawTimeLine(double time) {
+        GraphicsContext gc1 = waveformCanvas1.getGraphicsContext2D();
+        GraphicsContext gc2 = waveformCanvas2.getGraphicsContext2D();
+        int sampleRate = wf.getSampleRate();
+        double x = ((double) sampleRate * time) / (double) interval;
+        gc1.setStroke(Color.RED);
+        gc1.strokeLine(x, 0, x, waveformCanvas1.getHeight());
+        gc2.setStroke(Color.RED);
+        gc2.strokeLine(x, 0, x, waveformCanvas2.getHeight());
+
+    }*/
 
     public void tempArrayList() {
         signal_modify = new ArrayList[signal.length];

@@ -32,24 +32,24 @@
       <Label fx:id="lbSpeed" layoutX="698.0" layoutY="402.0" AnchorPane.bottomAnchor="29.0" />
       <ScrollPane fx:id="sp1" layoutX="60.0" layoutY="8.0" prefHeight="170.0" prefWidth="839.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">
          <content>
-            <Pane fx:id="sp_pane1" onMousePressed="#sp_pane1MousePressed" prefHeight="150.0" prefWidth="1000.0">
+            <Pane fx:id="sp_pane1" onMouseDragged="#sp_paneMouseDragged" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1000.0">
                <children>
-                  <Canvas fx:id="waveformCanvas1" height="150.0" width="1000.0" />
+                  <Canvas fx:id="waveformCanvas1" height="${sp_pane1.height}" width="${sp_pane1.width}" />
                </children>
             </Pane>
          </content>
       </ScrollPane>
       <ScrollPane fx:id="sp2" prefHeight="170.0" prefWidth="839.0" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="10.0">
          <content>
-            <Pane fx:id="sp_pane2" onMousePressed="#sp_pane2MousePressed" prefHeight="150.0" prefWidth="1000.0">
+            <Pane fx:id="sp_pane2" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1000.0">
                <children>
-                  <Canvas fx:id="waveformCanvas2" height="150.0" width="1000.0" />
+                  <Canvas fx:id="waveformCanvas2" height="${sp_pane2.height}" width="${sp_pane2.width}" />
                </children>
             </Pane>
          </content>
       </ScrollPane>
       <Label layoutX="10.0" layoutY="105.0" text="Left" AnchorPane.leftAnchor="10.0" />
-      <Label layoutX="10.0" layoutY="287.0" text="Right" AnchorPane.leftAnchor="10.0" />
+      <Label layoutX="10.0" layoutY="287.0" text="Right" AnchorPane.bottomAnchor="134.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="858.0" />
       <Button fx:id="fftbutton" layoutX="853.0" layoutY="2.0" mnemonicParsing="false" onAction="#fftClick" text="FFT" AnchorPane.rightAnchor="10.0" />
       <Button fx:id="btnvedio" layoutX="769.0" layoutY="2.0" mnemonicParsing="false" onAction="#btnVedioClick" text="vedio play" AnchorPane.rightAnchor="56.0" />
    </children>
