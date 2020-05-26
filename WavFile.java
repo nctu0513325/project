@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import java.nio.ByteBuffer;
 
 public class WavFile {
     private Riff riff = new Riff();
@@ -167,6 +168,48 @@ public class WavFile {
                 byte[] buffer_beforeData = new byte[44 + (int) note.getNoteChunkSize() + 4 + 4];
                 oldFile.read(buffer_beforeData);
                 os.write(buffer_beforeData);
+
+                byte[] data_write;
+                int buffer_size = fmt.getBitsPerSample() / (fmt.getNumChannels() * 4);
+                int normalizeConstant;
+                if (fmt.getBitsPerSample() == 8) {
+                    // if bitsPerSample = 8 => unsigned
+                    normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample());
+                } else {
+                    // if bitsPerSample = 16 or 32 => signed
+                    normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
+                }
+                int count = 0;
+                // while (count < (data.getSubchunk2Size() / fmt.getBlockAlign())) {
+                for (int x = 0; x < input[0].size(); x++) {
+                    for (int channel = 0; channel < fmt.getNumChannels(); channel++) {
+                        if (fmt.getBitsPerSample() != 8) {
+                            // for (int index = 0; index < input[channel].size(); index++) {
+
+                            int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
+                            if (temp > normalizeConstant) {
+                                temp = normalizeConstant;
+                            } else if (temp < -normalizeConstant) {
+                                temp = -normalizeConstant;
+                            }
+                            // int hex = Integer.toString(temp, 16);
+                            data_write = ByteBuffer.allocate(4).putInt(temp).array();
+                            // System.out.println(temp);
+                            os.write(data_write[3]);
+                            os.write(data_write[2]);
+                            // System.out.format("0x%x ", data_write[2]);
+                            // System.out.format("0x%x ", data_write[3]);
+
+                            // }
+                        }
+                    }
+                    // count++;
+                    // System.out.println(count);
+                }
+                // for(int index=0;index<input[0].size();index++){
+                // for(int channel=0;channel<fmt.ge)
+                // }
+                // byte[] data = ByteBuffer.allocate(4).putInt(1695609641).array();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

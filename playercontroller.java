@@ -147,6 +147,7 @@ public class playercontroller {
     void StopClick(ActionEvent event) {
         mplayer.stop();
         btnPlay.setText("Play");
+        wf.saveAsWav(signal_temp);
     }
 
     @FXML
@@ -196,7 +197,9 @@ public class playercontroller {
             signal = wf.getSignal();
             interval = signal[0].size() / (int) waveformCanvas1.getWidth();
             sampleRate = wf.getSampleRate();
+            tempArrayList();
             drawWaveform(signal);
+
             mplayer.play();
 
             // pass to FFTController now
@@ -239,7 +242,7 @@ public class playercontroller {
         stage.show();
 
         // WavFile.saveAsWav(signal_temp);
-        wf.saveAsWav(signal_temp);
+
     }
 
     private String Seconds2Str(Double seconds) {
@@ -295,9 +298,9 @@ public class playercontroller {
 
     //
     public void tempArrayList() {
-        signal_modify = new ArrayList[signal.length];
+        signal_temp = new ArrayList[signal.length];
         for (int channel = 0; channel < signal.length; channel++) {
-            signal_modify[channel] = new ArrayList(signal[channel]);
+            signal_temp[channel] = new ArrayList(signal[channel]);
         }
     }
 }
