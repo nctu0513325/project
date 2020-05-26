@@ -1,4 +1,3 @@
-
 //WavFile
 //RIFF chunk -> know its type (wav here)
 //Fmt chunk -> describe the format of the sound information
@@ -9,12 +8,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class WavFile {
-    private Riff riff = new Riff();
-    private Fmt fmt = new Fmt();
-    private Data data = new Data();
-    private Note note = new Note();
-    private InputStream input = null;
-    private String fileName;
+    private static Riff riff = new Riff();
+    private static  Fmt fmt = new Fmt();
+    private static Data data = new Data();
+    private static Note note = new Note();
+    private static InputStream input = null;
+    private static String fileName;
 
     private static ArrayList<Double>[] signal; // normalize between -1~1
     private static ArrayList<Double>[] signal_dB; // change to dB
@@ -31,11 +30,11 @@ public class WavFile {
         return fmt.getNumChannels();
     }
 
-    public ArrayList<Double>[] getSignal() {
+    public static ArrayList<Double>[] getSignal() {
         return signal;
     }
 
-    public void read(String fileNameInput) throws IOException {
+    public static void read(String fileNameInput) throws IOException {
         try {
             fileName = fileNameInput;
             byte[] buffer_four = new byte[4];
@@ -121,8 +120,7 @@ public class WavFile {
                             if (j == buffer_signal.length - 1) {
                                 temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), k);
                             } else {
-                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
-                                        * Math.pow(fmt.getBitsPerSample(), k);
+                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)* Math.pow(fmt.getBitsPerSample(), k);
                             }
                             k += 2;
                         }
