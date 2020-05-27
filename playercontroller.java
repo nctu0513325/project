@@ -31,42 +31,25 @@ import javafx.stage.Stage;
 
 public class playercontroller {
 
-    @FXML
-    private Slider slTime;
-    @FXML
-    private Button btnStop;
-    @FXML
-    private Button btnPlay;
-    @FXML
-    private Slider slVolume;
-    @FXML
-    private Label lbVolume;
-    @FXML
-    private Button btnOpen;
-    @FXML
-    private Label lbCurrentTime;
-    @FXML
-    private Slider slSpeed;
-    @FXML
-    private Label lbSpeed;
-    @FXML
-    private MediaView mView;
-    @FXML
-    private Pane pane;
-    @FXML
-    private Canvas waveformCanvas1;
-    @FXML
-    private Canvas waveformCanvas2;
-    @FXML
-    private ScrollPane sp1;
-    @FXML
-    private ScrollPane sp2;
-    @FXML
-    private Pane sp_pane1;
-    @FXML
-    private Pane sp_pane2;
-    @FXML
-    private Button fftbutton;
+    @FXML private Slider slTime;
+    @FXML private Button btnStop;
+    @FXML private Button btnPlay;
+    @FXML private Slider slVolume;
+    @FXML private Label lbVolume;
+    @FXML private Button btnOpen;
+    @FXML private Label lbCurrentTime;
+    @FXML private Slider slSpeed;
+    @FXML private Label lbSpeed;
+    @FXML private MediaView mView;
+    @FXML private Pane pane;
+    @FXML private Canvas waveformCanvas1;
+    @FXML private Canvas waveformCanvas2;
+    @FXML private ScrollPane sp1;
+    @FXML private ScrollPane sp2;
+    @FXML private Pane sp_pane1;
+    @FXML private Pane sp_pane2;
+    @FXML private Button fftbutton;
+    @FXML private Button btnvedio;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -94,11 +77,6 @@ public class playercontroller {
             btnPlay.setText("Play");
         });
 
-        fileChooser.setTitle("Open Media...");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
-                new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
-                new FileChooser.ExtensionFilter("WMV Music", "*.wmv"),
-                new FileChooser.ExtensionFilter("All Files", "*.*"));
     }
 
     int vol = 50;
@@ -130,6 +108,12 @@ public class playercontroller {
                 lbSpeed.setText(String.valueOf(speed));
             }
         });
+
+        fileChooser.setTitle("Open Media...");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
+                new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
+                new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
     }
 
     @FXML
@@ -144,7 +128,7 @@ public class playercontroller {
     }
 
     @FXML
-    void StopClick(ActionEvent event) {
+    void StopClick(final ActionEvent event) {
         mplayer.stop();
         btnPlay.setText("Play");
         wf.saveAsWav(wf, signal_temp);
@@ -245,9 +229,15 @@ public class playercontroller {
 
     }
 
+    @FXML
+    void btnVedioClick(ActionEvent event) throws Exception {
+        vedioplayer vp = new vedioplayer();
+        vp.start(new Stage());
+    }
+
     private String Seconds2Str(Double seconds) {
         Integer count = seconds.intValue();
-        Integer Hours = count / 3600;
+        final Integer Hours = count / 3600;
         count = count % 3600;
         Integer Minutes = count / 60;
         count = count % 60;
@@ -296,7 +286,6 @@ public class playercontroller {
 
     }
 
-    //
     public void tempArrayList() {
         signal_temp = new ArrayList[signal.length];
         for (int channel = 0; channel < signal.length; channel++) {

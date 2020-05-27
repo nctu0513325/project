@@ -12,11 +12,12 @@ import javafx.stage.Stage;
 import java.nio.ByteBuffer;
 
 public class WavFile {
-    private Riff riff = new Riff();
-    private Fmt fmt = new Fmt();
-    private Data data = new Data();
-    private Note note = new Note();
-    private InputStream input = null;
+
+    private static Riff riff = new Riff();
+    private static Fmt fmt = new Fmt();
+    private static Data data = new Data();
+    private static Note note = new Note();
+    private static InputStream input = null;
     private static String fileName;
 
     private static ArrayList<Double>[] signal; // normalize between -1~1
@@ -34,11 +35,11 @@ public class WavFile {
         return fmt.getNumChannels();
     }
 
-    public ArrayList<Double>[] getSignal() {
+    public static ArrayList<Double>[] getSignal() {
         return signal;
     }
 
-    public void read(String fileNameInput) throws IOException {
+    public static void read(String fileNameInput) throws IOException {
         try {
             fileName = fileNameInput;
             byte[] buffer_four = new byte[4];
