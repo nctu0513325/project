@@ -135,12 +135,16 @@ public class playercontroller {
                 // modify signal
                 // signal_temp = new ArrayList[signal_modify.length];
                 // for (int channel = 0; channel < signal.length; channel++) {
-                //     signal_temp[channel] = new ArrayList(signal_modify[channel]);
-                }
+                // signal_temp[channel] = new ArrayList(signal_modify[channel]);
+                // }
             }
         });
 
-    fileChooser.setTitle("Open Media...");fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MP4 Video","*.mp4"),new FileChooser.ExtensionFilter("MP3 Music","*.mp3"),new FileChooser.ExtensionFilter("WAV Music","*.wav"),new FileChooser.ExtensionFilter("All Files","*.*"));
+        fileChooser.setTitle("Open Media...");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
+                new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
+                new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
 
     }
 
