@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.event.ActionEvent;
+import javafx.scene.input.MouseDragEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -42,7 +43,7 @@ public class playercontroller {
     @FXML private Label lbSpeed;
     @FXML private MediaView mView;
     @FXML private Pane pane;
-    @FXML private java.awt.Canvas waveformCanvas1;
+    @FXML private Canvas waveformCanvas1;
     @FXML private Canvas waveformCanvas2;
     @FXML private ScrollPane sp1;
     @FXML private ScrollPane sp2;
@@ -50,6 +51,13 @@ public class playercontroller {
     @FXML private Pane sp_pane2;
     @FXML private Button fftbutton;
     @FXML private Button btnvedio;
+    @FXML private Slider slto;
+    @FXML private Slider slfrom;
+    @FXML private Line Lfromline;
+    @FXML private Line Ltoline;
+    @FXML private Line Rfromline;
+    @FXML private Line Rtoline;
+    @FXML private Button btnBlockPlay;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -66,6 +74,8 @@ public class playercontroller {
     // some useful signal properties
     private int sampleRate;
     private int interval;
+    private double blockstarttime=0;
+    private double blockendtime=100;
 
     public void start(Stage primarytStage) {
 
@@ -110,10 +120,28 @@ public class playercontroller {
         });
 
         fileChooser.setTitle("Open Media...");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
                 new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
-                new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
+                new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        slfrom.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                double x = newValue.doubleValue();
+                blockstarttime=x;
+                drawFromTimeLine(waveformCanvas1.getWidth()*(x/100));
+            }
+        });
+
+        slto.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                double x = newValue.doubleValue();
+                blockendtime = x;
+                drawToTimeLine(waveformCanvas1.getWidth()*(x/100));
+            }
+        });
     }
 
     @FXML
@@ -218,6 +246,21 @@ public class playercontroller {
         vp.start(new Stage());
     }
 
+    @FXML
+    void btnBlockPlayClick(ActionEvent event) {
+        mplayer.seek(mplayer.getTotalDuration().multiply(blockstarttime / 100));
+        mplayer.play();
+        btnplay.setText("pause");
+        mplayer.currentTimeProperty().addListener(ov -> {
+            if(mplayer.getCurrentTime()==mplayer.getTotalDuration().multiply(blockendtime/100)){
+                mplayer.pause();
+                btnPlay.setText("pause");
+            }
+            slTime.setValue(currentTime / endTime * 100);
+        });
+    }
+
+
     private String Seconds2Str(Double seconds) {
         Integer count = seconds.intValue();
         final Integer Hours = count / 3600;
@@ -261,24 +304,49 @@ public class playercontroller {
         sp_pane2.getChildren().clear();
         sp_pane1.getChildren().add(waveformCanvas1);
         sp_pane2.getChildren().add(waveformCanvas2);
+        sp_pane1.getChildren().add(Lfromline);
+        sp_pane1.getChildren().add(Ltoline);
+        sp_pane2.getChildren().add(Rfromline);
+        sp_pane2.getChildren().add(Rtoline);
         // draw on scroller panel
         Line newTimeline1 = new Line(x, 0, x, sp1.getHeight());
         Line newTimeline2 = new Line(x, 0, x, sp2.getHeight());
         sp_pane1.getChildren().add(newTimeline1);
         sp_pane2.getChildren().add(newTimeline2);
+    }
+
+    private void drawFromTimeLine(double time) {
+        Lfromline.setVisible(true);
+        Lfromline.setStroke(Color.RED);
+        Lfromline.setStartX(time);
+        Lfromline.setStartY(0);
+        Lfromline.setEndX(time);
+        Lfromline.setEndY(sp_pane1.getHeight()+3);
+
+        Rfromline.setVisible(true);
+        Rfromline.setStroke(Color.RED);
+        Rfromline.setStartX(time);
+        Rfromline.setStartY(0);
+        Rfromline.setEndX(time);
+        Rfromline.setEndY(sp_pane2.getHeight()+3);
 
     }
-    /*private void drawTimeLine(double time) {
-        GraphicsContext gc1 = waveformCanvas1.getGraphicsContext2D();
-        GraphicsContext gc2 = waveformCanvas2.getGraphicsContext2D();
-        int sampleRate = wf.getSampleRate();
-        double x = ((double) sampleRate * time) / (double) interval;
-        gc1.setStroke(Color.RED);
-        gc1.strokeLine(x, 0, x, waveformCanvas1.getHeight());
-        gc2.setStroke(Color.RED);
-        gc2.strokeLine(x, 0, x, waveformCanvas2.getHeight());
+   
+    private void drawToTimeLine(double time) {
+        Ltoline.setVisible(true);
+        Ltoline.setStroke(Color.RED);
+        Ltoline.setStartX(time);
+        Ltoline.setStartY(0);
+        Ltoline.setEndX(time);
+        Ltoline.setEndY(sp_pane1.getHeight()+3);
 
-    }*/
+        Rtoline.setVisible(true);
+        Rtoline.setStroke(Color.RED);
+        Rtoline.setStartX(time);
+        Rtoline.setStartY(0);
+        Rtoline.setEndX(time);
+        Rtoline.setEndY(sp_pane2.getHeight()+3);
+    }
 
     public void tempArrayList() {
         signal_modify = new ArrayList[signal.length];
