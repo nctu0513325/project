@@ -147,7 +147,7 @@ public class playercontroller {
     void StopClick(ActionEvent event) {
         mplayer.stop();
         btnPlay.setText("Play");
-        wf.saveAsWav(signal_temp);
+        wf.saveAsWav(wf, signal_temp);
     }
 
     @FXML

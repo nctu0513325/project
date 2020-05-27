@@ -151,7 +151,7 @@ public class WavFile {
 
     }
 
-    public void saveAsWav(ArrayList<Double>[] input) {
+    public void saveAsWav(WavFile wf, ArrayList<Double>[] input) {
         Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("save");
@@ -165,10 +165,17 @@ public class WavFile {
                 InputStream oldFile = null;
                 oldFile = new FileInputStream(fileName);
                 OutputStream os = new FileOutputStream(file);
+                // copy protocol from original file
                 byte[] buffer_beforeData = new byte[44 + (int) note.getNoteChunkSize() + 4 + 4];
                 oldFile.read(buffer_beforeData);
                 os.write(buffer_beforeData);
 
+                // change file length in
+                // int newDataLength = input[0].size()*;
+                // int newFileLength = newDataLength + 44 + (int) note.getNoteChunkSize() + 4 +
+                // 4;
+
+                // write data into wav file
                 byte[] data_write;
                 int buffer_size = fmt.getBitsPerSample() / (fmt.getNumChannels() * 4);
                 int normalizeConstant;
@@ -184,7 +191,6 @@ public class WavFile {
                 for (int x = 0; x < input[0].size(); x++) {
                     for (int channel = 0; channel < fmt.getNumChannels(); channel++) {
                         if (fmt.getBitsPerSample() != 8) {
-                            // for (int index = 0; index < input[channel].size(); index++) {
 
                             int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
                             if (temp > normalizeConstant) {
@@ -192,24 +198,13 @@ public class WavFile {
                             } else if (temp < -normalizeConstant) {
                                 temp = -normalizeConstant;
                             }
-                            // int hex = Integer.toString(temp, 16);
                             data_write = ByteBuffer.allocate(4).putInt(temp).array();
                             // System.out.println(temp);
                             os.write(data_write[3]);
                             os.write(data_write[2]);
-                            // System.out.format("0x%x ", data_write[2]);
-                            // System.out.format("0x%x ", data_write[3]);
-
-                            // }
                         }
                     }
-                    // count++;
-                    // System.out.println(count);
                 }
-                // for(int index=0;index<input[0].size();index++){
-                // for(int channel=0;channel<fmt.ge)
-                // }
-                // byte[] data = ByteBuffer.allocate(4).putInt(1695609641).array();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
