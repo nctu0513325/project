@@ -31,25 +31,47 @@ import javafx.stage.Stage;
 
 public class playercontroller {
 
-    @FXML private Slider slTime;
-    @FXML private Button btnStop;
-    @FXML private Button btnPlay;
-    @FXML private Slider slVolume;
-    @FXML private Label lbVolume;
-    @FXML private Button btnOpen;
-    @FXML private Label lbCurrentTime;
-    @FXML private Slider slSpeed;
-    @FXML private Label lbSpeed;
-    @FXML private MediaView mView;
-    @FXML private Pane pane;
-    @FXML private Canvas waveformCanvas1;
-    @FXML private Canvas waveformCanvas2;
-    @FXML private ScrollPane sp1;
-    @FXML private ScrollPane sp2;
-    @FXML private Pane sp_pane1;
-    @FXML private Pane sp_pane2;
-    @FXML private Button fftbutton;
-    @FXML private Button btnvedio;
+    @FXML
+    private Slider slTime;
+    @FXML
+    private Button btnStop;
+    @FXML
+    private Button btnPlay;
+    @FXML
+    private Slider slVolume;
+    @FXML
+    private Label lbVolume;
+    @FXML
+    private Button btnOpen;
+    @FXML
+    private Label lbCurrentTime;
+    @FXML
+    private Slider slSpeed;
+    @FXML
+    private Label lbSpeed;
+    @FXML
+    private MediaView mView;
+    @FXML
+    private Pane pane;
+    @FXML
+    private Canvas waveformCanvas1;
+    @FXML
+    private Canvas waveformCanvas2;
+    @FXML
+    private ScrollPane sp1;
+    @FXML
+    private ScrollPane sp2;
+    @FXML
+    private Pane sp_pane1;
+    @FXML
+    private Pane sp_pane2;
+    @FXML
+    private Button fftbutton;
+    @FXML
+    private Button btnvedio;
+
+    @FXML
+    private Button editButton;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -131,6 +153,7 @@ public class playercontroller {
     void StopClick(final ActionEvent event) {
         mplayer.stop();
         btnPlay.setText("Play");
+        wf.playBySample(signal_temp);
     }
 
     @FXML
@@ -189,6 +212,11 @@ public class playercontroller {
         }
     }
 
+    @FXML
+    void editButtonClick(ActionEvent event) {
+
+    }
+
     // timeline canvas
     @FXML
     void sp_pane1MousePressed(MouseEvent event) {
@@ -214,13 +242,8 @@ public class playercontroller {
 
     @FXML
     void fftClick(ActionEvent event) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent root = FXMLLoader.load(getClass().getResource("fftScene.fxml"));
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        stage.setTitle("FFT"); // displayed in window's title bar
-        stage.setScene(scene);
-        stage.show();
+        FFTDisplay fd = new FFTDisplay();
+        fd.start(new Stage());
     }
 
     @FXML

@@ -1,3 +1,4 @@
+
 //WavFile
 //RIFF chunk -> know its type (wav here)
 //Fmt chunk -> describe the format of the sound information
@@ -7,9 +8,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.sound.sampled.*;
+import java.nio.ByteBuffer;
+
 public class WavFile {
     private static Riff riff = new Riff();
-    private static  Fmt fmt = new Fmt();
+    private static Fmt fmt = new Fmt();
     private static Data data = new Data();
     private static Note note = new Note();
     private static InputStream input = null;
@@ -120,7 +124,8 @@ public class WavFile {
                             if (j == buffer_signal.length - 1) {
                                 temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), k);
                             } else {
-                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)* Math.pow(fmt.getBitsPerSample(), k);
+                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
+                                        * Math.pow(fmt.getBitsPerSample(), k);
                             }
                             k += 2;
                         }
@@ -146,7 +151,41 @@ public class WavFile {
 
     }
 
-    public static void save(ArrayList<Double>[] input) {
+    public static void playBySample(ArrayList<Double>[] input) {
+        try {
+            int bufferSize = 2200;
+            byte[] data_write;
+            AudioFormat audioFormat = new AudioFormat(fmt.getSampleRate(), fmt.getBitsPerSample(), fmt.getNumChannels(),
+                    true, true);
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+            SourceDataLine soundLine = (SourceDataLine) AudioSystem.getLine(info);
+            soundLine.open(audioFormat, bufferSize);
+            soundLine.start();
+            // byte counter = 0;
+            int index = 0;
+            int x = 0;
+            int k = 0;
+            byte[] buffer = new byte[bufferSize];
+            int normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
+            while (true) {
+                // for (int count = 0; count < bufferSize / fmt.getNumChannels(); count += 2) {
+                while (index < bufferSize) {
+                    for (int channel = 0; channel < fmt.getNumChannels(); channel++) {
+                        int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
+                        data_write = ByteBuffer.allocate(4).putInt(temp).array();
+                        buffer[index] = data_write[2];
+                        buffer[index + 1] = data_write[3];
+                        index += fmt.getNumChannels();
+                    }
+                    // k++;
+                    x++;
+                }
+                index = 0;
+                soundLine.write(buffer, 0, bufferSize);
+            }
+        } catch (LineUnavailableException e) {
+            System.out.println(e.getMessage());
+        }
 
     }
 
