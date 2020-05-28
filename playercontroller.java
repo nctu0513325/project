@@ -69,9 +69,10 @@ public class playercontroller {
     private Button fftbutton;
     @FXML
     private Button btnvedio;
-
     @FXML
-    private Button editButton;
+    private Button previewButton;
+    @FXML
+    private Button saveButton;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -108,17 +109,21 @@ public class playercontroller {
         slVolume.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                // show changes
                 vol = newValue.intValue();
-                signal = wf.getSignal();
-                signal_temp = new ArrayList[signal.length];
+                lbVolume.setText(String.valueOf(vol));
+
+                // modify signal
+                double constant = signal[0].size() / signal_modify[0].size();
+                signal_temp = new ArrayList[signal_modify.length];
                 for (int channel = 0; channel < signal.length; channel++) {
-                    signal_temp[channel] = new ArrayList(signal[channel]);
+                    signal_temp[channel] = new ArrayList(signal_modify[channel]);
                     for (int x = 0; x < signal_temp[channel].size(); x++) {
-                        signal_temp[channel].set(x, signal_temp[channel].get(x) * ((double) vol / 50));
+                        signal_temp[channel].set(x, signal[channel].get(x * (int) constant) * ((double) vol / 50));
                     }
                 }
                 drawWaveform(signal_temp);
-                lbVolume.setText(String.valueOf(vol));
+                signal_modify = signal_temp;
             }
         });
 
@@ -128,6 +133,12 @@ public class playercontroller {
                 speed = newValue.doubleValue();
                 speed = Double.parseDouble(String.format("%.2f", speed));
                 lbSpeed.setText(String.valueOf(speed));
+
+                // modify signal
+                // signal_temp = new ArrayList[signal_modify.length];
+                // for (int channel = 0; channel < signal.length; channel++) {
+                // signal_temp[channel] = new ArrayList(signal_modify[channel]);
+                // }
             }
         });
 
@@ -136,6 +147,7 @@ public class playercontroller {
                 new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
                 new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
+
     }
 
     @FXML
@@ -153,7 +165,7 @@ public class playercontroller {
     void StopClick(final ActionEvent event) {
         mplayer.stop();
         btnPlay.setText("Play");
-        wf.playBySample(signal_temp);
+        // wf.playBySample(signal_temp);
     }
 
     @FXML
@@ -203,7 +215,9 @@ public class playercontroller {
             signal = wf.getSignal();
             interval = signal[0].size() / (int) waveformCanvas1.getWidth();
             sampleRate = wf.getSampleRate();
+            modifyArrayList();
             drawWaveform(signal);
+
             mplayer.play();
 
             // pass to FFTController now
@@ -213,8 +227,8 @@ public class playercontroller {
     }
 
     @FXML
-    void editButtonClick(ActionEvent event) {
-
+    void previewButtonClick(ActionEvent event) {
+        WavFile.playBySample(signal_modify, 0, 3);
     }
 
     // timeline canvas
@@ -250,6 +264,11 @@ public class playercontroller {
     void btnVedioClick(ActionEvent event) throws Exception {
         vedioplayer vp = new vedioplayer();
         vp.start(new Stage());
+    }
+
+    @FXML
+    void saveButtonClick(ActionEvent event) {
+        wf.saveAsWav(wf, signal_modify);
     }
 
     private String Seconds2Str(Double seconds) {
@@ -303,7 +322,7 @@ public class playercontroller {
 
     }
 
-    public void tempArrayList() {
+    public void modifyArrayList() {
         signal_modify = new ArrayList[signal.length];
         for (int channel = 0; channel < signal.length; channel++) {
             signal_modify[channel] = new ArrayList(signal[channel]);

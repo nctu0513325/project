@@ -52,6 +52,8 @@
       <Label layoutX="10.0" layoutY="287.0" text="Right" AnchorPane.leftAnchor="10.0" />
       <Button fx:id="fftbutton" layoutX="853.0" layoutY="2.0" mnemonicParsing="false" onAction="#fftClick" text="FFT" AnchorPane.rightAnchor="10.0" />
       <Button fx:id="btnvedio" layoutX="769.0" layoutY="2.0" mnemonicParsing="false" onAction="#btnVedioClick" text="vedio play" AnchorPane.rightAnchor="56.0" />
-      <Button fx:id="editButton" layoutX="722.0" layoutY="2.0" mnemonicParsing="false" onAction="#editButtonClick" text="edit" />
+
+            <Button fx:id="previewButton" layoutX="649.0" layoutY="2.0" mnemonicParsing="false" onAction="#previewButtonClick" text="preview" />
+      <Button fx:id="saveButton" layoutX="722.0" layoutY="2.0" mnemonicParsing="false" onAction="#saveButtonClick" text="save" />
    </children>
 </AnchorPane>
