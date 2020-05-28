@@ -179,11 +179,17 @@ public class playercontroller {
                 mplayer.seek(Duration.ZERO);
                 btnPlay.setText("Play");
             });
-            
+
             mplayer.setOnStopped(() -> {
                 mplayer.setStopTime(mplayer.getMedia().getDuration());
                 mplayer.setStartTime(Duration.ZERO);
             });
+
+            mplayer.setOnPaused(() -> {
+                mplayer.setStopTime(mplayer.getMedia().getDuration());
+                mplayer.setStartTime(mplayer.getCurrentTime());
+            });
+            
             mplayer.currentTimeProperty().addListener(ov -> {
                 currentTime = mplayer.getCurrentTime().toSeconds();
                 lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));

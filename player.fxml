@@ -58,7 +58,9 @@
       <Button fx:id="fftbutton" layoutX="853.0" layoutY="2.0" mnemonicParsing="false" onAction="#fftClick" text="FFT" AnchorPane.rightAnchor="10.0" />
       <Button fx:id="btnvedio" layoutX="769.0" layoutY="2.0" mnemonicParsing="false" onAction="#btnVedioClick" text="vedio play" AnchorPane.rightAnchor="56.0" />
       <Slider fx:id="slfrom" layoutX="94.0" layoutY="10.0" />
-      <Slider fx:id="slto" layoutX="254.0" layoutY="10.0" value="100.0" />
-      <Button fx:id="btnBlockPlay" layoutX="411.0" layoutY="6.0" mnemonicParsing="false" onAction="#btnBlockPlayClick" text="區間播放" />
+      <Slider fx:id="slto" layoutX="334.0" layoutY="10.0" value="100.0" />
+      <Button fx:id="btnBlockPlay" layoutX="244.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnBlockPlayClick" text="區間播放" />
+      <Label layoutX="54.0" layoutY="10.0" text="From" />
+      <Label layoutX="316.0" layoutY="9.0" text="To" />
    </children>
 </AnchorPane>
