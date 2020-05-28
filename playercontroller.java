@@ -181,6 +181,17 @@ public class playercontroller {
                 mplayer.seek(Duration.ZERO);
                 btnPlay.setText("Play");
             });
+
+            mplayer.setOnStopped(() -> {
+                mplayer.setStopTime(mplayer.getMedia().getDuration());
+                mplayer.setStartTime(Duration.ZERO);
+            });
+
+            mplayer.setOnPaused(() -> {
+                mplayer.setStopTime(mplayer.getMedia().getDuration());
+                mplayer.setStartTime(mplayer.getCurrentTime());
+            });
+            
             mplayer.currentTimeProperty().addListener(ov -> {
                 currentTime = mplayer.getCurrentTime().toSeconds();
                 lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
@@ -249,22 +260,12 @@ public class playercontroller {
     }
 
     @FXML
-    void btnBlockPlayClick(ActionEvent event) throws IOException {
-        mplayer.seek(mplayer.getTotalDuration().multiply(blockstarttime / 100));
+    void btnBlockPlayClick(ActionEvent event) {
+        mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime / 100));
         mplayer.play();
-        btnPlay.setText("Pause");
-        //mplayer.setPauseTime(mplayer.getTotalDuration().multiply(blockendtime/100));
+        btnPlay.setText("pause");
         
-        /*mplayer.setOnPlaying(() -> {
-            mplayer.currentTimeProperty().addListener(ov -> {
-                mplayer.pause();
-                btnPlay.setText("Play");
-            });
-            if(){
-                mplayer.pause();
-                btnPlay.setText("Play");
-            }
-        });*/
+        mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime/100));
     }
 
     private String Seconds2Str(Double seconds) {
