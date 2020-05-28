@@ -179,6 +179,11 @@ public class playercontroller {
                 mplayer.seek(Duration.ZERO);
                 btnPlay.setText("Play");
             });
+            
+            mplayer.setOnStopped(() -> {
+                mplayer.setStopTime(mplayer.getMedia().getDuration());
+                mplayer.setStartTime(Duration.ZERO);
+            });
             mplayer.currentTimeProperty().addListener(ov -> {
                 currentTime = mplayer.getCurrentTime().toSeconds();
                 lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
@@ -248,16 +253,11 @@ public class playercontroller {
 
     @FXML
     void btnBlockPlayClick(ActionEvent event) {
-        mplayer.seek(mplayer.getTotalDuration().multiply(blockstarttime / 100));
+        mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime / 100));
         mplayer.play();
-        btnplay.setText("pause");
-        mplayer.currentTimeProperty().addListener(ov -> {
-            if(mplayer.getCurrentTime()==mplayer.getTotalDuration().multiply(blockendtime/100)){
-                mplayer.pause();
-                btnPlay.setText("pause");
-            }
-            slTime.setValue(currentTime / endTime * 100);
-        });
+        btnPlay.setText("pause");
+        
+        mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime/100));
     }
 
 
