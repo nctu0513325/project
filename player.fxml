@@ -35,9 +35,9 @@
          <content>
             <Pane fx:id="sp_pane1" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1000.0">
                <children>
-                  <Line fx:id="Lfromline" visible="false" />
+                  <Line fx:id="Lfromline" stroke="RED" visible="false" />
                   <Canvas fx:id="waveformCanvas1" height="150.0" width="1000.0" />
-                  <Line fx:id="Ltoline" endX="-193.0" endY="17.0" visible="false" />
+                  <Line fx:id="Ltoline" endX="264.0" endY="84.0" stroke="RED" visible="false" />
                </children>
             </Pane>
          </content>
@@ -46,9 +46,9 @@
          <content>
             <Pane fx:id="sp_pane2" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1000.0">
                <children>
-                  <Line fx:id="Rtoline" endX="100.0" startX="6.0" startY="6.0" visible="false" />
+                  <Line fx:id="Rtoline" endX="100.0" startX="6.0" startY="6.0" stroke="RED" visible="false" />
                   <Canvas fx:id="waveformCanvas2" height="150.0" width="1000.0" />
-                  <Line fx:id="Rfromline" endX="100.0" startX="19.0" startY="42.0" visible="false" />
+                  <Line fx:id="Rfromline" endX="100.0" startX="19.0" startY="42.0" stroke="RED" visible="false" />
                </children>
             </Pane>
          </content>

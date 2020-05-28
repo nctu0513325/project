@@ -120,10 +120,12 @@ public class playercontroller {
         });
 
         fileChooser.setTitle("Open Media...");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
-                new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
-                new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
-                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
+            new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
+            new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
+            new FileChooser.ExtensionFilter("All Files", "*.*")
+            );
 
         slfrom.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -182,7 +184,7 @@ public class playercontroller {
             mplayer.currentTimeProperty().addListener(ov -> {
                 currentTime = mplayer.getCurrentTime().toSeconds();
                 lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
-                // draw current time line
+                // draw current time line                
                 drawCurrentTimeLine(currentTime);
                 slTime.setValue(currentTime / endTime * 100);
             });
@@ -247,19 +249,23 @@ public class playercontroller {
     }
 
     @FXML
-    void btnBlockPlayClick(ActionEvent event) {
+    void btnBlockPlayClick(ActionEvent event) throws IOException {
         mplayer.seek(mplayer.getTotalDuration().multiply(blockstarttime / 100));
         mplayer.play();
-        btnplay.setText("pause");
-        mplayer.currentTimeProperty().addListener(ov -> {
-            if(mplayer.getCurrentTime()==mplayer.getTotalDuration().multiply(blockendtime/100)){
+        btnPlay.setText("Pause");
+        //mplayer.setPauseTime(mplayer.getTotalDuration().multiply(blockendtime/100));
+        
+        /*mplayer.setOnPlaying(() -> {
+            mplayer.currentTimeProperty().addListener(ov -> {
                 mplayer.pause();
-                btnPlay.setText("pause");
+                btnPlay.setText("Play");
+            });
+            if(){
+                mplayer.pause();
+                btnPlay.setText("Play");
             }
-            slTime.setValue(currentTime / endTime * 100);
-        });
+        });*/
     }
-
 
     private String Seconds2Str(Double seconds) {
         Integer count = seconds.intValue();
@@ -317,31 +323,26 @@ public class playercontroller {
 
     private void drawFromTimeLine(double time) {
         Lfromline.setVisible(true);
-        Lfromline.setStroke(Color.RED);
         Lfromline.setStartX(time);
         Lfromline.setStartY(0);
         Lfromline.setEndX(time);
         Lfromline.setEndY(sp_pane1.getHeight()+3);
 
         Rfromline.setVisible(true);
-        Rfromline.setStroke(Color.RED);
         Rfromline.setStartX(time);
         Rfromline.setStartY(0);
         Rfromline.setEndX(time);
         Rfromline.setEndY(sp_pane2.getHeight()+3);
-
     }
    
     private void drawToTimeLine(double time) {
         Ltoline.setVisible(true);
-        Ltoline.setStroke(Color.RED);
         Ltoline.setStartX(time);
         Ltoline.setStartY(0);
         Ltoline.setEndX(time);
         Ltoline.setEndY(sp_pane1.getHeight()+3);
 
         Rtoline.setVisible(true);
-        Rtoline.setStroke(Color.RED);
         Rtoline.setStartX(time);
         Rtoline.setStartY(0);
         Rtoline.setEndX(time);
