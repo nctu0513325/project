@@ -260,7 +260,7 @@ public class playercontroller {
 
     @FXML
     void saveButtonClick(ActionEvent event) {
-        wf.saveAsWav(wf, signal_modify);
+        wf.saveAsWav(wf, signal);
     }
 
     private String Seconds2Str(Double seconds) {
