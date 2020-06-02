@@ -1,4 +1,3 @@
-
 //WavFile
 //RIFF chunk -> know its type (wav here)
 //Fmt chunk -> describe the format of the sound information
@@ -7,14 +6,10 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import java.nio.ByteBuffer;
 
 public class WavFile {
-
     private static Riff riff = new Riff();
-    private static Fmt fmt = new Fmt();
+    private static  Fmt fmt = new Fmt();
     private static Data data = new Data();
     private static Note note = new Note();
     private static InputStream input = null;
@@ -125,8 +120,7 @@ public class WavFile {
                             if (j == buffer_signal.length - 1) {
                                 temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), k);
                             } else {
-                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
-                                        * Math.pow(fmt.getBitsPerSample(), k);
+                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)* Math.pow(fmt.getBitsPerSample(), k);
                             }
                             k += 2;
                         }
@@ -152,64 +146,8 @@ public class WavFile {
 
     }
 
-    public void saveAsWav(WavFile wf, ArrayList<Double>[] input) {
-        Stage stage = new Stage();
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("save");
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("WAV file", "*.wav");
-        fileChooser.getExtensionFilters().add(filter);
-        File file = fileChooser.showSaveDialog(stage);
+    public static void save(ArrayList<Double>[] input) {
 
-        if (file != null) {
-            try {
-                file = new File(file.getAbsolutePath() + ".wav");
-                InputStream oldFile = null;
-                oldFile = new FileInputStream(fileName);
-                OutputStream os = new FileOutputStream(file);
-                // copy protocol from original file
-                byte[] buffer_beforeData = new byte[44 + (int) note.getNoteChunkSize() + 4 + 4];
-                oldFile.read(buffer_beforeData);
-                os.write(buffer_beforeData);
-
-                // change file length in
-                // int newDataLength = input[0].size()*;
-                // int newFileLength = newDataLength + 44 + (int) note.getNoteChunkSize() + 4 +
-                // 4;
-
-                // write data into wav file
-                byte[] data_write;
-                int buffer_size = fmt.getBitsPerSample() / (fmt.getNumChannels() * 4);
-                int normalizeConstant;
-                if (fmt.getBitsPerSample() == 8) {
-                    // if bitsPerSample = 8 => unsigned
-                    normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample());
-                } else {
-                    // if bitsPerSample = 16 or 32 => signed
-                    normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
-                }
-                int count = 0;
-                // while (count < (data.getSubchunk2Size() / fmt.getBlockAlign())) {
-                for (int x = 0; x < input[0].size(); x++) {
-                    for (int channel = 0; channel < fmt.getNumChannels(); channel++) {
-                        if (fmt.getBitsPerSample() != 8) {
-
-                            int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
-                            if (temp > normalizeConstant) {
-                                temp = normalizeConstant;
-                            } else if (temp < -normalizeConstant) {
-                                temp = -normalizeConstant;
-                            }
-                            data_write = ByteBuffer.allocate(4).putInt(temp).array();
-                            // System.out.println(temp);
-                            os.write(data_write[3]);
-                            os.write(data_write[2]);
-                        }
-                    }
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
     }
 
 }
