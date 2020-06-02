@@ -58,6 +58,7 @@ public class playercontroller {
     @FXML private Line Rfromline;
     @FXML private Line Rtoline;
     @FXML private Button btnBlockPlay;
+    @FXML private Button btnCut;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -71,6 +72,7 @@ public class playercontroller {
     private ArrayList<Double>[] signal;
     private ArrayList<Double>[] signal_modify;
     private ArrayList<Double>[] signal_temp;
+    private ArrayList<Double>[] signal_cut;
     // some useful signal properties
     private int sampleRate;
     private int interval;
@@ -265,6 +267,16 @@ public class playercontroller {
         
         mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime/100));
     }
+    
+    @FXML
+    void CutClick(ActionEvent event) {
+        int y =(int)blockstarttime;
+        for ( int x=0; x<=(blockendtime-blockstarttime); x++){
+            signal_cut[x]=signal[y];
+            y++;
+        }
+        wf.saveAsWav(wf, signal_cut);
+    }
 
 
     private String Seconds2Str(Double seconds) {
@@ -323,14 +335,12 @@ public class playercontroller {
 
     private void drawFromTimeLine(double time) {
         Lfromline.setVisible(true);
-        Lfromline.setStroke(Color.RED);
         Lfromline.setStartX(time);
         Lfromline.setStartY(0);
         Lfromline.setEndX(time);
         Lfromline.setEndY(sp_pane1.getHeight()+3);
 
         Rfromline.setVisible(true);
-        Rfromline.setStroke(Color.RED);
         Rfromline.setStartX(time);
         Rfromline.setStartY(0);
         Rfromline.setEndX(time);
@@ -339,15 +349,13 @@ public class playercontroller {
     }
    
     private void drawToTimeLine(double time) {
-        Ltoline.setVisible(true);
-        Ltoline.setStroke(Color.RED);
+        Ltoline.setVisible(true);       
         Ltoline.setStartX(time);
         Ltoline.setStartY(0);
         Ltoline.setEndX(time);
         Ltoline.setEndY(sp_pane1.getHeight()+3);
 
         Rtoline.setVisible(true);
-        Rtoline.setStroke(Color.RED);
         Rtoline.setStartX(time);
         Rtoline.setStartY(0);
         Rtoline.setEndX(time);
