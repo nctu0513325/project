@@ -162,7 +162,7 @@ public class WavFile {
 
         if (file != null) {
             try {
-                file = new File(file.getAbsolutePath() + ".wav");
+                file = new File(file.getAbsolutePath() );
                 InputStream oldFile = null;
                 oldFile = new FileInputStream(fileName);
                 OutputStream os = new FileOutputStream(file);

@@ -17,6 +17,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import java.io.IOException;
+import java.security.PublicKey;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.Pane;
@@ -87,6 +88,8 @@ public class playercontroller {
     // some useful signal properties
     private int sampleRate;
     private int interval;
+    private double blockstarttime = 0;
+    private double blockendtime = 100;
 
     public void start(Stage primarytStage) {
 
@@ -97,7 +100,6 @@ public class playercontroller {
             mplayer.stop();
             btnPlay.setText("Play");
         });
-
     }
 
     int vol = 50;
@@ -146,6 +148,23 @@ public class playercontroller {
                 new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
 
+        slfrom.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                double x = newValue.doubleValue();
+                blockstarttime = x;
+                drawFromTimeLine(waveformCanvas1.getWidth() * (x / 100));
+            }
+        });
+
+        slto.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                double x = newValue.doubleValue();
+                blockendtime = x;
+                drawToTimeLine(waveformCanvas1.getWidth() * (x / 100));
+            }
+        });
     }
 
     @FXML
@@ -183,6 +202,17 @@ public class playercontroller {
                 mplayer.seek(Duration.ZERO);
                 btnPlay.setText("Play");
             });
+
+            mplayer.setOnStopped(() -> {
+                mplayer.setStopTime(mplayer.getMedia().getDuration());
+                mplayer.setStartTime(Duration.ZERO);
+            });
+
+            mplayer.setOnPaused(() -> {
+                mplayer.setStopTime(mplayer.getMedia().getDuration());
+                mplayer.setStartTime(mplayer.getCurrentTime());
+            });
+
             mplayer.currentTimeProperty().addListener(ov -> {
                 currentTime = mplayer.getCurrentTime().toSeconds();
                 lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
@@ -259,8 +289,23 @@ public class playercontroller {
     }
 
     @FXML
-    void saveButtonClick(ActionEvent event) {
-        wf.saveAsWav(wf, signal_modify);
+    void btnBlockPlayClick(ActionEvent event) {
+        mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime / 100));
+        mplayer.play();
+        btnPlay.setText("Pause");
+
+        mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
+    }
+
+    @FXML
+    void CutClick(ActionEvent event) {
+                
+        int start = (int) ((blockstarttime / 100) * signal[0].size());
+        int end = (int) ((blockendtime / 100) * signal[0].size());
+        int save = start;
+        
+        WavCut(start, end, save);
+        wf.saveAsWav(wf, signal_cut);
     }
 
     private String Seconds2Str(Double seconds) {
@@ -312,12 +357,56 @@ public class playercontroller {
         sp_pane1.getChildren().add(newTimeline1);
         sp_pane2.getChildren().add(newTimeline2);
 
+    private void drawFromTimeLine(double time) {
+        Lfromline.setVisible(true);
+        Lfromline.setStartX(time);
+        Lfromline.setStartY(0);
+        Lfromline.setEndX(time);
+        Lfromline.setEndY(sp_pane1.getHeight() + 3);
+
+        Rfromline.setVisible(true);
+        Rfromline.setStartX(time);
+        Rfromline.setStartY(0);
+        Rfromline.setEndX(time);
+        Rfromline.setEndY(sp_pane2.getHeight() + 3);
+
+    }
+
+    private void drawToTimeLine(double time) {
+        Ltoline.setVisible(true);
+        Ltoline.setStartX(time);
+        Ltoline.setStartY(0);
+        Ltoline.setEndX(time);
+        Ltoline.setEndY(sp_pane1.getHeight() + 3);
+
+        Rtoline.setVisible(true);
+        Rtoline.setStartX(time);
+        Rtoline.setStartY(0);
+        Rtoline.setEndX(time);
+        Rtoline.setEndY(sp_pane2.getHeight() + 3);
     }
 
     public void modifyArrayList() {
         signal_modify = new ArrayList[signal.length];
+        
         for (int channel = 0; channel < signal.length; channel++) {
-            signal_modify[channel] = new ArrayList(signal[channel]);
+            signal_cut[channel] = new ArrayList<Double>(signal[channel]);
+        }
+    }
+    
+    public void WavCut(int start, int end, int save){
+        signal_cut = new ArrayList[signal.length];
+
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_cut[channel] = new ArrayList<Double>();
+        }
+
+        for(int channel=0; channel<signal.length; channel++){
+            for(int y=0; y<(end-start); y++){
+                signal_cut[channel].add(signal[channel].get(save));
+                save++;
+            }
+            save=start;
         }
     }
 }
