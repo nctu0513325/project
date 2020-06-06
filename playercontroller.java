@@ -18,6 +18,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import java.io.IOException;
+import java.security.PublicKey;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.Pane;
@@ -284,11 +285,7 @@ public class playercontroller {
         /*@SuppressWarnings("unchecked")
         signal_cut = new ArrayList<Double> [signal.length] ;*/
         
-        for ( int channel=0; channel<signal.length; channel++){
-            System.out.println("fuck");
-            signal_cut[channel] = new ArrayList<Double>();
-            save=start;
-        } 
+        WavCut(start, end, save);
         System.out.println("signal_cut[0].size():\t" + signal_cut[0].size());
         System.out.println("signal_cut[0].get(1):\t" + signal_cut[0].get(1));
         wf.saveAsWav(wf, signal_cut);
@@ -380,8 +377,31 @@ public class playercontroller {
 
     public void tempArrayList() {
         signal_modify = new ArrayList[signal.length];
+        
         for (int channel = 0; channel < signal.length; channel++) {
-            signal_modify[channel] = new ArrayList(signal[channel]);
+            signal_cut[channel] = new ArrayList<Double>(signal[channel]);
         }
+    }
+    
+    public void WavCut(int start, int end, int save){
+        signal_cut = new ArrayList[signal.length];
+
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_cut[channel] = new ArrayList<Double>(signal[channel]);
+        }
+
+        for(int channel=0; channel<signal.length; channel++){
+            for(int y=0; y<(end-start); y++){
+                signal_cut[channel].set(y,signal[channel].get(save));
+                save++;
+            }
+            save=start;
+        }
+
+        /*for(int channel=0; channel<signal.length; channel++){
+            for(int y=(end-start); y<signal[0].size();y++){
+                signal_cut[channel].remove(y);
+            }
+        }*/
     }
 }
