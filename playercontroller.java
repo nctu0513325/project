@@ -275,17 +275,9 @@ public class playercontroller {
         int start = (int) ((blockstarttime / 100) * signal[0].size());
         int end = (int) ((blockendtime / 100) * signal[0].size());
         int save = start;
-
-        System.out.println("start:\t" + start);
-        System.out.println("end:\t" + end);
-        System.out.println("blockstarttime:\t" + blockstarttime);
-        System.out.println("blockendtime:\t" + blockendtime);
         
         WavCut(start, end, save);
-        System.out.println("signal_cut[0].size():\t" + signal_cut[0].size());
-        System.out.println("signal_cut[0].get(1):\t" + signal_cut[0].get(1));
         wf.saveAsWav(wf, signal_cut);
-
     }
 
     private String Seconds2Str(Double seconds) {
@@ -393,11 +385,5 @@ public class playercontroller {
             }
             save=start;
         }
-
-        /*for(int channel=0; channel<signal.length; channel++){
-            for(int y=(end-start); y<signal[0].size();y++){
-                signal_cut[channel].remove(y);
-            }
-        }*/
     }
 }
