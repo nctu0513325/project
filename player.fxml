@@ -15,6 +15,7 @@
       <Pane fx:id="pane" layoutX="123.0" layoutY="61.0" prefHeight="363.0" prefWidth="839.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="14.0">
          <children>
             <MediaView fx:id="mView" fitHeight="${pane.height}" fitWidth="${pane.width}" layoutX="1.0" />
+            <Slider layoutX="67.0" layoutY="-6.0" />
          </children>
       </Pane>
       <Slider fx:id="slTime" layoutX="160.0" layoutY="396.0" AnchorPane.bottomAnchor="26.0" />
