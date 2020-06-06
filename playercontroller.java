@@ -374,11 +374,8 @@ public class playercontroller {
     public void WavCut(int start, int end, int save){
         signal_cut = new ArrayList[signal.length];
 
-        for (int channel = 0; channel < signal.length; channel++) {
-            signal_cut[channel] = new ArrayList<Double>();
-        }
-
         for(int channel=0; channel<signal.length; channel++){
+            signal_cut[channel] = new ArrayList<Double>();
             for(int y=0; y<(end-start); y++){
                 signal_cut[channel].add(signal[channel].get(save));
                 save++;
