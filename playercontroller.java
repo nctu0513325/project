@@ -280,10 +280,6 @@ public class playercontroller {
         System.out.println("end:\t" + end);
         System.out.println("blockstarttime:\t" + blockstarttime);
         System.out.println("blockendtime:\t" + blockendtime);
-        System.out.println("signal[0].size():\t" + signal[0].size());
-
-        /*@SuppressWarnings("unchecked")
-        signal_cut = new ArrayList<Double> [signal.length] ;*/
         
         WavCut(start, end, save);
         System.out.println("signal_cut[0].size():\t" + signal_cut[0].size());
@@ -387,12 +383,12 @@ public class playercontroller {
         signal_cut = new ArrayList[signal.length];
 
         for (int channel = 0; channel < signal.length; channel++) {
-            signal_cut[channel] = new ArrayList<Double>(signal[channel]);
+            signal_cut[channel] = new ArrayList<Double>();
         }
 
         for(int channel=0; channel<signal.length; channel++){
             for(int y=0; y<(end-start); y++){
-                signal_cut[channel].set(y,signal[channel].get(save));
+                signal_cut[channel].add(signal[channel].get(save));
                 save++;
             }
             save=start;
