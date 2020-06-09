@@ -172,11 +172,7 @@ public class WavFile {
             byte[] data_write;
             AudioFormat audioFormat = new AudioFormat(fmt.getSampleRate(), fmt.getBitsPerSample(), fmt.getNumChannels(),
                     true, true);
-            // DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-            // SourceDataLine soundLine = (SourceDataLine) AudioSystem.getLine(info);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            // soundLine.open(audioFormat, bufferSize);
-            // soundLine.start();
             int sampleCount = 0;
             int index = 0;
             int normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
@@ -204,8 +200,6 @@ public class WavFile {
             AudioInputStream audioInputStream = new AudioInputStream(byteArrayInputStream, audioFormat,
                     input[0].size());
             AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, file);
-            // } catch (LineUnavailableException e) {
-            // System.out.println(e.getMessage());
         } catch (IOException e) {
             System.out.println(e.getStackTrace());
         }
