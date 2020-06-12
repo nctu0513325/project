@@ -70,6 +70,8 @@ public class playercontroller {
     @FXML
     private Button btnvedio;
     @FXML
+    private Button previewButton;
+    @FXML
     private Button saveButton;
 
     private Double endTime = new Double(0);
@@ -82,7 +84,7 @@ public class playercontroller {
     // wavfile
     // private WavFile wf;
     private ArrayList<Double>[] signal;
-    private ArrayList<Double>[] signal_modify;
+    private ArrayList<Double>[] signal_prev;
     private ArrayList<Double>[] signal_temp;
     // some useful signal properties
     private int sampleRate;
@@ -112,16 +114,17 @@ public class playercontroller {
                 lbVolume.setText(String.valueOf(vol));
 
                 // modify signal
-                double constant = signal[0].size() / signal_modify[0].size();
-                signal_temp = new ArrayList[signal_modify.length];
+                double constant = signal[0].size() / signal_prev[0].size();
+                signal_temp = new ArrayList[signal_prev.length];
                 for (int channel = 0; channel < signal.length; channel++) {
-                    signal_temp[channel] = new ArrayList(signal_modify[channel]);
+                    signal_temp[channel] = new ArrayList(signal_prev[channel]);
                     for (int x = 0; x < signal_temp[channel].size(); x++) {
+                        // use original signal to modify sound
                         signal_temp[channel].set(x, signal[channel].get(x * (int) constant) * ((double) vol / 50));
                     }
                 }
                 drawWaveform(signal_temp);
-                signal_modify = signal_temp;
+                signal_prev = signal_temp;
             }
         });
 
@@ -133,9 +136,9 @@ public class playercontroller {
                 lbSpeed.setText(String.valueOf(speed));
 
                 // modify signal
-                // signal_temp = new ArrayList[signal_modify.length];
+                // signal_temp = new ArrayList[signal_prev.length];
                 // for (int channel = 0; channel < signal.length; channel++) {
-                // signal_temp[channel] = new ArrayList(signal_modify[channel]);
+                // signal_temp[channel] = new ArrayList(signal_prev[channel]);
                 // }
             }
         });
@@ -163,8 +166,8 @@ public class playercontroller {
     void StopClick(final ActionEvent event) {
         mplayer.stop();
         btnPlay.setText("Play");
-        signal_modify = EQ.lowPass(signal);
-        drawWaveform(signal_modify);
+        signal_prev = EQ.lowPass(signal);
+        drawWaveform(signal_prev);
     }
 
     @FXML
@@ -206,7 +209,7 @@ public class playercontroller {
             });
 
             // read wav file and draw waveform
-            // save in signal arraylist(for original soundtrack) and signal_modify
+            // save in signal arraylist(for original soundtrack) and signal_prev
             // arraylist(for modify)
 
             // wf = new WavFile();
@@ -223,6 +226,11 @@ public class playercontroller {
             // FFTController.set(wf);
 
         }
+    }
+
+    @FXML
+    void previewButtonClick(ActionEvent event) {
+        WavFile.playBySample(signal_prev, 0, 3);
     }
 
     // timeline canvas
@@ -262,7 +270,8 @@ public class playercontroller {
 
     @FXML
     void saveButtonClick(ActionEvent event) {
-        WavFile.saveAsWav(signal_modify);
+
+        WavFile.saveAsWav(signal_prev);
     }
 
     private String Seconds2Str(Double seconds) {
@@ -317,9 +326,9 @@ public class playercontroller {
     }
 
     public void modifyArrayList() {
-        signal_modify = new ArrayList[signal.length];
+        signal_prev = new ArrayList[signal.length];
         for (int channel = 0; channel < signal.length; channel++) {
-            signal_modify[channel] = new ArrayList(signal[channel]);
+            signal_prev[channel] = new ArrayList(signal[channel]);
         }
     }
 }

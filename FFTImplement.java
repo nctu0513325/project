@@ -76,6 +76,7 @@ public class FFTImplement {
     }
 
     public static int[] getNLargestFrequencyIndex(Complex[] input, int n) {
+
         int[] indexArr = new int[n];
         sampleRate = WavFile.getSampleRate();
         ArrayList<Integer> index = new ArrayList<Integer>();
@@ -88,7 +89,8 @@ public class FFTImplement {
         int fre;
         for (int i = 0; i < input.length; i++) {
             a = Math.pow(input[i].re(), 2) + Math.pow(input[i].im(), 2);
-            fre = (int) ((double) i * (double) sampleRate / sampleNum);
+
+            fre = (int) ((double) i * (double) WavFile.getSampleRate() / sampleNum);
             for (int j = 0; j < n; j++) {
                 b = Math.pow(input[index.get(j)].re(), 2) + Math.pow(input[index.get(j)].re(), 2);
                 // range of fft
@@ -106,5 +108,4 @@ public class FFTImplement {
         }
         return indexArr;
     }
-
 }
