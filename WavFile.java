@@ -28,15 +28,15 @@ public class WavFile {
     private static ArrayList<Double>[] signal; // normalize between -1~1
     private static ArrayList<Double>[] signal_dB; // change to dB
 
-    public int getSampleRate() {
+    public static int getSampleRate() {
         return fmt.getSampleRate();
     }
 
-    public String getFileName() {
+    public static String getFileName() {
         return fileName;
     }
 
-    public int getnumChannel() {
+    public static int getnumChannel() {
         return fmt.getNumChannels();
     }
 
@@ -157,7 +157,7 @@ public class WavFile {
 
     }
 
-    public void saveAsWav(WavFile wf, ArrayList<Double>[] input) {
+    public static void saveAsWav(ArrayList<Double>[] input) {
         // file chooser
         Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();

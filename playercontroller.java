@@ -80,7 +80,7 @@ public class playercontroller {
     FileChooser fileChooser = new FileChooser();
 
     // wavfile
-    private WavFile wf;
+    // private WavFile wf;
     private ArrayList<Double>[] signal;
     private ArrayList<Double>[] signal_modify;
     private ArrayList<Double>[] signal_temp;
@@ -163,6 +163,8 @@ public class playercontroller {
     void StopClick(final ActionEvent event) {
         mplayer.stop();
         btnPlay.setText("Play");
+        signal_modify = EQ.lowPass(signal);
+        drawWaveform(signal_modify);
     }
 
     @FXML
@@ -207,18 +209,18 @@ public class playercontroller {
             // save in signal arraylist(for original soundtrack) and signal_modify
             // arraylist(for modify)
 
-            wf = new WavFile();
-            wf.read(file.getAbsolutePath());
-            signal = wf.getSignal();
+            // wf = new WavFile();
+            WavFile.read(file.getAbsolutePath());
+            signal = WavFile.getSignal();
             interval = signal[0].size() / (int) waveformCanvas1.getWidth();
-            sampleRate = wf.getSampleRate();
+            sampleRate = WavFile.getSampleRate();
             modifyArrayList();
             drawWaveform(signal);
 
             mplayer.play();
 
             // pass to FFTController now
-            FFTController.set(wf);
+            // FFTController.set(wf);
 
         }
     }
@@ -228,7 +230,7 @@ public class playercontroller {
     void sp_pane1MousePressed(MouseEvent event) {
         double x = event.getX();
         // find the time correspond to the x
-        double timeClick = (x * interval) / wf.getSampleRate();
+        double timeClick = (x * interval) / WavFile.getSampleRate();
         slTime.setValue(timeClick / endTime * 100);
         drawCurrentTimeLine(timeClick);
         mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
@@ -239,7 +241,7 @@ public class playercontroller {
     void sp_pane2MousePressed(MouseEvent event) {
         double x = event.getX();
         // find the time correspond to the x
-        double timeClick = (x * interval) / wf.getSampleRate();
+        double timeClick = (x * interval) / WavFile.getSampleRate();
         slTime.setValue(timeClick / endTime * 100);
         drawCurrentTimeLine(timeClick);
         mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
@@ -260,7 +262,7 @@ public class playercontroller {
 
     @FXML
     void saveButtonClick(ActionEvent event) {
-        wf.saveAsWav(wf, signal);
+        WavFile.saveAsWav(signal_modify);
     }
 
     private String Seconds2Str(Double seconds) {
@@ -300,7 +302,7 @@ public class playercontroller {
     // use to draw current timeline
     private void drawCurrentTimeLine(double time) {
         // static double lastTime;
-        int sampleRate = wf.getSampleRate();
+        int sampleRate = WavFile.getSampleRate();
         double x = ((double) sampleRate * time) / (double) interval;
         sp_pane1.getChildren().clear();
         sp_pane2.getChildren().clear();

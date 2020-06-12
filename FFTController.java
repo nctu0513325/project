@@ -11,19 +11,17 @@ public class FFTController {
 
     private ArrayList<Double>[] signal;
     private ArrayList<double[][]> fft_signal;
-    public static WavFile wf = new WavFile();
-
-    private int sampleNum = (int) Math.pow(2, 13);
+    // public static WavFile wf = new WavFile();
 
     public void initialize() {
-        signal = wf.getSignal();
-        fft_signal = FFTImplement.signalDoFFT(wf, signal, sampleNum);
+        signal = WavFile.getSignal();
+        fft_signal = FFTImplement.signalDoFFT(signal);
         drawFT();
     }
 
-    public static void set(WavFile input) {
-        wf = input;
-    }
+    // public static void set(WavFile input) {
+    // wf = input;
+    // }
 
     private void drawFT() {
         GraphicsContext gc1 = canvas1.getGraphicsContext2D();
