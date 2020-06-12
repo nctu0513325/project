@@ -272,6 +272,7 @@ public class playercontroller {
     void saveButtonClick(ActionEvent event) {
 
         WavFile.saveAsWav(signal_prev);
+
     }
 
     private String Seconds2Str(Double seconds) {
@@ -287,6 +288,7 @@ public class playercontroller {
     // use to draw waveform
     private void drawWaveform(ArrayList<Double>[] input) {
         // clean canvas
+        int interval_temp = input[0].size() / (int) waveformCanvas1.getWidth();
         GraphicsContext gc1 = waveformCanvas1.getGraphicsContext2D();
         GraphicsContext gc2 = waveformCanvas2.getGraphicsContext2D();
         gc1.clearRect(0, 0, waveformCanvas1.getWidth(), waveformCanvas1.getHeight());
@@ -298,11 +300,11 @@ public class playercontroller {
         for (int x = 0; x < waveformCanvas1.getWidth(); x++) {
             for (int channel = 0; channel < input.length; channel++) {
                 if (channel % 2 == 0) {
-                    gc1.strokeLine(x, y_base - (int) (input[channel].get(x * interval) * max), x + 1,
-                            y_base - (int) (input[channel].get((x + 1) * interval) * max));
+                    gc1.strokeLine(x, y_base - (int) (input[channel].get(x * interval_temp) * max), x + 1,
+                            y_base - (int) (input[channel].get((x + 1) * interval_temp) * max));
                 } else if (channel % 2 != 0) {
-                    gc2.strokeLine(x, y_base - (int) (input[channel].get(x * interval) * max), x + 1,
-                            y_base - (int) (input[channel].get((x + 1) * interval) * max));
+                    gc2.strokeLine(x, y_base - (int) (input[channel].get(x * interval_temp) * max), x + 1,
+                            y_base - (int) (input[channel].get((x + 1) * interval_temp) * max));
                 }
             }
         }
