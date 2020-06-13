@@ -47,7 +47,7 @@
             <Pane fx:id="sp_pane2" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1000.0">
                <children>
                   <Line fx:id="Rtoline" endX="100.0" startX="6.0" startY="6.0" stroke="RED" visible="false" />
-                  <Canvas fx:id="waveformCanvas2" height="150.0" layoutX="14.0" width="1000.0" />
+                  <Canvas fx:id="waveformCanvas2" height="150.0" width="1000.0" />
                   <Line fx:id="Rfromline" endX="100.0" startX="19.0" startY="42.0" stroke="RED" visible="false" />
                </children>
             </Pane>

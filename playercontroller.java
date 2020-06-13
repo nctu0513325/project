@@ -168,6 +168,7 @@ public class playercontroller {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                 double x = newValue.doubleValue();
+                // System.out.println("start: " + x);
                 blockstarttime = x;
                 drawFromTimeLine(waveformCanvas1.getWidth() * (x / 100));
             }
@@ -177,6 +178,7 @@ public class playercontroller {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                 double x = newValue.doubleValue();
+                // System.out.println("end: " + x);
                 blockendtime = x;
                 drawToTimeLine(waveformCanvas1.getWidth() * (x / 100));
             }
@@ -302,21 +304,28 @@ public class playercontroller {
 
     @FXML
     void btnBlockPlayClick(ActionEvent event) {
-        mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime / 100));
+        // mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime /
+        // 100));
+        // more accurate(?)
+        double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
+        double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+        mplayer.setStartTime(Duration.seconds(start));
         mplayer.play();
         btnPlay.setText("Pause");
 
-        mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
+        // mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
+        mplayer.setStopTime(Duration.seconds(end));
     }
 
     @FXML
     void CutClick(ActionEvent event) {
 
-        int start = (int) ((blockstarttime / 100) * signal[0].size());
-        int end = (int) ((blockendtime / 100) * signal[0].size());
-        int save = start;
+        // int start = (int) ((blockstarttime / 100) * signal[0].size());
+        int start = (int) (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
+        // int end = (int) ((blockendtime / 100) * signal[0].size());
+        int end = (int) (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
 
-        WavCut(start, end, save);
+        WavCut(start, end);
         WavFile.saveAsWav(signal_cut);
 
     }
@@ -412,16 +421,25 @@ public class playercontroller {
         }
     }
 
-    public void WavCut(int start, int end, int save) {
+    public void WavCut(int start, int end) {
         signal_cut = new ArrayList[signal.length];
 
+        // for (int channel = 0; channel < signal.length; channel++) {
+        // signal_cut[channel] = new ArrayList<Double>();
+        // for (int y = 0; y < (end - start); y++) {
+        // signal_cut[channel].add(signal[channel].get(save));
+        // save++;
+        // }
+        // save = start;
+        // }
+
+        int startPos = start * WavFile.getSampleRate();
+        int endPos = end * WavFile.getSampleRate();
         for (int channel = 0; channel < signal.length; channel++) {
             signal_cut[channel] = new ArrayList<Double>();
-            for (int y = 0; y < (end - start); y++) {
-                signal_cut[channel].add(signal[channel].get(save));
-                save++;
+            for (int x = startPos; x <= endPos; x++) {
+                signal_cut[channel].add(signal[channel].get(x));
             }
-            save = start;
         }
     }
 }
