@@ -23,6 +23,9 @@ public class EQ extends FFTImplement {
 
         int count = 0;
         double time = 0;
+        double cutoff_frequency = 150;
+        double high = 160;
+        double low = 80;
         // number of frequency we get in
         int n = 3;
         for (count = 0; count < input[0].size() - sampleNum; count += sampleNum) {
@@ -42,15 +45,29 @@ public class EQ extends FFTImplement {
             // filter
             for (int col_filter = 0; col_filter < sampleNum; col_filter++) {
                 for (int row_filter = 0; row_filter < input.length; row_filter++) {
-                    int fre = (int) ((double) col_filter * (double) WavFile.getSampleRate() / sampleNum);
+                    double fre = ((double) col_filter * (double) WavFile.getSampleRate() / sampleNum);
+                    if (col_filter > sampleNum / 2) {
+                        fre = ((double) (sampleNum - col_filter + sampleNum / 2) * (double) WavFile.getSampleRate()
+                                / sampleNum);
+                    }
                     // System.out.println(fre);
-                    if ((fre < 200 && fre > 50)) {
-                        // System.out.println("hi");
+                    if ((fre < cutoff_frequency)) {
+                        double k = Math.log(fre / cutoff_frequency);
+                        // lower (2*k) dB
+                        fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter]
+                                .scale(Math.pow(10, -k));
+                        // fft_signal_arr[row_filter][col_filter] =
+                        // fft_signal_arr[row_filter][col_filter].scale(0);
+                    } else if (fre < cutoff_frequency && fre > cutoff_frequency / 10) {
                         // fft_signal_arr[row_filter][col_filter] =
                         // fft_signal_arr[row_filter][col_filter]
-                        // .plus(new Complex(100, 100));
-                        fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(1.5);
+                        // .scale(Math.pow(10, -0.3));
+                        // fft_signal_arr[row_filter][col_filter] =
+                        // fft_signal_arr[row_filter][col_filter].scale(0);
+                    } else {
+
                     }
+
                 }
             }
             // ifft
@@ -61,9 +78,11 @@ public class EQ extends FFTImplement {
             // add into signal modify
             for (int col = 0; col < sampleNum; col++) {
                 for (int row = 0; row < input.length; row++) {
-                    signal_modify[row]
-                            .add(part_signal_arr[row][col].abs() * Math.signum(part_signal_arr[row][col].re()));
-                    // signal_modify[row].add(part_signal_arr[row][col].re());
+                    // signal_modify[row]
+                    // .add(part_signal_arr[row][col].abs() *
+                    // Math.signum(part_signal_arr[row][col].re()));
+                    // System.out.println(part_signal_arr[row][col].abs()));
+                    signal_modify[row].add(part_signal_arr[row][col].re());
                 }
             }
         }
