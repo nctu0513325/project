@@ -81,14 +81,8 @@ public class playercontroller {
     private double blockendtime = 100;
 
     public void start(Stage primarytStage) {
-
         mView.fitWidthProperty().bind(pane.widthProperty());
         mView.fitHeightProperty().bind(pane.heightProperty());
-
-        mplayer.setOnEndOfMedia(() -> {
-            mplayer.stop();
-            btnPlay.setText("Play");
-        });
     }
 
     int vol = 50;
@@ -263,10 +257,9 @@ public class playercontroller {
     @FXML
     void btnBlockPlayClick(ActionEvent event) {
         mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime / 100));
-        mplayer.play();
-        btnPlay.setText("Pause");
-
         mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
+        mplayer.play();
+        btnPlay.setText("Pause");       
     }
 
     @FXML
@@ -346,7 +339,6 @@ public class playercontroller {
         Rfromline.setStartY(0);
         Rfromline.setEndX(time);
         Rfromline.setEndY(sp_pane2.getHeight() + 3);
-
     }
 
     private void drawToTimeLine(double time) {
