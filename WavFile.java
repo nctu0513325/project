@@ -7,6 +7,9 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import java.nio.ByteBuffer;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
@@ -206,7 +209,6 @@ public class WavFile {
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("WAV file", "*.wav");
         fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showSaveDialog(stage);
-
         try {
             // declare sourcedataline to stream in
             int bufferSize = 2200;
@@ -243,6 +245,7 @@ public class WavFile {
             AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, file);
         } catch (IOException e) {
             System.out.println(e.getStackTrace());
+
         }
 
     }

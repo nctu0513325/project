@@ -23,7 +23,7 @@ public class EQ extends FFTImplement {
 
         int count = 0;
         double time = 0;
-        double cutoff_frequency = 100;
+        double cutoff_frequency = 300;
         // double high = 160;
         // double low = 80;
         // number of frequency we get in
@@ -54,18 +54,16 @@ public class EQ extends FFTImplement {
                     if ((fre > cutoff_frequency)) {
                         double k = Math.log(fre / cutoff_frequency);
                         // lower (2*k) dB
+                        fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter]
+                                .scale(Math.pow(10, -0.5 * k));
                         // fft_signal_arr[row_filter][col_filter] =
-                        // fft_signal_arr[row_filter][col_filter]
-                        // .scale(Math.pow(10, -k));
+                        // fft_signal_arr[row_filter][col_filter].scale(0.5);
+                        // fft_signal_arr[row_filter][col_filter] =
+                        // fft_signal_arr[row_filter][col_filter].scale(Mat);
+                    } else if (fre < 50) {
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(0);
-                    } else if (fre < cutoff_frequency && fre > cutoff_frequency / 10) {
-                        // fft_signal_arr[row_filter][col_filter] =
-                        // fft_signal_arr[row_filter][col_filter]
-                        // .scale(Math.pow(10, -0.3));
-                        // fft_signal_arr[row_filter][col_filter] =
-                        // fft_signal_arr[row_filter][col_filter].scale(0);
                     } else {
-
+                        fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(1.2);
                     }
 
                 }
