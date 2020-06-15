@@ -102,7 +102,8 @@ public class playercontroller {
 
     }
 
-    int vol = 50;
+    double vol = 50;
+    double last_vol = 1;
     double speed = 1;
 
     public void initialize() {
@@ -110,7 +111,10 @@ public class playercontroller {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                 // show changes
-                vol = newValue.intValue();
+                vol = (double) newValue.intValue() / 50;
+                if (vol == 0) {
+                    vol = 1;
+                }
                 lbVolume.setText(String.valueOf(vol));
 
                 // modify signal
@@ -120,9 +124,10 @@ public class playercontroller {
                     signal_temp[channel] = new ArrayList(signal_prev[channel]);
                     for (int x = 0; x < signal_temp[channel].size(); x++) {
                         // use original signal to modify sound
-                        signal_temp[channel].set(x, signal[channel].get(x * (int) constant) * ((double) vol / 50));
+                        signal_temp[channel].set(x, signal_prev[channel].get(x * (int) constant) * (vol / last_vol));
                     }
                 }
+                last_vol = vol;
                 drawWaveform(signal_temp);
                 signal_prev = signal_temp;
             }
@@ -230,7 +235,20 @@ public class playercontroller {
 
     @FXML
     void previewButtonClick(ActionEvent event) {
-        WavFile.playBySample(signal_prev, 0, 3);
+        Thread t = new Thread();
+        if (previewButton.getText().equals("preview")) {
+            previewButton.setText("stop");
+            t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    WavFile.playBySample(signal_prev, 0, 10);
+                }
+            });
+            t.start();
+        } else {
+            previewButton.setText("preview");
+            t.interrupt();
+        }
     }
 
     // timeline canvas

@@ -194,6 +194,7 @@ public class WavFile {
         } catch (LineUnavailableException e) {
             System.out.println(e.getMessage());
         }
+
     }
 
     public static void saveAsWav(ArrayList<Double>[] input) {

@@ -23,7 +23,7 @@ public class EQ extends FFTImplement {
 
         int count = 0;
         double time = 0;
-        double cutoff_frequency = 150;
+        double cutoff_frequency = 500;
         double high = 160;
         double low = 80;
         // number of frequency we get in
@@ -51,7 +51,7 @@ public class EQ extends FFTImplement {
                                 / sampleNum);
                     }
                     // System.out.println(fre);
-                    if ((fre < cutoff_frequency)) {
+                    if ((fre > cutoff_frequency)) {
                         double k = Math.log(fre / cutoff_frequency);
                         // lower (2*k) dB
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter]
@@ -78,11 +78,9 @@ public class EQ extends FFTImplement {
             // add into signal modify
             for (int col = 0; col < sampleNum; col++) {
                 for (int row = 0; row < input.length; row++) {
-                    // signal_modify[row]
-                    // .add(part_signal_arr[row][col].abs() *
-                    // Math.signum(part_signal_arr[row][col].re()));
-                    // System.out.println(part_signal_arr[row][col].abs()));
-                    signal_modify[row].add(part_signal_arr[row][col].re());
+                    signal_modify[row].add(part_signal_arr[row][col].abs());
+                    // System.out.println(part_signal_arr[row][col].abs());
+                    // signal_modify[row].add(part_signal_arr[row][col].re());
                 }
             }
         }
