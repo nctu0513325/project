@@ -10,11 +10,11 @@ public class FFTImplement {
     private static ArrayList<double[][]> fft_signal = new ArrayList<double[][]>();
     private static int index[][]; // WavFileeform
 
-    public static ArrayList<double[][]> signalDoFFT(WavFile wf, ArrayList<Double>[] signal, int sampleNum) {
-        part_signal_arr = new Complex[wf.getnumChannel()][];
-        fft_signal_arr = new Complex[wf.getnumChannel()][];
+    public static ArrayList<double[][]> signalDoFFT(ArrayList<Double>[] signal, int sampleNum) {
+        part_signal_arr = new Complex[WavFile.getnumChannel()][];
+        fft_signal_arr = new Complex[WavFile.getnumChannel()][];
 
-        double duration = ((double) sampleNum / wf.getSampleRate());
+        double duration = ((double) sampleNum / WavFile.getSampleRate());
         // System.out.println("fft every: " + duration + " sec");
         // build new complex array to store sample point
 
@@ -39,7 +39,7 @@ public class FFTImplement {
 
             index = new int[signal.length][];
             for (int row = 0; row < signal.length; row++) {
-                index[row] = getNLargestFrequencyIndex(wf, fft_signal_arr[row], n, sampleNum);
+                index[row] = getNLargestFrequencyIndex(fft_signal_arr[row], n, sampleNum);
             }
             time += duration / 2;
             // System.out.printf("at time %.2f:\t", time);
@@ -51,7 +51,7 @@ public class FFTImplement {
                     if (index[row][col] > sampleNum / 2) {
                         index[row][col] = sampleNum - index[row][col];
                     }
-                    fre[row][col] = (double) index[row][col] * (double) wf.getSampleRate() / sampleNum;
+                    fre[row][col] = (double) index[row][col] * (double) WavFile.getSampleRate() / sampleNum;
                 }
             }
             // sort and output (checking)
@@ -73,7 +73,7 @@ public class FFTImplement {
         return fft_signal;
     }
 
-    public static int[] getNLargestFrequencyIndex(WavFile wf, Complex[] input, int n, int sampleNum) {
+    public static int[] getNLargestFrequencyIndex(Complex[] input, int n, int sampleNum) {
         int[] indexArr = new int[n];
         ArrayList<Integer> index = new ArrayList<Integer>();
         double a, b;
@@ -85,7 +85,7 @@ public class FFTImplement {
         int fre;
         for (int i = 0; i < input.length; i++) {
             a = Math.pow(input[i].re(), 2) + Math.pow(input[i].im(), 2);
-            fre = (int) ((double) i * (double) wf.getSampleRate() / sampleNum);
+            fre = (int) ((double) i * (double) WavFile.getSampleRate() / sampleNum);
             for (int j = 0; j < n; j++) {
                 b = Math.pow(input[index.get(j)].re(), 2) + Math.pow(input[index.get(j)].re(), 2);
                 // range of fft

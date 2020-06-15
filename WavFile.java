@@ -11,6 +11,14 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.nio.ByteBuffer;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.*;
+
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import java.nio.ByteBuffer;
+
 public class WavFile {
 
     private static Riff riff = new Riff();
@@ -23,15 +31,15 @@ public class WavFile {
     private static ArrayList<Double>[] signal; // normalize between -1~1
     private static ArrayList<Double>[] signal_dB; // change to dB
 
-    public int getSampleRate() {
+    public static int getSampleRate() {
         return fmt.getSampleRate();
     }
 
-    public String getFileName() {
+    public static String getFileName() {
         return fileName;
     }
 
-    public int getnumChannel() {
+    public static int getnumChannel() {
         return fmt.getNumChannels();
     }
 
@@ -152,63 +160,52 @@ public class WavFile {
 
     }
 
-    public void saveAsWav(WavFile wf, ArrayList<Double>[] input) {
+    public static void saveAsWav(ArrayList<Double>[] input) {
+        // file chooser
+
         Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("save");
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("WAV file", "*.wav");
         fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showSaveDialog(stage);
-
-        if (file != null) {
-            try {
-                file = new File(file.getAbsolutePath() );
-                InputStream oldFile = null;
-                oldFile = new FileInputStream(fileName);
-                OutputStream os = new FileOutputStream(file);
-                // copy protocol from original file
-                byte[] buffer_beforeData = new byte[44 + (int) note.getNoteChunkSize() + 4 + 4];
-                oldFile.read(buffer_beforeData);
-                os.write(buffer_beforeData);
-
-                // change file length in
-                // int newDataLength = input[0].size()*;
-                // int newFileLength = newDataLength + 44 + (int) note.getNoteChunkSize() + 4 +
-                // 4;
-
-                // write data into wav file
-                byte[] data_write;
-                int buffer_size = fmt.getBitsPerSample() / (fmt.getNumChannels() * 4);
-                int normalizeConstant;
-                if (fmt.getBitsPerSample() == 8) {
-                    // if bitsPerSample = 8 => unsigned
-                    normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample());
-                } else {
-                    // if bitsPerSample = 16 or 32 => signed
-                    normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
-                }
-                int count = 0;
-                // while (count < (data.getSubchunk2Size() / fmt.getBlockAlign())) {
-                for (int x = 0; x < input[0].size(); x++) {
+        try {
+            // declare sourcedataline to stream in
+            int bufferSize = 2200;
+            byte[] data_write;
+            AudioFormat audioFormat = new AudioFormat(fmt.getSampleRate(), fmt.getBitsPerSample(), fmt.getNumChannels(),
+                    true, true);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            int sampleCount = 0;
+            int index = 0;
+            int normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
+            byte[] buffer = new byte[bufferSize];
+            while (sampleCount < input[0].size()) {
+                while (index < bufferSize) {
                     for (int channel = 0; channel < fmt.getNumChannels(); channel++) {
-                        if (fmt.getBitsPerSample() != 8) {
-
-                            int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
-                            if (temp > normalizeConstant) {
-                                temp = normalizeConstant;
-                            } else if (temp < -normalizeConstant) {
-                                temp = -normalizeConstant;
-                            }
-                            data_write = ByteBuffer.allocate(4).putInt(temp).array();
-                            // System.out.println(temp);
-                            os.write(data_write[3]);
-                            os.write(data_write[2]);
-                        }
+                        int temp = (int) (input[channel].get(sampleCount) * (double) normalizeConstant);
+                        data_write = ByteBuffer.allocate(4).putInt(temp).array();
+                        buffer[index] = data_write[2];
+                        buffer[index + 1] = data_write[3];
+                        index += fmt.getNumChannels();
+                    }
+                    sampleCount++;
+                    if (sampleCount >= input[0].size()) {
+                        break;
                     }
                 }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                index = 0;
+                byteArrayOutputStream.write(buffer, 0, bufferSize);
+                buffer = new byte[bufferSize];
             }
+            byte audioBytes[] = byteArrayOutputStream.toByteArray();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioBytes);
+            AudioInputStream audioInputStream = new AudioInputStream(byteArrayInputStream, audioFormat,
+                    input[0].size());
+            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, file);
+        } catch (IOException e) {
+            System.out.println(e.getStackTrace());
+
         }
     }
 
