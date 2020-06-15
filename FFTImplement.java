@@ -27,7 +27,7 @@ public class FFTImplement {
         int count = 0;
         double time = 0;
         // number of frequency we get in
-        int n = 3;
+        int n = 1;
         for (count = 0; count < signal[0].size() - sampleNum; count += sampleNum) {
             for (int col = 0; col < sampleNum; col++) {
                 for (int row = 0; row < signal.length; row++) {
@@ -94,7 +94,8 @@ public class FFTImplement {
             for (int j = 0; j < n; j++) {
                 b = Math.pow(input[index.get(j)].re(), 2) + Math.pow(input[index.get(j)].re(), 2);
                 // range of fft
-                if (a > b && fre > 80 && fre < 300) {
+                // if (a > b && fre > 80 && fre < 300) {
+                if (a > b) {
                     index.add(j, i);
                     break;
                 }

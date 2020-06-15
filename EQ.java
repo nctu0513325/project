@@ -23,11 +23,11 @@ public class EQ extends FFTImplement {
 
         int count = 0;
         double time = 0;
-        double cutoff_frequency = 500;
-        double high = 160;
-        double low = 80;
+        double cutoff_frequency = 100;
+        // double high = 160;
+        // double low = 80;
         // number of frequency we get in
-        int n = 3;
+        int n = 1;
         for (count = 0; count < input[0].size() - sampleNum; count += sampleNum) {
 
             // put arraylist into complex 2d array
@@ -54,10 +54,10 @@ public class EQ extends FFTImplement {
                     if ((fre > cutoff_frequency)) {
                         double k = Math.log(fre / cutoff_frequency);
                         // lower (2*k) dB
-                        fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter]
-                                .scale(Math.pow(10, -k));
                         // fft_signal_arr[row_filter][col_filter] =
-                        // fft_signal_arr[row_filter][col_filter].scale(0);
+                        // fft_signal_arr[row_filter][col_filter]
+                        // .scale(Math.pow(10, -k));
+                        fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(0);
                     } else if (fre < cutoff_frequency && fre > cutoff_frequency / 10) {
                         // fft_signal_arr[row_filter][col_filter] =
                         // fft_signal_arr[row_filter][col_filter]
@@ -78,7 +78,7 @@ public class EQ extends FFTImplement {
             // add into signal modify
             for (int col = 0; col < sampleNum; col++) {
                 for (int row = 0; row < input.length; row++) {
-                    signal_modify[row].add(part_signal_arr[row][col].abs());
+                    signal_modify[row].add(part_signal_arr[row][col].re());
                     // System.out.println(part_signal_arr[row][col].abs());
                     // signal_modify[row].add(part_signal_arr[row][col].re());
                 }

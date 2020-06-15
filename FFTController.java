@@ -14,7 +14,7 @@ public class FFTController {
     // public static WavFile wf = new WavFile();
 
     public void initialize() {
-        signal = WavFile.getSignal();
+        signal = FFTDisplay.getSignal();
         fft_signal = FFTImplement.signalDoFFT(signal);
         drawFT();
     }
@@ -25,6 +25,7 @@ public class FFTController {
 
     private void drawFT() {
         GraphicsContext gc1 = canvas1.getGraphicsContext2D();
+        gc1.clearRect(0, 0, canvas1.getWidth(), canvas1.getHeight());
         int E_note2 = 82;
         int F_note2 = 87;
         int G_note2 = 98;
@@ -42,18 +43,24 @@ public class FFTController {
         int E_note4 = 329;
         int G_note4 = 392;
         // C_major
-        gc1.setStroke(Color.GREEN);
-        gc1.strokeLine(0, canvas1.getHeight() - C_note3, canvas1.getWidth(), canvas1.getHeight() - C_note3);
-        gc1.strokeLine(0, canvas1.getHeight() - E_note3, canvas1.getWidth(), canvas1.getHeight() - E_note3);
-        gc1.strokeLine(0, canvas1.getHeight() - G_note3, canvas1.getWidth(), canvas1.getHeight() - G_note3);
+        // gc1.setStroke(Color.GREEN);
+        // gc1.strokeLine(0, canvas1.getHeight() - C_note3, canvas1.getWidth(),
+        // canvas1.getHeight() - C_note3);
+        // gc1.strokeLine(0, canvas1.getHeight() - E_note3, canvas1.getWidth(),
+        // canvas1.getHeight() - E_note3);
+        // gc1.strokeLine(0, canvas1.getHeight() - G_note3, canvas1.getWidth(),
+        // canvas1.getHeight() - G_note3);
 
         // G
+        // gc1.setStroke(Color.RED);
+        // gc1.strokeLine(0, canvas1.getHeight() - G_note2, canvas1.getWidth(),
+        // canvas1.getHeight() - G_note2);
+        // gc1.strokeLine(0, canvas1.getHeight() - B_note2, canvas1.getWidth(),
+        // canvas1.getHeight() - B_note2);
+        // gc1.strokeLine(0, canvas1.getHeight() - D_note3, canvas1.getWidth(),
+        // canvas1.getHeight() - D_note3);
         gc1.setStroke(Color.RED);
-        gc1.strokeLine(0, canvas1.getHeight() - G_note2, canvas1.getWidth(), canvas1.getHeight() - G_note2);
-        gc1.strokeLine(0, canvas1.getHeight() - B_note2, canvas1.getWidth(), canvas1.getHeight() - B_note2);
-        gc1.strokeLine(0, canvas1.getHeight() - D_note3, canvas1.getWidth(), canvas1.getHeight() - D_note3);
-
-        // g.drawLine(0, getHeight() - E_note4, getWidth(), getHeight() - E_note4);
+        gc1.strokeLine(0, canvas1.getHeight() - 300, canvas1.getWidth(), canvas1.getHeight() - 300);
         gc1.setFill(Color.BLACK);
         for (int time = 0; time < fft_signal.size(); time++) {
             // channel number

@@ -277,6 +277,7 @@ public class playercontroller {
     @FXML
     void fftClick(ActionEvent event) throws Exception {
         FFTDisplay fd = new FFTDisplay();
+        fd.setSignal(signal_prev);
         fd.start(new Stage());
     }
 
