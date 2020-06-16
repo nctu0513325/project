@@ -33,33 +33,60 @@ import javafx.stage.Stage;
 
 public class playercontroller {
 
-    @FXML private Slider slTime;
-    @FXML private Button btnStop;
-    @FXML private Button btnPlay;
-    @FXML private Slider slVolume;
-    @FXML private Label lbVolume;
-    @FXML private Button btnOpen;
-    @FXML private Label lbCurrentTime;
-    @FXML private Slider slSpeed;
-    @FXML private Label lbSpeed;
-    @FXML private MediaView mView;
-    @FXML private Pane pane;
-    @FXML private Canvas waveformCanvas1;
-    @FXML private Canvas waveformCanvas2;
-    @FXML private ScrollPane sp1;
-    @FXML private ScrollPane sp2;
-    @FXML private Pane sp_pane1;
-    @FXML private Pane sp_pane2;
-    @FXML private Button fftbutton;
-    @FXML private Button btnvedio;
-    @FXML private Slider slto;
-    @FXML private Slider slfrom;
-    @FXML private Line Lfromline;
-    @FXML private Line Ltoline;
-    @FXML private Line Rfromline;
-    @FXML private Line Rtoline;
-    @FXML private Button btnBlockPlay;
-    @FXML private Button btnCut;
+    @FXML
+    private Slider slTime;
+    @FXML
+    private Button btnStop;
+    @FXML
+    private Button btnPlay;
+    @FXML
+    private Slider slVolume;
+    @FXML
+    private Label lbVolume;
+    @FXML
+    private Button btnOpen;
+    @FXML
+    private Label lbCurrentTime;
+    @FXML
+    private Slider slSpeed;
+    @FXML
+    private Label lbSpeed;
+    @FXML
+    private MediaView mView;
+    @FXML
+    private Pane pane;
+    @FXML
+    private Canvas waveformCanvas1;
+    @FXML
+    private Canvas waveformCanvas2;
+    @FXML
+    private ScrollPane sp1;
+    @FXML
+    private ScrollPane sp2;
+    @FXML
+    private Pane sp_pane1;
+    @FXML
+    private Pane sp_pane2;
+    @FXML
+    private Button fftbutton;
+    @FXML
+    private Button btnvedio;
+    @FXML
+    private Slider slto;
+    @FXML
+    private Slider slfrom;
+    @FXML
+    private Line Lfromline;
+    @FXML
+    private Line Ltoline;
+    @FXML
+    private Line Rfromline;
+    @FXML
+    private Line Rtoline;
+    @FXML
+    private Button btnBlockPlay;
+    @FXML
+    private Button btnCut;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -69,7 +96,7 @@ public class playercontroller {
     FileChooser fileChooser = new FileChooser();
 
     // wavfile
-    private WavFile wf;
+    // private WavFile wf;
     private ArrayList<Double>[] signal;
     private ArrayList<Double>[] signal_modify;
     private ArrayList<Double>[] signal_temp;
@@ -81,14 +108,8 @@ public class playercontroller {
     private double blockendtime = 100;
 
     public void start(Stage primarytStage) {
-
         mView.fitWidthProperty().bind(pane.widthProperty());
         mView.fitHeightProperty().bind(pane.heightProperty());
-
-        mplayer.setOnEndOfMedia(() -> {
-            mplayer.stop();
-            btnPlay.setText("Play");
-        });
     }
 
     int vol = 50;
@@ -98,17 +119,21 @@ public class playercontroller {
         slVolume.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                // show changes
                 vol = newValue.intValue();
-                signal = wf.getSignal();
-                signal_temp = new ArrayList[signal.length];
+                lbVolume.setText(String.valueOf(vol));
+
+                // modify signal
+                double constant = signal[0].size() / signal_modify[0].size();
+                signal_temp = new ArrayList[signal_modify.length];
                 for (int channel = 0; channel < signal.length; channel++) {
-                    signal_temp[channel] = new ArrayList(signal[channel]);
+                    signal_temp[channel] = new ArrayList(signal_modify[channel]);
                     for (int x = 0; x < signal_temp[channel].size(); x++) {
-                        signal_temp[channel].set(x, signal_temp[channel].get(x) * ((double) vol / 50));
+                        signal_temp[channel].set(x, signal[channel].get(x * (int) constant) * ((double) vol / 50));
                     }
                 }
                 drawWaveform(signal_temp);
-                lbVolume.setText(String.valueOf(vol));
+                signal_modify = signal_temp;
             }
         });
 
@@ -118,6 +143,12 @@ public class playercontroller {
                 speed = newValue.doubleValue();
                 speed = Double.parseDouble(String.format("%.2f", speed));
                 lbSpeed.setText(String.valueOf(speed));
+
+                // modify signal
+                // signal_temp = new ArrayList[signal_modify.length];
+                // for (int channel = 0; channel < signal.length; channel++) {
+                // signal_temp[channel] = new ArrayList(signal_modify[channel]);
+                // }
             }
         });
 
@@ -131,6 +162,7 @@ public class playercontroller {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                 double x = newValue.doubleValue();
+                // System.out.println("start: " + x);
                 blockstarttime = x;
                 drawFromTimeLine(waveformCanvas1.getWidth() * (x / 100));
             }
@@ -140,10 +172,12 @@ public class playercontroller {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                 double x = newValue.doubleValue();
+                // System.out.println("end: " + x);
                 blockendtime = x;
                 drawToTimeLine(waveformCanvas1.getWidth() * (x / 100));
             }
         });
+
     }
 
     @FXML
@@ -216,17 +250,18 @@ public class playercontroller {
             // save in signal arraylist(for original soundtrack) and signal_modify
             // arraylist(for modify)
 
-            wf = new WavFile();
-            wf.read(file.getAbsolutePath());
-            signal = wf.getSignal();
+            // wf = new WavFile();
+            WavFile.read(file.getAbsolutePath());
+            signal = WavFile.getSignal();
             interval = signal[0].size() / (int) waveformCanvas1.getWidth();
-            sampleRate = wf.getSampleRate();
+            sampleRate = WavFile.getSampleRate();
+            // modifyArrayList();
             drawWaveform(signal);
 
             mplayer.play();
 
             // pass to FFTController now
-            FFTController.set(wf);
+            // FFTController.set(wf);
 
         }
     }
@@ -236,7 +271,7 @@ public class playercontroller {
     void sp_paneMousePressed(MouseEvent event) {
         double x = event.getX();
         // find the time correspond to the x
-        double timeClick = (x * interval) / wf.getSampleRate();
+        double timeClick = (x * interval) / WavFile.getSampleRate();
         slTime.setValue(timeClick / endTime * 100);
         drawCurrentTimeLine(timeClick);
         mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
@@ -245,13 +280,8 @@ public class playercontroller {
 
     @FXML
     void fftClick(ActionEvent event) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent root = FXMLLoader.load(getClass().getResource("fftScene.fxml"));
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        stage.setTitle("FFT"); // displayed in window's title bar
-        stage.setScene(scene);
-        stage.show();
+        FFTDisplay fd = new FFTDisplay();
+        fd.start(new Stage());
     }
 
     @FXML
@@ -261,23 +291,37 @@ public class playercontroller {
     }
 
     @FXML
+
+    void saveButtonClick(ActionEvent event) {
+        WavFile.saveAsWav(signal);
+    }
+
+    @FXML
     void btnBlockPlayClick(ActionEvent event) {
-        mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime / 100));
+        // mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime /
+        // 100));
+        // more accurate(?)
+        double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
+        double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+        mplayer.setStartTime(Duration.seconds(start));
         mplayer.play();
         btnPlay.setText("Pause");
 
-        mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
+        // mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
+        mplayer.setStopTime(Duration.seconds(end));
     }
 
     @FXML
     void CutClick(ActionEvent event) {
-                
-        int start = (int) ((blockstarttime / 100) * signal[0].size());
-        int end = (int) ((blockendtime / 100) * signal[0].size());
-        int save = start;
-        
-        WavCut(start, end, save);
-        wf.saveAsWav(wf, signal_cut);
+
+        // int start = (int) ((blockstarttime / 100) * signal[0].size());
+        int start = (int) (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
+        // int end = (int) ((blockendtime / 100) * signal[0].size());
+        int end = (int) (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+
+        WavCut(start, end);
+        WavFile.saveAsWav(signal_cut);
+
     }
 
     private String Seconds2Str(Double seconds) {
@@ -317,7 +361,7 @@ public class playercontroller {
     // use to draw current timeline
     private void drawCurrentTimeLine(double time) {
         // static double lastTime;
-        int sampleRate = wf.getSampleRate();
+        int sampleRate = WavFile.getSampleRate();
         double x = ((double) sampleRate * time) / (double) interval;
         sp_pane1.getChildren().clear();
         sp_pane2.getChildren().clear();
@@ -346,7 +390,6 @@ public class playercontroller {
         Rfromline.setStartY(0);
         Rfromline.setEndX(time);
         Rfromline.setEndY(sp_pane2.getHeight() + 3);
-
     }
 
     private void drawToTimeLine(double time) {
@@ -365,22 +408,31 @@ public class playercontroller {
 
     public void tempArrayList() {
         signal_modify = new ArrayList[signal.length];
-        
+
         for (int channel = 0; channel < signal.length; channel++) {
             signal_cut[channel] = new ArrayList<Double>(signal[channel]);
         }
     }
-    
-    public void WavCut(int start, int end, int save){
+
+    public void WavCut(int start, int end) {
         signal_cut = new ArrayList[signal.length];
 
-        for(int channel=0; channel<signal.length; channel++){
+        // for (int channel = 0; channel < signal.length; channel++) {
+        // signal_cut[channel] = new ArrayList<Double>();
+        // for (int y = 0; y < (end - start); y++) {
+        // signal_cut[channel].add(signal[channel].get(save));
+        // save++;
+        // }
+        // save = start;
+        // }
+
+        int startPos = start * WavFile.getSampleRate();
+        int endPos = end * WavFile.getSampleRate();
+        for (int channel = 0; channel < signal.length; channel++) {
             signal_cut[channel] = new ArrayList<Double>();
-            for(int y=0; y<(end-start); y++){
-                signal_cut[channel].add(signal[channel].get(save));
-                save++;
+            for (int x = startPos; x <= endPos; x++) {
+                signal_cut[channel].add(signal[channel].get(x));
             }
-            save=start;
         }
     }
 }
