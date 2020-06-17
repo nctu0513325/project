@@ -23,7 +23,7 @@ public class EQ extends FFTImplement {
 
         int count = 0;
         double time = 0;
-        double cutoff_frequency = 200;
+        double cutoff_frequency = 300;
         // double high = 160;
         // double low = 80;
         // number of frequency we get in
@@ -52,14 +52,7 @@ public class EQ extends FFTImplement {
                     }
                     // System.out.println(fre);
                     if ((fre > cutoff_frequency)) {
-                        // double k = Math.log(fre / cutoff_frequency);
-                        // lower (2*k) dB
-                        // fft_signal_arr[row_filter][col_filter] =
-                        // fft_signal_arr[row_filter][col_filter]
-                        // .scale(Math.pow(10, -0.5 * k));
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(0);
-                        // fft_signal_arr[row_filter][col_filter] =
-                        // fft_signal_arr[row_filter][col_filter].scale(Mat);
                     } else if (fre < 30) {
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(0);
                     } else {
@@ -81,6 +74,22 @@ public class EQ extends FFTImplement {
                     // signal_modify[row].add(part_signal_arr[row][col].re());
                 }
             }
+            // for (int col = 0; col < sampleNum; col++) {
+            // for (int row = 0; row < input.length; row++) {
+            // if (count == 0) {
+            // signal_modify[row].set(col, part_signal_arr[row][col].re());
+            // } else {
+            // if (col < sampleNum / 2) {
+            // signal_modify[row].set(count - (sampleNum / 2) + col,
+            // (signal_modify[row].get(count - (sampleNum / 2) + col)
+            // + part_signal_arr[row][col].re()) / 2);
+            // } else {
+            // signal_modify[row].set(count - (sampleNum / 2) + col,
+            // part_signal_arr[row][col].re());
+            // }
+            // }
+            // }
+            // }
         }
 
         return signal_modify;
