@@ -31,6 +31,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.nio.ByteBuffer;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+// import javax.sound.sampled.*;
+
 public class playercontroller {
 
     @FXML
@@ -249,11 +259,15 @@ public class playercontroller {
                 lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
                 // draw current time line
                 drawCurrentTimeLine(currentTime);
-                slTime.setValue(currentTime / endTime * 100);
+                // slTime.setValue(currentTime / endTime * 100);
             });
             slTime.valueProperty().addListener(ov -> {
                 if (slTime.isValueChanging()) {
                     mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
+                    // mplayer.seek(Duration
+                    // .seconds(signal_modify[0].size() * slTime.getValue() / (100 *
+                    // WavFile.getSampleRate())));
+                    // System.out.print("ddd");
                 }
             });
             mplayer.volumeProperty().bind(slVolume.valueProperty().divide(100));
@@ -292,7 +306,7 @@ public class playercontroller {
             t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    WavFile.playBySample(signal_modify, 0, 10);
+                    playBySample(signal_modify, 0, 10);
                 }
             });
             t.start();
@@ -308,9 +322,15 @@ public class playercontroller {
         double x = event.getX();
         // find the time correspond to the x
         double timeClick = (x * interval) / WavFile.getSampleRate();
-        slTime.setValue(timeClick / endTime * 100);
+        double ratio = 100 * x / waveformCanvas1.getWidth();
+        // System.out.println(timeClick);
+        slTime.setValue(ratio);
         drawCurrentTimeLine(timeClick);
-        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
+        // System.out.println(timeClick + "\t" + slTime.getValue() + "\t" +
+        // Duration.seconds(timeClick));
+        mplayer.seek(Duration.seconds(timeClick));
+        // slTime.setValue(timeClick);
+        // mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
 
     }
 
@@ -342,12 +362,13 @@ public class playercontroller {
         // more accurate(?)
         double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
-        mplayer.setStartTime(Duration.seconds(start));
-        mplayer.play();
+        // mplayer.setStartTime(Duration.seconds(start));
+        // mplayer.play();
         btnPlay.setText("Pause");
-
         // mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
-        mplayer.setStopTime(Duration.seconds(end));
+        // mplayer.setStopTime(Duration.seconds(end));
+        playBySample(signal_modify, start, end);
+
     }
 
     @FXML
@@ -481,6 +502,45 @@ public class playercontroller {
             for (int x = startPos; x <= endPos; x++) {
                 signal_cut[channel].add(signal[channel].get(x));
             }
+        }
+    }
+
+    public void playBySample(ArrayList<Double>[] input, double startTime, double endTime) {
+
+        try {
+            int bufferSize = 2200;
+            byte[] data_write;
+            AudioFormat audioFormat = new AudioFormat(WavFile.getSampleRate(), WavFile.getBitsPerSample(),
+                    WavFile.getNumChannels(), true, true);
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+            SourceDataLine soundLine = (SourceDataLine) AudioSystem.getLine(info);
+            soundLine.open(audioFormat, bufferSize);
+            soundLine.start();
+            // byte counter = 0;
+            int index = 0;
+            double start = WavFile.getSampleRate() * startTime;
+            double end = WavFile.getSampleRate() * endTime;
+            int x = (int) start;
+            byte[] buffer = new byte[bufferSize];
+            int normalizeConstant = (int) Math.pow(2, WavFile.getBitsPerSample() - 1);
+            drawCurrentTimeLine(startTime);
+            while (x < end) {
+                while (index < bufferSize) {
+                    for (int channel = 0; channel < WavFile.getNumChannels(); channel++) {
+                        int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
+                        data_write = ByteBuffer.allocate(4).putInt(temp).array();
+                        buffer[index] = data_write[2];
+                        buffer[index + 1] = data_write[3];
+                        index += WavFile.getNumChannels();
+                    }
+                    x++;
+                }
+                index = 0;
+                soundLine.write(buffer, 0, bufferSize);
+
+            }
+        } catch (LineUnavailableException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

@@ -3,7 +3,7 @@
 import java.util.*;
 
 public class FFTImplement {
-    protected static int sampleNum = (int) Math.pow(2, 15);
+    protected static int sampleNum = (int) Math.pow(2, 16);
     protected static int sampleRate;
     protected static Complex[][] part_signal_arr;
     protected static Complex[][] fft_signal_arr;
@@ -27,7 +27,7 @@ public class FFTImplement {
         int count = 0;
         double time = 0;
         // number of frequency we get in
-        int n = 1;
+        int n = 3;
         for (count = 0; count < signal[0].size() - sampleNum; count += sampleNum) {
             for (int col = 0; col < sampleNum; col++) {
                 for (int row = 0; row < signal.length; row++) {
@@ -94,8 +94,8 @@ public class FFTImplement {
             for (int j = 0; j < n; j++) {
                 b = Math.pow(input[index.get(j)].re(), 2) + Math.pow(input[index.get(j)].re(), 2);
                 // range of fft
-                // if (a > b && fre > 80 && fre < 300) {
-                if (a > b) {
+                if (a > b && fre > 80 && fre < 300) {
+                    // if (a > b) {
                     index.add(j, i);
                     break;
                 }

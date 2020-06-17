@@ -15,13 +15,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.*;
 
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import java.nio.ByteBuffer;
-
-import javax.sound.sampled.*;
-import java.nio.ByteBuffer;
-
 public class WavFile {
 
     private static Riff riff = new Riff();
@@ -42,12 +35,16 @@ public class WavFile {
         return fileName;
     }
 
-    public static int getnumChannel() {
+    public static int getNumChannels() {
         return fmt.getNumChannels();
     }
 
     public static ArrayList<Double>[] getSignal() {
         return signal;
+    }
+
+    public static int getBitsPerSample() {
+        return fmt.getBitsPerSample();
     }
 
     public static void read(String fileNameInput) throws IOException {
@@ -159,43 +156,6 @@ public class WavFile {
             if (input != null) {
                 input.close();
             }
-        }
-
-    }
-
-    public static void playBySample(ArrayList<Double>[] input, double startTime, double endTime) {
-        try {
-            int bufferSize = 2200;
-            byte[] data_write;
-            AudioFormat audioFormat = new AudioFormat(fmt.getSampleRate(), fmt.getBitsPerSample(), fmt.getNumChannels(),
-                    true, true);
-            DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-            SourceDataLine soundLine = (SourceDataLine) AudioSystem.getLine(info);
-            soundLine.open(audioFormat, bufferSize);
-            soundLine.start();
-            // byte counter = 0;
-            int index = 0;
-            double start = fmt.getSampleRate() * startTime;
-            double end = fmt.getSampleRate() * endTime;
-            int x = (int) start;
-            byte[] buffer = new byte[bufferSize];
-            int normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
-            while (x < end) {
-                while (index < bufferSize) {
-                    for (int channel = 0; channel < fmt.getNumChannels(); channel++) {
-                        int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
-                        data_write = ByteBuffer.allocate(4).putInt(temp).array();
-                        buffer[index] = data_write[2];
-                        buffer[index + 1] = data_write[3];
-                        index += fmt.getNumChannels();
-                    }
-                    x++;
-                }
-                index = 0;
-                soundLine.write(buffer, 0, bufferSize);
-            }
-        } catch (LineUnavailableException e) {
-            System.out.println(e.getMessage());
         }
 
     }
