@@ -214,10 +214,12 @@ public class playercontroller {
     void PlayClick(ActionEvent event) {
         if (btnPlay.getText().equals("Play")) {
             btnPlay.setText("Pause");
-            mplayer.play();
+            playBySample(signal_modify, 0, signal_modify[0].size() / WavFile.getSampleRate());
+            // mplayer.play();
         } else {
             btnPlay.setText("Play");
-            mplayer.pause();
+            td.stop();
+            // mplayer.pause();
         }
     }
 
@@ -235,7 +237,7 @@ public class playercontroller {
         file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
             mplayer.stop();
-            btnPlay.setText("Pause");
+            // btnPlay.setText("Pause");
             media = new Media(file.toURI().toString());
             mplayer = new MediaPlayer(media);
             mView.setMediaPlayer(mplayer);
@@ -293,7 +295,7 @@ public class playercontroller {
             modifyArrayList();
             drawWaveform(signal);
 
-            mplayer.play();
+            // mplayer.play();
 
             // pass to FFTController now
             // FFTController.set(wf);
@@ -368,7 +370,7 @@ public class playercontroller {
         double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
         // mplayer.setStartTime(Duration.seconds(start));
         // mplayer.play();
-        // btnPlay.setText("Pause");
+        btnPlay.setText("Pause");
         // mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
         // mplayer.setStopTime(Duration.seconds(end));
         // if (btnPlay.getText().equals("Pause")) {
@@ -377,13 +379,13 @@ public class playercontroller {
         // // play
         // playBySample(signal_modify, start, end);
         // }
-        if (platBySampleFlag == false) {
-            platBySampleFlag = true;
-            playBySample(signal_modify, start, end);
-        } else {
-            platBySampleFlag = false;
-            playBySample(signal_modify, start, end);
-        }
+        // if (platBySampleFlag == false) {
+        // platBySampleFlag = true;
+        playBySample(signal_modify, start, end);
+        // } else {
+        // platBySampleFlag = false;
+        // playBySample(signal_modify, start, end);
+        // }
 
     }
 
@@ -439,6 +441,7 @@ public class playercontroller {
     private void drawCurrentTimeLine(double time) {
         // static double lastTime;
         int sampleRate = WavFile.getSampleRate();
+        int interval = signal_modify[0].size() / (int) waveformCanvas1.getWidth();
         double x = ((double) sampleRate * time) / (double) interval;
         sp_pane1.getChildren().clear();
         sp_pane2.getChildren().clear();
@@ -522,61 +525,63 @@ public class playercontroller {
     }
 
     public void playBySample(ArrayList<Double>[] input, double startTime, double endTime) {
-        if (platBySampleFlag == true) {
-            td = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    // TODO Auto-generated method stub
-                    try {
-                        int bufferSize = 2200;
-                        byte[] data_write;
-                        AudioFormat audioFormat = new AudioFormat(WavFile.getSampleRate(), WavFile.getBitsPerSample(),
-                                WavFile.getNumChannels(), true, true);
-                        DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-                        SourceDataLine soundLine = (SourceDataLine) AudioSystem.getLine(info);
-                        soundLine.open(audioFormat, bufferSize);
-                        soundLine.start();
-                        // byte counter = 0;
-                        int index = 0;
-                        double start = WavFile.getSampleRate() * startTime;
-                        double end = WavFile.getSampleRate() * endTime;
-                        int x = (int) start;
-                        byte[] buffer = new byte[bufferSize];
-                        int normalizeConstant = (int) Math.pow(2, WavFile.getBitsPerSample() - 1);
-                        // drawCurrentTimeLine(startTime);
+        // if (platBySampleFlag == true) {
+        td = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                try {
+                    int bufferSize = 2200;
+                    byte[] data_write;
+                    AudioFormat audioFormat = new AudioFormat(WavFile.getSampleRate(), WavFile.getBitsPerSample(),
+                            WavFile.getNumChannels(), true, true);
+                    DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+                    SourceDataLine soundLine = (SourceDataLine) AudioSystem.getLine(info);
+                    soundLine.open(audioFormat, bufferSize);
+                    soundLine.start();
+                    // byte counter = 0;
+                    int index = 0;
+                    double start = WavFile.getSampleRate() * startTime;
+                    double end = WavFile.getSampleRate() * endTime;
+                    int x = (int) start;
+                    byte[] buffer = new byte[bufferSize];
+                    int normalizeConstant = (int) Math.pow(2, WavFile.getBitsPerSample() - 1);
+                    // drawCurrentTimeLine(startTime);
 
-                        while (x < end) {
-                            while (index < bufferSize) {
-                                for (int channel = 0; channel < WavFile.getNumChannels(); channel++) {
-                                    int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
-                                    data_write = ByteBuffer.allocate(4).putInt(temp).array();
-                                    buffer[index] = data_write[2];
-                                    buffer[index + 1] = data_write[3];
-                                    index += WavFile.getNumChannels();
-                                }
-                                x++;
-                                if (x % 10000 == 0) {
-                                    final int temp = x;
-                                    Platform.runLater(() -> {
-                                        drawCurrentTimeLine(temp / WavFile.getSampleRate());
-                                    });
-                                }
+                    while (x < end) {
+                        while (index < bufferSize) {
+                            for (int channel = 0; channel < WavFile.getNumChannels(); channel++) {
+                                int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
+                                data_write = ByteBuffer.allocate(4).putInt(temp).array();
+                                buffer[index] = data_write[2];
+                                buffer[index + 1] = data_write[3];
+                                index += WavFile.getNumChannels();
                             }
-
-                            index = 0;
-                            soundLine.write(buffer, 0, bufferSize);
+                            x++;
+                            // use Platform.runLater() to update UI during Thread
+                            // x%10000 in case of delay too much
+                            if (x % 10000 == 0) {
+                                final int temp = x;
+                                Platform.runLater(() -> {
+                                    drawCurrentTimeLine(temp / WavFile.getSampleRate());
+                                });
+                            }
                         }
-                    } catch (LineUnavailableException e) {
-                        System.out.println(e.getMessage());
-                    }
 
+                        index = 0;
+                        soundLine.write(buffer, 0, bufferSize);
+                    }
+                } catch (LineUnavailableException e) {
+                    System.out.println(e.getMessage());
                 }
-            });
-            td.start();
-        } else {
-            td.stop();
-            // System.out.print("hi");
-        }
+
+            }
+        });
+        td.start();
+        // } else {
+        // td.stop();
+        // // System.out.print("hi");
+        // }
 
     }
 }
