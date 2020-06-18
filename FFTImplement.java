@@ -3,7 +3,7 @@
 import java.util.*;
 
 public class FFTImplement {
-    protected static int sampleNum = (int) Math.pow(2, 15);
+    protected static int sampleNum = (int) Math.pow(2, 16);
     protected static int sampleRate;
     protected static Complex[][] part_signal_arr;
     protected static Complex[][] fft_signal_arr;

@@ -1,6 +1,7 @@
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ScrollPane;
@@ -16,6 +17,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.input.MouseDragEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.security.PublicKey;
@@ -82,8 +85,7 @@ public class playercontroller {
     private Button fftbutton;
     @FXML
     private Button btnvedio;
-    @FXML
-    private Button previewButton;
+
     @FXML
     private Button saveButton;
     @FXML
@@ -103,6 +105,11 @@ public class playercontroller {
     @FXML
     private Button btnCut;
 
+    ObservableList<String> styleList = FXCollections.observableArrayList("None", "Low Pass", "High Pass");
+
+    @FXML
+    private ComboBox styleComboBox;
+
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
     private java.io.File file = new java.io.File("init.mp3");
@@ -116,6 +123,7 @@ public class playercontroller {
     protected ArrayList<Double>[] signal_modify;
     protected ArrayList<Double>[] signal_temp;
     protected ArrayList<Double>[] signal_cut;
+    protected ArrayList<Double>[] signal_EQ_save;
     // some useful signal properties
     // private int sampleRate;
     private double blockstarttime = 0;
@@ -145,6 +153,7 @@ public class playercontroller {
 
     public void initialize() {
         // player = new Play();
+        styleComboBox.setItems(styleList);
         slVolume.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
@@ -212,6 +221,26 @@ public class playercontroller {
             }
         });
 
+        styleComboBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                if (t1.equals("Low Pass")) {
+                    // copy
+                    signal_modify = signal_EQ_save;
+                    signal_modify = EQ.lowPass(signal_modify);
+                    drawWaveform(signal_modify);
+                } else if (t1.equals("High Pass")) {
+                    signal_modify = signal_EQ_save;
+                    signal_modify = EQ.highPass(signal_modify);
+                    drawWaveform(signal_modify);
+                } else if (t1.equals("None")) {
+                    signal_modify = signal_EQ_save;
+                    drawWaveform(signal_modify);
+                }
+
+            }
+        });
+
     }
 
     @FXML
@@ -247,54 +276,56 @@ public class playercontroller {
         double sp = slSpeed.getValue();
         file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
-            mplayer.stop();
-            // btnPlay.setText("Pause");
-            media = new Media(file.toURI().toString());
-            mplayer = new MediaPlayer(media);
-            mView.setMediaPlayer(mplayer);
-            mplayer.setOnReady(() -> {
-                endTime = mplayer.getStopTime().toSeconds();
-            });
-            mplayer.setOnEndOfMedia(() -> {
-                mplayer.stop();
-                mplayer.seek(Duration.ZERO);
-                btnPlay.setText("Play");
-            });
+            // mplayer.stop();
+            // // btnPlay.setText("Pause");
+            // media = new Media(file.toURI().toString());
+            // mplayer = new MediaPlayer(media);
+            // mView.setMediaPlayer(mplayer);
+            // mplayer.setOnReady(() -> {
+            // endTime = mplayer.getStopTime().toSeconds();
+            // });
+            // mplayer.setOnEndOfMedia(() -> {
+            // mplayer.stop();
+            // mplayer.seek(Duration.ZERO);
+            // btnPlay.setText("Play");
+            // });
 
-            mplayer.setOnStopped(() -> {
-                mplayer.setStopTime(mplayer.getMedia().getDuration());
-                mplayer.setStartTime(Duration.ZERO);
-            });
+            // mplayer.setOnStopped(() -> {
+            // mplayer.setStopTime(mplayer.getMedia().getDuration());
+            // mplayer.setStartTime(Duration.ZERO);
+            // });
 
-            mplayer.setOnPaused(() -> {
-                mplayer.setStopTime(mplayer.getMedia().getDuration());
-                mplayer.setStartTime(mplayer.getCurrentTime());
-            });
+            // mplayer.setOnPaused(() -> {
+            // mplayer.setStopTime(mplayer.getMedia().getDuration());
+            // mplayer.setStartTime(mplayer.getCurrentTime());
+            // });
 
-            mplayer.currentTimeProperty().addListener(ov -> {
-                currentTime = mplayer.getCurrentTime().toSeconds();
-                lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
-                // draw current time line
-                drawCurrentTimeLine(currentTime);
-                // slTime.setValue(currentTime / endTime * 100);
-            });
-            slTime.valueProperty().addListener(ov -> {
-                if (slTime.isValueChanging()) {
-                    // mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
-                    pauseTime = signal_modify[0].size() * slTime.getValue() / (100 * WavFile.getSampleRate());
-                    // mplayer.seek(Duration
-                    // .seconds(signal_modify[0].size() * slTime.getValue() / (100 *
-                    // WavFile.getSampleRate())));
-                    // System.out.print("ddd");
-                }
-            });
-            mplayer.volumeProperty().bind(slVolume.valueProperty().divide(100));
-            mplayer.setRate(1);
-            slSpeed.valueProperty().addListener(ov -> {
-                if (slSpeed.isValueChanging()) {
-                    mplayer.setRate(slSpeed.getValue());
-                }
-            });
+            // mplayer.currentTimeProperty().addListener(ov -> {
+            // currentTime = mplayer.getCurrentTime().toSeconds();
+            // lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
+            // // draw current time line
+            // drawCurrentTimeLine(currentTime);
+            // // slTime.setValue(currentTime / endTime * 100);
+            // });
+            // slTime.valueProperty().addListener(ov -> {
+            // if (slTime.isValueChanging()) {
+            // // mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() /
+            // 100));
+            // pauseTime = signal_modify[0].size() * slTime.getValue() / (100 *
+            // WavFile.getSampleRate());
+            // // mplayer.seek(Duration
+            // // .seconds(signal_modify[0].size() * slTime.getValue() / (100 *
+            // // WavFile.getSampleRate())));
+            // // System.out.print("ddd");
+            // }
+            // });
+            // mplayer.volumeProperty().bind(slVolume.valueProperty().divide(100));
+            // mplayer.setRate(1);
+            // slSpeed.valueProperty().addListener(ov -> {
+            // if (slSpeed.isValueChanging()) {
+            // mplayer.setRate(slSpeed.getValue());
+            // }
+            // });
 
             // read wav file and draw waveform
             // save in signal arraylist(for original soundtrack) and signal_modify
@@ -305,6 +336,7 @@ public class playercontroller {
             signal = WavFile.getSignal();
             // sampleRate = WavFile.getSampleRate();
             modifyArrayList();
+            signal_EQ_save = makeModifyArrayList();
             drawWaveform(signal);
 
             // mplayer.play();
@@ -312,24 +344,6 @@ public class playercontroller {
             // pass to FFTController now
             // FFTController.set(wf);
 
-        }
-    }
-
-    @FXML
-    void previewButtonClick(ActionEvent event) {
-        Thread t = new Thread();
-        if (previewButton.getText().equals("preview")) {
-            previewButton.setText("stop");
-            t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    // playBySample(signal_modify, 0, 10);
-                }
-            });
-            t.start();
-        } else {
-            previewButton.setText("preview");
-            t.interrupt();
         }
     }
 
@@ -494,6 +508,15 @@ public class playercontroller {
         for (int channel = 0; channel < signal.length; channel++) {
             signal_modify[channel] = new ArrayList(signal[channel]);
         }
+    }
+
+    public ArrayList<Double>[] makeModifyArrayList() {
+        ArrayList<Double>[] temp;
+        temp = new ArrayList[signal_modify.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            temp[channel] = new ArrayList(signal_modify[channel]);
+        }
+        return temp;
     }
 
     private void drawToTimeLine(double time) {
