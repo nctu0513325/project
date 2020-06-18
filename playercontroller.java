@@ -105,7 +105,7 @@ public class playercontroller {
     @FXML
     private Button btnCut;
 
-    ObservableList<String> styleList = FXCollections.observableArrayList("None", "Low Pass", "High Pass");
+    ObservableList<String> styleList = FXCollections.observableArrayList("None", "Low Pass", "High Pass", "Rock");
 
     @FXML
     private ComboBox styleComboBox;
@@ -236,6 +236,10 @@ public class playercontroller {
                 } else if (t1.equals("None")) {
                     signal_modify = signal_EQ_save;
                     drawWaveform(signal_modify);
+                } else if (t1.equals("Rock")) {
+                    signal_modify = signal_EQ_save;
+                    signal_modify = EQ.rockStyle(signal_modify);
+                    drawWaveform(signal_modify);
                 }
 
             }
@@ -267,8 +271,6 @@ public class playercontroller {
         td.stop();
         btnPlay.setText("Play");
         drawCurrentTimeLine(0);
-        signal_modify = EQ.lowPass(signal);
-        drawWaveform(signal_modify);
     }
 
     @FXML
@@ -548,7 +550,7 @@ public class playercontroller {
         for (int channel = 0; channel < signal.length; channel++) {
             signal_cut[channel] = new ArrayList<Double>();
             for (int x = startPos; x <= endPos; x++) {
-                signal_cut[channel].add(signal[channel].get(x));
+                signal_cut[channel].add(signal_modify[channel].get(x));
             }
         }
     }

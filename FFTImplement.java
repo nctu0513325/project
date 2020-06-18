@@ -86,11 +86,14 @@ public class FFTImplement {
             index.add(0);
         }
         double temp, max = 0;
-        int fre;
+        double fre;
         for (int i = 0; i < input.length; i++) {
             a = Math.pow(input[i].re(), 2) + Math.pow(input[i].im(), 2);
 
-            fre = (int) ((double) i * (double) WavFile.getSampleRate() / sampleNum);
+            fre = ((double) i * (double) WavFile.getSampleRate() / sampleNum);
+            if (i > input.length / 2) {
+                fre = ((double) (input.length - i) * (double) WavFile.getSampleRate() / sampleNum);
+            }
             for (int j = 0; j < n; j++) {
                 b = Math.pow(input[index.get(j)].re(), 2) + Math.pow(input[index.get(j)].re(), 2);
                 // range of fft
