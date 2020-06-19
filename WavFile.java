@@ -15,10 +15,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.*;
 
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import java.nio.ByteBuffer;
-
 public class WavFile {
 
     private static Riff riff = new Riff();
@@ -39,12 +35,16 @@ public class WavFile {
         return fileName;
     }
 
-    public static int getnumChannel() {
+    public static int getNumChannels() {
         return fmt.getNumChannels();
     }
 
     public static ArrayList<Double>[] getSignal() {
         return signal;
+    }
+
+    public static int getBitsPerSample() {
+        return fmt.getBitsPerSample();
     }
 
     public static void read(String fileNameInput) throws IOException {
@@ -207,6 +207,7 @@ public class WavFile {
             System.out.println(e.getStackTrace());
 
         }
+
     }
 
 }
