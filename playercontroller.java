@@ -13,12 +13,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+// import sun.misc.Signal;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseDragEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
 import java.security.PublicKey;
@@ -44,6 +46,11 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javafx.application.Platform;
 // import javax.sound.sampled.*;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class playercontroller {
 
@@ -381,10 +388,24 @@ public class playercontroller {
     }
 
     @FXML
+    // void fftClick(ActionEvent event) throws Exception {
+
     void fftClick(ActionEvent event) throws Exception {
-        FFTDisplay fd = new FFTDisplay();
-        fd.setSignal(signal_modify);
-        fd.start(new Stage());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("tenEQ.fxml"));
+        Parent root = (BorderPane) loader.load();
+        // get TenEQcontroller
+        TenEQController tenEQController = loader.<TenEQController>getController();
+        tenEQController.getSignal(signal_modify);
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("EQ"); // displayed in window's title bar
+        stage.setScene(scene);
+        stage.show();
+        // te.setSignal(signal_modify);
+
+        // FFTDisplay fd = new FFTDisplay();
+        // fd.setSignal(signal_modify);
+        // fd.start(new Stage());
     }
 
     @FXML
@@ -610,5 +631,10 @@ public class playercontroller {
         });
         td.start();
     }
+
+    // public static void getSignalFromEQ(ArrayList<Double>[] input) {
+    // signal_modify = input;
+
+    // }
 
 }
