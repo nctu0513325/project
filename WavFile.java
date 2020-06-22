@@ -145,7 +145,7 @@ public class WavFile {
                         }
                     }
 
-                    temp = (temp / normalizeConstant);
+                    // temp = (temp / normalizeConstant);
                     signal[i].add(Double.valueOf(temp));
                 }
                 count++;
@@ -178,12 +178,13 @@ public class WavFile {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             int sampleCount = 0;
             int index = 0;
-            int normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
             byte[] buffer = new byte[bufferSize];
             while (sampleCount < input[0].size()) {
                 while (index < bufferSize) {
                     for (int channel = 0; channel < fmt.getNumChannels(); channel++) {
-                        int temp = (int) (input[channel].get(sampleCount) * (double) normalizeConstant);
+                        // int temp = (int) (input[channel].get(sampleCount) * (double)
+                        // normalizeConstant);
+                        int temp = input[channel].get(sampleCount).intValue();
                         data_write = ByteBuffer.allocate(4).putInt(temp).array();
                         buffer[index] = data_write[2];
                         buffer[index + 1] = data_write[3];

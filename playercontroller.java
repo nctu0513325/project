@@ -410,23 +410,26 @@ public class PlayerController {
      */
     private void drawWaveform(ArrayList<Double>[] input) {
         // clean canvas
+        double normalizeConstant = Math.pow(2, WavFile.getBitsPerSample() - 1);
         int interval_temp = input[0].size() / (int) waveformCanvas1.getWidth();
         GraphicsContext gc1 = waveformCanvas1.getGraphicsContext2D();
         GraphicsContext gc2 = waveformCanvas2.getGraphicsContext2D();
         gc1.clearRect(0, 0, waveformCanvas1.getWidth(), waveformCanvas1.getHeight());
         gc2.clearRect(0, 0, waveformCanvas2.getWidth(), waveformCanvas2.getHeight());
-        int max = 100;
+        double max = 100;
         int y_base = (int) waveformCanvas1.getHeight() / 2;
         gc1.strokeLine(0, y_base, waveformCanvas1.getWidth(), y_base);
         gc2.strokeLine(0, y_base, waveformCanvas2.getWidth(), y_base);
         for (int x = 0; x < waveformCanvas1.getWidth(); x++) {
             for (int channel = 0; channel < input.length; channel++) {
                 if (channel % 2 == 0) {
-                    gc1.strokeLine(x, y_base - (int) (input[channel].get(x * interval_temp) * max), x + 1,
-                            y_base - (int) (input[channel].get((x + 1) * interval_temp) * max));
+                    gc1.strokeLine(x, y_base - (int) (input[channel].get(x * interval_temp) * max / normalizeConstant),
+                            x + 1,
+                            y_base - (int) (input[channel].get((x + 1) * interval_temp) * max / normalizeConstant));
                 } else if (channel % 2 != 0) {
-                    gc2.strokeLine(x, y_base - (int) (input[channel].get(x * interval_temp) * max), x + 1,
-                            y_base - (int) (input[channel].get((x + 1) * interval_temp) * max));
+                    gc2.strokeLine(x, y_base - (int) (input[channel].get(x * interval_temp) * max / normalizeConstant),
+                            x + 1,
+                            y_base - (int) (input[channel].get((x + 1) * interval_temp) * max / normalizeConstant));
                 }
             }
         }
@@ -550,7 +553,8 @@ public class PlayerController {
                     while (x < end) {
                         while (index < bufferSize) {
                             for (int channel = 0; channel < WavFile.getNumChannels(); channel++) {
-                                int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
+                                // int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
+                                int temp = input[channel].get(x).intValue();
                                 data_write = ByteBuffer.allocate(4).putInt(temp).array();
                                 buffer[index] = data_write[2];
                                 buffer[index + 1] = data_write[3];
