@@ -31,6 +31,7 @@ import javafx.scene.paint.Color;
 import java.util.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
+import java.io.File;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -73,19 +74,16 @@ public class PlayerController {
     @FXML private Pane sp_pane2;
     @FXML private Button fftbutton;
     @FXML private Button btnvedio;
-
     @FXML private Button saveButton;
     @FXML private Slider slto;
     @FXML private Slider slfrom;
     @FXML private Line Lfromline;
     @FXML private Line Ltoline;
     @FXML private Line Rfromline;
-    @FXML
-    private Line Rtoline;
-    @FXML
-    private Button btnBlockPlay;
-    @FXML
-    private Button btnCut;
+    @FXML private Line Rtoline;
+    @FXML private Button btnBlockPlay;
+    @FXML private Button btnCut;
+    @FXML private Button btnDel;
 
     ObservableList<String> styleList = FXCollections.observableArrayList("None", "Low Pass", "High Pass", "Rock");
 
@@ -106,6 +104,7 @@ public class PlayerController {
     protected ArrayList<Double>[] signal_temp;
     protected ArrayList<Double>[] signal_cut;
     protected ArrayList<Double>[] signal_EQ_save;
+    protected ArrayList<Double>[] signal_del;
     // some useful signal properties
     // private int sampleRate;
     private double blockstarttime = 0;
@@ -179,7 +178,12 @@ public class PlayerController {
             }
         });
 
+        File file=new File(".");
+        String path=file.getAbsolutePath();
+        path=file.getPath();   
+        
         fileChooser.setTitle("Open Media...");
+        fileChooser.setInitialDirectory(new File(path));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
                 new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
                 new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
@@ -346,8 +350,7 @@ public class PlayerController {
         td.stop();
         double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
-        // mplayer.setStartTime(Duration.seconds(start));
-        // mplayer.play();
+       
         btnPlay.setText("Pause");
         playBySample(signal_modify, start, end);
 
@@ -357,13 +360,20 @@ public class PlayerController {
     @FXML
     void CutClick(ActionEvent event) {
 
-        // int start = (int) ((blockstarttime / 100) * signal[0].size());
         double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
-        // int end = (int) ((blockendtime / 100) * signal[0].size());
         double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+
         WavCut(start, end);
         WavFile.saveAsWav(signal_cut);
 
+    }
+
+    @FXML
+    void DelClick(ActionEvent event) {
+        double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
+        double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+        
+        WavDel(start, end);
     }
 
     private String Seconds2Str(Double seconds) {
@@ -494,8 +504,25 @@ public class PlayerController {
         }
     }
 
-    /*
-     * this funciton is used to play by sample which stored in the
+    public void WavDel(double start, double end){
+        signal_del = new ArrayList[signal.length];
+        int startPos = (int) start * WavFile.getSampleRate();
+        int endPos = (int) end * WavFile.getSampleRate();
+        for(int channel=0; channel < signal.length; channel++){
+            signal_del[channel] = new ArrayList<Double>();
+            for (int x = 0; x <= signal_modify[channel].size(); x++) {
+                if(x > startPos && x < endPos){
+                    
+                }else{
+                    signal_del[channel].add(signal_modify[channel].get(x));
+                }
+            }
+        }
+        //signal_modify = signal_del;
+        drawWaveform(signal_modify);
+    }
+
+    /* this funciton is used to play by sample which stored in the
      * ArrayList<Double>[], replacing the use of media player. This function is very
      * important
      */

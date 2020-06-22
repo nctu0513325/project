@@ -50,6 +50,7 @@
                   <Line fx:id="Rtoline" endX="100.0" startX="6.0" startY="6.0" stroke="RED" visible="false" />
                   <Canvas fx:id="waveformCanvas2" height="150.0" width="1000.0" />
                   <Line fx:id="Rfromline" endX="100.0" startX="19.0" startY="42.0" stroke="RED" visible="false" />
+                  <Canvas fx:id="waveformCanvas21" height="150.0" layoutX="10.0" layoutY="10.0" width="1000.0" />
                </children>
             </Pane>
          </content>
@@ -64,8 +65,9 @@
       <Button fx:id="btnBlockPlay" layoutX="244.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnBlockPlayClick" text="區間播放" />
       <Label layoutX="54.0" layoutY="10.0" text="From" />
       <Label layoutX="316.0" layoutY="9.0" text="To" />
-      <Button fx:id="btnCut" layoutX="485.0" layoutY="6.0" mnemonicParsing="false" onAction="#CutClick" text="cut" />
       <ComboBox fx:id="styleComboBox" layoutX="591.0" layoutY="2.0" prefWidth="150.0" promptText="Style" />
+      <Button fx:id="btnDel" layoutX="515.0" layoutY="5.0" mnemonicParsing="false" onAction="#DelClick" text="刪除區段" />
+      <Button fx:id="btnCut" layoutX="481.0" layoutY="5.0" mnemonicParsing="false" onAction="#CutClick" text="cut" />
 
    </children>
 </AnchorPane>
