@@ -2,6 +2,7 @@
 
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
@@ -9,7 +10,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.media.MediaView?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="playercontroller">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="929.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PlayerController">
    <children>
 
       <Pane fx:id="pane" layoutX="123.0" layoutY="61.0" prefHeight="363.0" prefWidth="839.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="14.0">
@@ -44,7 +45,10 @@
          <content>
             <Pane fx:id="sp_pane2" onMousePressed="#sp_pane2MousePressed" prefHeight="150.0" prefWidth="1000.0">
                <children>
+                  <Line fx:id="Rtoline" endX="100.0" startX="6.0" startY="6.0" stroke="RED" visible="false" />
                   <Canvas fx:id="waveformCanvas2" height="150.0" width="1000.0" />
+                  <Line fx:id="Rfromline" endX="100.0" startX="19.0" startY="42.0" stroke="RED" visible="false" />
+                  <Canvas fx:id="waveformCanvas21" height="150.0" layoutX="10.0" layoutY="10.0" width="1000.0" />
                </children>
             </Pane>
          </content>
@@ -53,6 +57,15 @@
       <Label layoutX="10.0" layoutY="287.0" text="Right" AnchorPane.leftAnchor="10.0" />
       <Button fx:id="fftbutton" layoutX="853.0" layoutY="2.0" mnemonicParsing="false" onAction="#fftClick" text="FFT" AnchorPane.rightAnchor="10.0" />
       <Button fx:id="btnvedio" layoutX="769.0" layoutY="2.0" mnemonicParsing="false" onAction="#btnVedioClick" text="vedio play" AnchorPane.rightAnchor="56.0" />
-      <Button fx:id="saveButton" layoutX="722.0" layoutY="2.0" mnemonicParsing="false" onAction="#saveButtonClick" text="save" />
+      <Button fx:id="saveButton" layoutX="750.0" layoutY="2.0" mnemonicParsing="false" onAction="#saveButtonClick" text="save" />
+      <Slider fx:id="slfrom" layoutX="94.0" layoutY="10.0" />
+      <Slider fx:id="slto" layoutX="334.0" layoutY="10.0" value="100.0" />
+      <Button fx:id="btnBlockPlay" layoutX="244.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnBlockPlayClick" text="區間播放" />
+      <Label layoutX="54.0" layoutY="10.0" text="From" />
+      <Label layoutX="316.0" layoutY="9.0" text="To" />
+      <ComboBox fx:id="styleComboBox" layoutX="591.0" layoutY="2.0" prefWidth="150.0" promptText="Style" />
+      <Button fx:id="btnDel" layoutX="515.0" layoutY="5.0" mnemonicParsing="false" onAction="#DelClick" text="刪除區段" />
+      <Button fx:id="btnCut" layoutX="481.0" layoutY="5.0" mnemonicParsing="false" onAction="#CutClick" text="cut" />
+
    </children>
 </AnchorPane>

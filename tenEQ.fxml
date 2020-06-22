@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TenEQController">
+   <center>
+      <GridPane hgap="10.0" prefHeight="237.0" prefWidth="600.0" vgap="10.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="278.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="278.0" minHeight="10.0" prefHeight="259.3333511352539" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="94.0" minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Slider fx:id="sl31" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl62" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl125" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl250" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl500" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl1k" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl2k" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="7" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl4k" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="8" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl8k" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="9" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Slider fx:id="sl16k" blockIncrement="1.0" max="6.0" min="-20.0" orientation="VERTICAL" prefHeight="150.0" showTickMarks="true" GridPane.columnIndex="10" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Label alignment="CENTER" text="31" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="62" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="125" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="250" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="500" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="1k" GridPane.columnIndex="6" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="2k" GridPane.columnIndex="7" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="4k" GridPane.columnIndex="8" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="8k" GridPane.columnIndex="9" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" text="16k" GridPane.columnIndex="10" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <BorderPane prefHeight="278.0" prefWidth="16.0" GridPane.rowIndex="1">
+               <top>
+                  <Label text="+12dB" BorderPane.alignment="TOP_RIGHT" />
+               </top>
+               <bottom>
+                  <Label text="-12dB" BorderPane.alignment="TOP_RIGHT" />
+               </bottom>
+               <center>
+                  <Label text="0dB" BorderPane.alignment="CENTER_RIGHT" />
+               </center>
+            </BorderPane>
+            <TextField fx:id="tf31" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="1" />
+            <TextField fx:id="tf125" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="3" />
+            <TextField fx:id="tf62" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="2" />
+            <TextField fx:id="tf250" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="4" />
+            <TextField fx:id="tf500" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="5" />
+            <TextField fx:id="tf1k" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="6" />
+            <TextField fx:id="tf2k" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="7" />
+            <TextField fx:id="tf4k" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="8" />
+            <TextField fx:id="tf8k" alignment="CENTER" prefWidth="5.0" text="0" GridPane.columnIndex="9" />
+            <TextField fx:id="tf16k" alignment="CENTER" prefHeight="0.0" prefWidth="0.0" text="0" GridPane.columnIndex="10" />
+            <Label alignment="TOP_RIGHT" text="Hz" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+         </children>
+      </GridPane>
+   </center>
+   <bottom>
+      <Pane prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button layoutX="537.0" layoutY="9.0" mnemonicParsing="false" onAction="#applyButtonPressed" text="Apply" />
+         </children>
+      </Pane>
+   </bottom>
+   <top>
+      <Pane prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </top>
+</BorderPane>
