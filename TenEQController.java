@@ -111,7 +111,9 @@ public class TenEQController extends FFTImplement {
      */
     @FXML
     void applyButtonPressed(ActionEvent event) throws Exception {
-        // signal_modify = EQ.lowPass(signal_modify);
+        // make a frequency map
+
+        // double[] fm = makeFrequencyMap();
         signal_modify = signal_EQ_save;
         temp = new ArrayList[signal_modify.length];
         for (int channel = 0; channel < signal_modify.length; channel++) {
@@ -125,6 +127,21 @@ public class TenEQController extends FFTImplement {
             part_signal_arr[row] = new Complex[sampleNum];
             fft_signal_arr[row] = new Complex[sampleNum];
         }
+
+        /* find thd gain in each frequency band */
+        dBGain31 = Math.pow(10, (double) sl31.getValue() / 10);
+        dBGain62 = Math.pow(10, (double) sl62.getValue() / 10);
+        dBGain125 = Math.pow(10, (double) sl125.getValue() / 10);
+        dBGain250 = Math.pow(10, (double) sl250.getValue() / 10);
+        dBGain500 = Math.pow(10, (double) sl500.getValue() / 10);
+        dBGain1k = Math.pow(10, (double) sl1k.getValue() / 10);
+        dBGain2k = Math.pow(10, (double) sl2k.getValue() / 10);
+        dBGain4k = Math.pow(10, (double) sl4k.getValue() / 10);
+        dBGain8k = Math.pow(10, (double) sl8k.getValue() / 10);
+        dBGain16k = Math.pow(10, (double) sl16k.getValue() / 10);
+        System.out.println(dBGain31 + "\t" + dBGain62);
+
+        /* start to do some adjustments */
         int count = 0;
         double time = 0;
         for (count = 0; count < signal_modify[0].size() - sampleNum; count += sampleNum) {
@@ -151,41 +168,50 @@ public class TenEQController extends FFTImplement {
                     /* ============================== */
                     /* modify signal by frquency here */
                     /* ============================== */
+                    // fft_signal_arr[row_filter][col_filter] =
+                    // fft_signal_arr[row_filter][col_filter].scale(2);
                     double k = 0;
                     if (fre < band31) {
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(0);
                     } else if ((fre > band31) && (fre < band62)) {
-                        k = Math.pow(10, (double) sl31.getValue() / 20);
+                        k = ((dBGain62 - dBGain31) / (band62 - band31)) * (fre - band31) + dBGain31;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band62) && (fre < band125)) {
-                        k = Math.pow(10, (double) sl62.getValue() / 20);
+                        k = ((dBGain125 - dBGain62) / (band125 - band62)) * (fre - band62) + dBGain62;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band125) && (fre < band250)) {
-                        k = Math.pow(10, (double) sl125.getValue() / 20);
+                        k = ((dBGain250 - dBGain125) / (band250 - band125)) * (fre - band125) + dBGain125;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band250) && (fre < band500)) {
-                        k = Math.pow(10, (double) sl250.getValue() / 20);
+                        k = ((dBGain500 - dBGain250) / (band500 - band250)) * (fre - band250) + dBGain250;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band500) && (fre < band1k)) {
-                        k = Math.pow(10, (double) sl500.getValue() / 20);
+                        k = ((dBGain1k - dBGain500) / (band1k - band500)) * (fre - band500) + dBGain500;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band1k) && (fre < band2k)) {
-                        k = Math.pow(10, (double) sl1k.getValue() / 20);
+                        k = ((dBGain2k - dBGain1k) / (band2k - band1k)) * (fre - band1k) + dBGain1k;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band2k) && (fre < band4k)) {
-                        k = Math.pow(10, (double) sl2k.getValue() / 20);
+                        k = ((dBGain4k - dBGain2k) / (band4k - band2k)) * (fre - band2k) + dBGain2k;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band4k) && (fre < band8k)) {
-                        k = Math.pow(10, (double) sl4k.getValue() / 20);
+                        k = ((dBGain8k - dBGain4k) / (band8k - band4k)) * (fre - band4k) + dBGain4k;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band8k) && (fre < band16k)) {
-                        k = Math.pow(10, (double) sl8k.getValue() / 20);
+                        k = ((dBGain16k - dBGain8k) / (band16k - band8k)) * (fre - band8k) + dBGain8k;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     } else if ((fre > band16k)) {
-                        k = Math.pow(10, (double) sl16k.getValue() / 20);
+                        k = dBGain16k;
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(k);
                     }
                     // System.out.println(k);
+
+                    /*
+                     * handle each band step by step, Let Q (quality factor) = 1.5, each frequency
+                     * label indicates the center frequency
+                     */
+                    double q = 1.5;
+
                 }
             }
             // ifft
@@ -202,9 +228,10 @@ public class TenEQController extends FFTImplement {
 
         }
         signal_modify = temp;
-        PlayerController.callbackSignal(temp);
+        PlayerController.callbackSignal(signal_modify);
     }
 
+    /* this function is used to make frequency map for signal_ */
     /* this function is used to catch reference that passed from PlayerController */
     public void passSignal(PlayerController PlayerController, ArrayList<Double>[] input) {
         this.signal_modify = input;

@@ -337,6 +337,7 @@ public class PlayerController {
      */
     @FXML
     void fftClick(ActionEvent event) throws Exception {
+        td.stop();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("tenEQ.fxml"));
         Parent root = (BorderPane) loader.load();
         // get TenEQcontroller
