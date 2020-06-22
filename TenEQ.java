@@ -7,7 +7,7 @@ import java.util.*;
 
 public class TenEQ extends Application {
 
-    // private static ArrayList<Double>[] signal_modify; // use to modify signal
+    private static ArrayList<Double>[] signal_modify; // use to modify signal
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -29,12 +29,11 @@ public class TenEQ extends Application {
     // private ArrayList<Double>[] signal_EQ_save; // for save origin signal,restore
     // later
 
-    // public void setSignal(ArrayList<Double>[] input) {
-    // signal_modify = input;
-    // input = null;
-    // }
+    public void setSignal(ArrayList<Double>[] input) {
+        signal_modify = input;
+    }
 
-    // public static ArrayList<Double>[] getSignal() {
-    // return signal_modify;
-    // }
+    public static ArrayList<Double>[] getSignal() {
+        return signal_modify;
+    }
 }

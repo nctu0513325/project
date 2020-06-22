@@ -11,7 +11,7 @@
 <?import javafx.scene.media.MediaView?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="929.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="playercontroller">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="929.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PlayerController">
    <children>
 
       <Pane fx:id="pane" layoutX="21.0" layoutY="14.0" prefHeight="23.0" prefWidth="22.0" AnchorPane.bottomAnchor="399.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="886.0" AnchorPane.topAnchor="14.0">
