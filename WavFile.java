@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.*;
+import java.io.File;
 
 public class WavFile {
 
@@ -164,8 +165,13 @@ public class WavFile {
         // file chooser
 
         Stage stage = new Stage();
+        File file1=new File(".");
+        String path=file1.getAbsolutePath();
+        path=file1.getPath();   
+        
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("save");
+        fileChooser.setInitialDirectory(new File(path));
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("WAV file", "*.wav");
         fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showSaveDialog(stage);

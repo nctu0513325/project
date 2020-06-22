@@ -12,8 +12,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-// import sun.misc.Signal;
+import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseDragEvent;
 import javafx.beans.value.ChangeListener;
@@ -55,35 +56,64 @@ import javafx.stage.Stage;
 
 public class PlayerController {
 
-    @FXML private Slider slTime;
-    @FXML private Button btnStop;
-    @FXML private Button btnPlay;
-    @FXML private Slider slVolume;
-    @FXML private Label lbVolume;
-    @FXML private Button btnOpen;
-    @FXML private Label lbCurrentTime;
-    @FXML private Slider slSpeed;
-    @FXML private Label lbSpeed;
-    @FXML private MediaView mView;
-    @FXML private Pane pane;
-    @FXML private Canvas waveformCanvas1;
-    @FXML private Canvas waveformCanvas2;
-    @FXML private ScrollPane sp1;
-    @FXML private ScrollPane sp2;
-    @FXML private Pane sp_pane1;
-    @FXML private Pane sp_pane2;
-    @FXML private Button fftbutton;
-    @FXML private Button btnvedio;
-    @FXML private Button saveButton;
-    @FXML private Slider slto;
-    @FXML private Slider slfrom;
-    @FXML private Line Lfromline;
-    @FXML private Line Ltoline;
-    @FXML private Line Rfromline;
-    @FXML private Line Rtoline;
-    @FXML private Button btnBlockPlay;
-    @FXML private Button btnCut;
-    @FXML private Button btnDel;
+    @FXML
+    private Slider slTime;
+    @FXML
+    private Button btnStop;
+    @FXML
+    private Button btnPlay;
+    @FXML
+    private Slider slVolume;
+    @FXML
+    private Label lbVolume;
+    @FXML
+    private Button btnOpen;
+    @FXML
+    private Label lbCurrentTime;
+    @FXML
+    private Slider slSpeed;
+    @FXML
+    private Label lbSpeed;
+    @FXML
+    private MediaView mView;
+    @FXML
+    private Pane pane;
+    @FXML
+    private Canvas waveformCanvas1;
+    @FXML
+    private Canvas waveformCanvas2;
+    @FXML
+    private ScrollPane sp1;
+    @FXML
+    private ScrollPane sp2;
+    @FXML
+    private Pane sp_pane1;
+    @FXML
+    private Pane sp_pane2;
+    @FXML
+    private Button fftbutton;
+    @FXML
+    private Button btnvedio;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Slider slto;
+    @FXML
+    private Slider slfrom;
+    @FXML
+    private Line Lfromline;
+    @FXML
+    private Line Ltoline;
+    @FXML
+    private Line Rfromline;
+    @FXML
+    private Line Rtoline;
+    @FXML
+    private Button btnBlockPlay;
+    @FXML
+    private Button btnCut;
+    @FXML
+    private Button btnDel;
 
     ObservableList<String> styleList = FXCollections.observableArrayList("None", "Low Pass", "High Pass", "Rock");
 
@@ -124,6 +154,14 @@ public class PlayerController {
             mplayer.stop();
             btnPlay.setText("Play");
         });
+
+        primarytStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                td.stop();
+            }
+        });
+        
 
     }
 
@@ -178,10 +216,10 @@ public class PlayerController {
             }
         });
 
-        File file=new File(".");
-        String path=file.getAbsolutePath();
-        path=file.getPath();   
-        
+        File file = new File(".");
+        String path = file.getAbsolutePath();
+        path = file.getPath();
+
         fileChooser.setTitle("Open Media...");
         fileChooser.setInitialDirectory(new File(path));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
@@ -347,10 +385,10 @@ public class PlayerController {
     @FXML
     void btnBlockPlayClick(ActionEvent event) {
         // more accurate(?)
-        td.stop();
+        // td.stop();
         double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
-       
+
         btnPlay.setText("Pause");
         playBySample(signal_modify, start, end);
 
@@ -364,15 +402,13 @@ public class PlayerController {
         double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
 
         WavCut(start, end);
-        WavFile.saveAsWav(signal_cut);
-
     }
 
     @FXML
     void DelClick(ActionEvent event) {
         double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
-        
+
         WavDel(start, end);
     }
 
@@ -502,27 +538,29 @@ public class PlayerController {
                 signal_cut[channel].add(signal_modify[channel].get(x));
             }
         }
+        signal_modify = signal_cut;
+        drawWaveform(signal_modify);
     }
 
-    public void WavDel(double start, double end){
+    public void WavDel(double start, double end) {
         signal_del = new ArrayList[signal.length];
         int startPos = (int) start * WavFile.getSampleRate();
         int endPos = (int) end * WavFile.getSampleRate();
-        for(int channel=0; channel < signal.length; channel++){
+        for (int channel = 0; channel < signal.length; channel++) {
             signal_del[channel] = new ArrayList<Double>();
-            for (int x = 0; x <= signal_modify[channel].size(); x++) {
-                if(x > startPos && x < endPos){
-                    
-                }else{
+            for (int x = 0; x < signal_modify[channel].size(); x++) {
+                if (x > startPos && x < endPos) {
+                } else {
                     signal_del[channel].add(signal_modify[channel].get(x));
                 }
             }
         }
-        //signal_modify = signal_del;
+        signal_modify = signal_del;
         drawWaveform(signal_modify);
     }
 
-    /* this funciton is used to play by sample which stored in the
+    /*
+     * this funciton is used to play by sample which stored in the
      * ArrayList<Double>[], replacing the use of media player. This function is very
      * important
      */
