@@ -114,6 +114,8 @@ public class PlayerController {
     private Button btnCut;
     @FXML
     private Button btnDel;
+    @FXML
+    private Button btnUndo;
 
     ObservableList<String> styleList = FXCollections.observableArrayList("None", "Low Pass", "High Pass", "Rock");
 
@@ -135,6 +137,7 @@ public class PlayerController {
     protected ArrayList<Double>[] signal_cut;
     protected ArrayList<Double>[] signal_EQ_save;
     protected ArrayList<Double>[] signal_del;
+    protected ArrayList<Double>[] signal_undo;
     // some useful signal properties
     // private int sampleRate;
     private double blockstarttime = 0;
@@ -412,6 +415,12 @@ public class PlayerController {
         WavDel(start, end);
     }
 
+    @FXML
+    void UndoClick(ActionEvent event) {
+        signal_modify=signal_undo;
+        drawWaveform(signal_modify);
+    }
+
     private String Seconds2Str(Double seconds) {
         Integer count = seconds.intValue();
         final Integer Hours = count / 3600;
@@ -538,6 +547,11 @@ public class PlayerController {
                 signal_cut[channel].add(signal_modify[channel].get(x));
             }
         }
+        signal_undo = new ArrayList[signal.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_undo[channel] = new ArrayList<Double>();
+        }
+        signal_undo=signal_modify;
         signal_modify = signal_cut;
         drawWaveform(signal_modify);
     }
@@ -555,6 +569,11 @@ public class PlayerController {
                 }
             }
         }
+        signal_undo = new ArrayList[signal.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_undo[channel] = new ArrayList<Double>();
+        }
+        signal_undo=signal_modify;
         signal_modify = signal_del;
         drawWaveform(signal_modify);
     }
