@@ -162,7 +162,7 @@ public class TenEQController extends FFTImplement {
             for (int col_filter = 0; col_filter < sampleNum; col_filter++) {
                 for (int row_filter = 0; row_filter < signal_modify.length; row_filter++) {
                     double fre = ((double) col_filter * (double) WavFile.getSampleRate() / sampleNum);
-                    if (col_filter > sampleNum / 2) {
+                    if (col_filter >= sampleNum / 2) {
                         fre = ((double) (sampleNum - col_filter) * (double) WavFile.getSampleRate() / sampleNum);
                     }
                     /* ============================== */
@@ -206,12 +206,6 @@ public class TenEQController extends FFTImplement {
                     }
                     // System.out.println(k);
 
-                    /*
-                     * handle each band step by step, Let Q (quality factor) = 1.5, each frequency
-                     * label indicates the center frequency
-                     */
-                    double q = 1.5;
-
                 }
             }
             // ifft
@@ -251,105 +245,34 @@ public class TenEQController extends FFTImplement {
     /* inititalize */
     public void initialize() {
         // 31Hz band slider and textfield binding
-        sl31.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain31 = newValue.intValue();
-                tf31.setText(String.valueOf(dBGain31));
-                // tf31.setText(String.format("%.1f", dBGain31));
-            }
-        });
-        // tf31.textProperty().bind(sl31.valueProperty().asString("%.1f"));
+        tf31.textProperty().bind(sl31.valueProperty().asString("%.0f"));
 
         // 62Hz band slider and textfield binding
-        sl62.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain62 = newValue.intValue();
-                tf62.setText(String.valueOf(dBGain62));
-            }
-        });
-        // tf62.textProperty().bind(sl62.valueProperty().asString("%.1f"));
+        tf62.textProperty().bind(sl62.valueProperty().asString("%.0f"));
 
         // 125Hz band slider and textfield binding
-        sl125.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain125 = newValue.intValue();
-                tf125.setText(String.valueOf(dBGain125));
-            }
-        });
-        // tf125.textProperty().bind(sl125.valueProperty().asString("%.1f"));
+        tf125.textProperty().bind(sl125.valueProperty().asString("%.0f"));
 
         // 250Hz band slider and textfield binding
-        sl250.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain250 = newValue.intValue();
-                tf250.setText(String.valueOf(dBGain250));
-            }
-        });
-        // tf250.textProperty().bind(sl250.valueProperty().asString("%.1f"));
+        tf250.textProperty().bind(sl250.valueProperty().asString("%.0f"));
 
         // 500Hz band slider and textfield binding
-        sl500.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain500 = newValue.intValue();
-                tf500.setText(String.valueOf(dBGain500));
-            }
-        });
-        // tf500.textProperty().bind(sl500.valueProperty().asString("%.1f"));
+        tf500.textProperty().bind(sl500.valueProperty().asString("%.0f"));
 
         // 1kHz band slider and textfield binding
-        sl1k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain1k = newValue.intValue();
-                tf1k.setText(String.valueOf(dBGain1k));
-            }
-        });
-        // tf1k.textProperty().bind(sl1k.valueProperty().asString("%.1f"));
+        tf1k.textProperty().bind(sl1k.valueProperty().asString("%.0f"));
 
         // 2kHz band slider and textfield binding
-        sl2k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain2k = newValue.intValue();
-                tf2k.setText(String.valueOf(dBGain2k));
-            }
-        });
-        // tf2k.textProperty().bind(sl2k.valueProperty().asString("%.1f"));
+        tf2k.textProperty().bind(sl2k.valueProperty().asString("%.0f"));
 
         // 4kHz band slider and textfield binding
-        sl4k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain4k = newValue.intValue();
-                tf4k.setText(String.valueOf(dBGain4k));
-            }
-        });
-        // tf4k.textProperty().bind(sl4k.valueProperty().asString("%.1f"));
+        tf4k.textProperty().bind(sl4k.valueProperty().asString("%.0f"));
 
         // 8kHz band slider and textfield binding
-        sl8k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain8k = newValue.intValue();
-                tf8k.setText(String.valueOf(dBGain8k));
-            }
-        });
-        // tf8k.textProperty().bind(sl31.valueProperty().asString("%.1f"));
+        tf8k.textProperty().bind(sl8k.valueProperty().asString("%.0f"));
 
         // 16kHz band slider and textfield binding
-        sl16k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain16k = newValue.intValue();
-                tf16k.setText(String.valueOf(dBGain16k));
-            }
-        });
-        // tf16k.textProperty().bind(sl16k.valueProperty().asString("%.1f"));
+        tf16k.textProperty().bind(sl16k.valueProperty().asString("%.0f"));
         // get signal data
         // signal_modify = TenEQ.getSignal();
 
