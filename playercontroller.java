@@ -291,7 +291,6 @@ public class playercontroller {
     }
 
     @FXML
-
     void saveButtonClick(ActionEvent event) {
         WavFile.saveAsWav(signal);
     }
