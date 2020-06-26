@@ -140,7 +140,7 @@ public class PlayerController {
     protected ArrayList<Double>[] signal_cut;
     protected ArrayList<Double>[] signal_EQ_save;
     protected ArrayList<Double>[] signal_del;
-    protected ArrayList<Double>[][] signal_undo;
+    protected ArrayList<Double>[] signal_undo;
     protected ArrayList<Double>[] signal_speed;
     // some useful signal properties
     // private int sampleRate;
@@ -390,13 +390,13 @@ public class PlayerController {
     }
 
     /*
-     * this function is used to playe the segment that the user choose by the
+     * this function is used to play the segment that the user choose by the
      * sliders
      */
     @FXML
     void btnBlockPlayClick(ActionEvent event) {
         // more accurate(?)
-        // td.stop();
+        td.stop();
         double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
 
@@ -424,12 +424,7 @@ public class PlayerController {
 
     @FXML
     void UndoClick(ActionEvent event) {
-
-        for (int channel = 0; channel < signal.length; channel++) {
-            signal_modify[channel]=signal_undo[channel][num];
-        }
-        num--;
-       // signal_modify=signal_undo;
+        signal_modify=signal_undo;
         drawWaveform(signal_modify);
     }
 

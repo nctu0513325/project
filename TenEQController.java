@@ -20,61 +20,42 @@ public class TenEQController extends FFTImplement {
 
     @FXML
     private Slider sl31;
-
     @FXML
     private Slider sl62;
-
     @FXML
     private Slider sl125;
-
     @FXML
     private Slider sl250;
-
     @FXML
     private Slider sl500;
-
     @FXML
     private Slider sl1k;
-
     @FXML
     private Slider sl2k;
-
     @FXML
     private Slider sl4k;
-
     @FXML
     private Slider sl8k;
-
     @FXML
     private Slider sl16k;
-
     @FXML
     private TextField tf31;
-
     @FXML
     private TextField tf125;
-
     @FXML
     private TextField tf62;
-
     @FXML
     private TextField tf250;
-
     @FXML
     private TextField tf500;
-
     @FXML
     private TextField tf1k;
-
     @FXML
     private TextField tf2k;
-
     @FXML
     private TextField tf4k;
-
     @FXML
     private TextField tf8k;
-
     @FXML
     private TextField tf16k;
 

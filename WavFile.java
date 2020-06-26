@@ -1,4 +1,3 @@
-
 //WavFile
 //RIFF chunk -> know its type (wav here)
 //Fmt chunk -> describe the format of the sound information
