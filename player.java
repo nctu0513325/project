@@ -2,6 +2,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.WindowEvent;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
 
 public class player extends Application {
@@ -13,6 +15,15 @@ public class player extends Application {
         stage.setTitle("player"); // displayed in window's title bar
         stage.setScene(scene);
         stage.show();
+
+        PlayerController PC = new PlayerController();
+
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                PC.PlayStop();
+            }
+        });   
     }
 
     public static void main(String[] args) {

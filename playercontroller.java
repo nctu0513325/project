@@ -13,7 +13,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
@@ -131,6 +130,7 @@ public class PlayerController {
     private Media media = new Media(file.toURI().toString());
     private MediaPlayer mplayer = new MediaPlayer(media);
     FileChooser fileChooser = new FileChooser();
+    //int BPS =WavFile.getBitsPerSample();
 
     // wavfile
     // private WavFile wf;
@@ -162,15 +162,6 @@ public class PlayerController {
             mplayer.stop();
             btnPlay.setText("Play");
         });
-
-        primarytStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                td.stop();
-            }
-        });
-        
-
     }
 
     double vol = 50;
@@ -215,6 +206,7 @@ public class PlayerController {
                 speed = newValue.doubleValue();
                 speed = Double.parseDouble(String.format("%.2f", speed));
                 lbSpeed.setText(String.valueOf(speed));
+                //BPS = (int) (BPS*speed);
 
                 // modify signal
                 // signal_temp = new ArrayList[signal_modify.length];
@@ -667,6 +659,10 @@ public class PlayerController {
 
         });
         td.start();
+    }
+
+    public void PlayStop(){
+        td.stop();
     }
 
     /* this funciton receive the signal_modify which modified in TenEQController */
