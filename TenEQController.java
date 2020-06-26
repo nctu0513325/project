@@ -16,7 +16,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.util.*;
 
-public class TenEQController extends FFTImplement {
+public class TenEQController {
 
     @FXML
     private Slider sl31;
@@ -104,6 +104,11 @@ public class TenEQController extends FFTImplement {
     private ArrayList<Double>[] signal_EQ_save; // for save origin signal,restore later
     private ArrayList<Double>[] temp;
     private PlayerController PlayerController;
+    /*
+     * we change sampleNum corresponding to size of signal_modify[] that pass in,
+     * try to cover whole signal_modify[].size()
+     */
+    private int sampleNum;
 
     /*
      * this function is used to apply user's EQ parameters on signal_modify and pass
@@ -159,17 +164,15 @@ public class TenEQController extends FFTImplement {
                 fft_signal_arr[row] = FFT.fft(part_signal_arr[row]);
             }
             // filter
-            for (int col_filter = 1; col_filter < sampleNum - 1; col_filter++) {
+            for (int col_filter = 0; col_filter < sampleNum; col_filter++) {
                 for (int row_filter = 0; row_filter < signal_modify.length; row_filter++) {
                     double fre = ((double) (col_filter) * (double) WavFile.getSampleRate() / sampleNum);
                     if (col_filter >= sampleNum / 2) {
-                        fre = ((double) (sampleNum - col_filter - 1) * (double) WavFile.getSampleRate() / sampleNum);
+                        fre = ((double) (sampleNum - col_filter) * (double) WavFile.getSampleRate() / sampleNum);
                     }
                     /* ============================== */
                     /* modify signal by frquency here */
                     /* ============================== */
-                    // fft_signal_arr[row_filter][col_filter] =
-                    // fft_signal_arr[row_filter][col_filter].scale(2);
                     double k = 0;
                     if (fre < band31) {
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(0);
@@ -214,7 +217,7 @@ public class TenEQController extends FFTImplement {
             }
 
             // add into signal modify
-            for (int col = 100; col < sampleNum - 100; col++) {
+            for (int col = 0; col < sampleNum; col++) {
                 for (int row = 0; row < signal_modify.length; row++) {
                     // if (col != (sampleNum - 2) / 2) {
                     temp[row].add(part_signal_arr[row][col].re());

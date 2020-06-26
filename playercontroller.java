@@ -543,7 +543,7 @@ public class PlayerController {
                 // TODO Auto-generated method stub
                 try {
                     // int bufferSize = 2200;
-                    int bufferSize = 5000;
+                    int bufferSize = 2200;
                     byte[] data_write;
                     AudioFormat audioFormat = new AudioFormat(WavFile.getSampleRate(), WavFile.getBitsPerSample(),
                             WavFile.getNumChannels(), true, true);
