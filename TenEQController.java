@@ -159,11 +159,11 @@ public class TenEQController extends FFTImplement {
                 fft_signal_arr[row] = FFT.fft(part_signal_arr[row]);
             }
             // filter
-            for (int col_filter = 0; col_filter < sampleNum; col_filter++) {
+            for (int col_filter = 1; col_filter < sampleNum - 1; col_filter++) {
                 for (int row_filter = 0; row_filter < signal_modify.length; row_filter++) {
-                    double fre = ((double) col_filter * (double) WavFile.getSampleRate() / sampleNum);
+                    double fre = ((double) (col_filter) * (double) WavFile.getSampleRate() / sampleNum);
                     if (col_filter >= sampleNum / 2) {
-                        fre = ((double) (sampleNum - col_filter) * (double) WavFile.getSampleRate() / sampleNum);
+                        fre = ((double) (sampleNum - col_filter - 1) * (double) WavFile.getSampleRate() / sampleNum);
                     }
                     /* ============================== */
                     /* modify signal by frquency here */
@@ -214,9 +214,11 @@ public class TenEQController extends FFTImplement {
             }
 
             // add into signal modify
-            for (int col = 0; col < sampleNum; col++) {
+            for (int col = 100; col < sampleNum - 100; col++) {
                 for (int row = 0; row < signal_modify.length; row++) {
+                    // if (col != (sampleNum - 2) / 2) {
                     temp[row].add(part_signal_arr[row][col].re());
+                    // }
                 }
             }
 

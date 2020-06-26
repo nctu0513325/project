@@ -3,7 +3,7 @@
 import java.util.*;
 
 public class FFTImplement {
-    protected static int sampleNum = (int) Math.pow(2, 16);
+    protected static int sampleNum = (int) Math.pow(2, 14);
     protected static int sampleRate;
     protected static Complex[][] part_signal_arr;
     protected static Complex[][] fft_signal_arr;
@@ -50,24 +50,12 @@ public class FFTImplement {
             double fre[][] = new double[signal.length][n];
             for (int col = 0; col < n; col++) {
                 for (int row = 0; row < signal.length; row++) {
-                    if (index[row][col] > sampleNum / 2) {
+                    if (index[row][col] >= sampleNum / 2) {
                         index[row][col] = sampleNum - index[row][col];
                     }
                     fre[row][col] = (double) index[row][col] * (double) WavFile.getSampleRate() / sampleNum;
                 }
             }
-            // sort and output (checking)
-            // for (int row = 0; row < signal.length; row++) {
-            // Arrays.sort(fre[row]);
-            // }
-            // for (int row = 0; row < signal.length; row++) {
-            // for (int col = 0; col < n; col++) {
-            // if (row % 2 == 0) {
-            // System.out.printf("%.2f\t", fre[row][col]);
-            // }
-            // }
-            // }
-            // System.out.println();
             fft_signal.add(fre);
             // System.out.println(fft_signal.size());
 
@@ -91,7 +79,7 @@ public class FFTImplement {
             a = Math.pow(input[i].re(), 2) + Math.pow(input[i].im(), 2);
 
             fre = ((double) i * (double) WavFile.getSampleRate() / sampleNum);
-            if (i > input.length / 2) {
+            if (i >= input.length / 2) {
                 fre = ((double) (input.length - i) * (double) WavFile.getSampleRate() / sampleNum);
             }
             for (int j = 0; j < n; j++) {

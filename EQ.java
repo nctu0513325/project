@@ -39,11 +39,13 @@ public class EQ extends FFTImplement {
                 fft_signal_arr[row] = FFT.fft(part_signal_arr[row]);
             }
             // filter
-            for (int col_filter = 0; col_filter < sampleNum; col_filter++) {
+            for (int col_filter = 1; col_filter < sampleNum; col_filter++) {
                 for (int row_filter = 0; row_filter < input.length; row_filter++) {
                     double fre = ((double) col_filter * (double) WavFile.getSampleRate() / sampleNum);
-                    if (col_filter > sampleNum / 2) {
-                        fre = ((double) (sampleNum - col_filter) * (double) WavFile.getSampleRate() / sampleNum);
+                    if (col_filter >= sampleNum / 2) {
+                        // fre = ((double) (sampleNum - col_filter) * (double) WavFile.getSampleRate() /
+                        // sampleNum);
+                        fre = ((double) (col_filter - sampleNum / 2) * (double) WavFile.getSampleRate() / sampleNum);
                     }
                     // System.out.println(fre);
                     if ((fre > cutoff_frequency)) {

@@ -61,6 +61,8 @@ public class PlayerController {
     @FXML
     private Button btnPlay;
     @FXML
+    private Button btnChordFind;
+    @FXML
     private Slider slVolume;
     @FXML
     private Label lbVolume;
@@ -89,7 +91,7 @@ public class PlayerController {
     @FXML
     private Pane sp_pane2;
     @FXML
-    private Button fftbutton;
+    private Button btnEQ;
     @FXML
     private Button btnvedio;
 
@@ -305,6 +307,13 @@ public class PlayerController {
         }
     }
 
+    @FXML
+    void btnChordFindClick(ActionEvent event) throws Exception {
+        FFTDisplay fd = new FFTDisplay();
+        fd.setSignal(signal_modify);
+        fd.start(new Stage());
+    }
+
     /* this fumction is used to put timeline on the spot where user click on */
     @FXML
     void sp_paneMousePressed(MouseEvent event) {
@@ -332,12 +341,11 @@ public class PlayerController {
 
     /*
      * create another fxml and controller, need to pass our own
-     * controller(this),too, or the reference might be lost create two function,
+     * controller(this),too, or the reference might be lost. We create two function,
      * passSignal & callbackSignal to pass signal_modify
      */
     @FXML
-    void fftClick(ActionEvent event) throws Exception {
-        td.stop();
+    void eqClick(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("tenEQ.fxml"));
         Parent root = (BorderPane) loader.load();
         // get TenEQcontroller
@@ -534,7 +542,8 @@ public class PlayerController {
             public void run() {
                 // TODO Auto-generated method stub
                 try {
-                    int bufferSize = 2200;
+                    // int bufferSize = 2200;
+                    int bufferSize = 5000;
                     byte[] data_write;
                     AudioFormat audioFormat = new AudioFormat(WavFile.getSampleRate(), WavFile.getBitsPerSample(),
                             WavFile.getNumChannels(), true, true);
