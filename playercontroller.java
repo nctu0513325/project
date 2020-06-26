@@ -567,13 +567,8 @@ public class PlayerController {
                 signal_cut[channel].add(signal_modify[channel].get(x));
             }
         }
-        //signal_undo = new ArrayList[signal.length];
-        signal_undo = new ArrayList[signal.length][];
-        for (int channel = 0; channel < signal.length; channel++) {
-            signal_undo[channel][num] = new ArrayList<Double>();
-            signal_undo[channel][num]=signal_modify[channel];
-        }
-        num++;
+        signal_undo = new ArrayList[signal.length];
+        signal_undo=signal_modify;
         signal_modify = signal_cut;
         drawWaveform(signal_modify);
     }
@@ -591,12 +586,8 @@ public class PlayerController {
                 }
             }
         }
-        for (int channel = 0; channel < signal.length; channel++) {
-            signal_undo[channel][num] = new ArrayList<Double>();
-            signal_undo[channel][num]=signal_modify[channel];
-        }
-        num++;
-       // signal_undo=signal_modify;
+        signal_undo = new ArrayList[signal.length];
+        signal_undo=signal_modify;
         signal_modify = signal_del;
         drawWaveform(signal_modify);
     }
@@ -614,13 +605,8 @@ public class PlayerController {
             }
         }
 
-        for (int channel = 0; channel < signal.length; channel++) {
-            signal_undo[channel][num] = new ArrayList<Double>();
-            signal_undo[channel][num]=signal_modify[channel];
-        }
-        num++;
-
-        //signal_undo = signal_modify;
+        signal_undo = new ArrayList[signal.length];
+        signal_undo=signal_modify;
         signal_modify = signal_speed;
 
         drawWaveform(signal_modify);        
