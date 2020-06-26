@@ -295,8 +295,6 @@ public class PlayerController {
     /* this function is used to stop the music and put timeline back to t = 0 */
     @FXML
     void StopClick(final ActionEvent event) {
-        // mplayer.stop();
-        // player.stop();
         pauseTime = 0;
         td.stop();
         btnPlay.setText("Play");
@@ -315,8 +313,6 @@ public class PlayerController {
             modifyArrayList();
             signal_EQ_save = makeModifyArrayList();
             drawWaveform(signal);
-
-            // mplayer.play();
 
             // pass to FFTController now
             // FFTController.set(wf);
@@ -654,9 +650,7 @@ public class PlayerController {
                 } catch (LineUnavailableException e) {
                     System.out.println(e.getMessage());
                 }
-
             }
-
         });
         td.start();
     }

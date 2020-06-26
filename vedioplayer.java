@@ -23,7 +23,6 @@ public class vedioplayer extends Application {
             @Override
             public void handle(WindowEvent event) {
                 VC.PlayStop();
-                System.out.println("FUCK");
             }
         });   
     }
