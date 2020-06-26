@@ -1,6 +1,7 @@
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ScrollPane;
@@ -11,11 +12,16 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseDragEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
 import java.security.PublicKey;
@@ -26,12 +32,29 @@ import javafx.scene.paint.Color;
 import java.util.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
+import java.io.File;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class playercontroller {
+import java.nio.ByteBuffer;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javafx.application.Platform;
+// import javax.sound.sampled.*;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+public class PlayerController {
 
     @FXML
     private Slider slTime;
@@ -72,6 +95,8 @@ public class playercontroller {
     @FXML
     private Button btnvedio;
     @FXML
+    private Button saveButton;
+    @FXML
     private Slider slto;
     @FXML
     private Slider slfrom;
@@ -87,6 +112,15 @@ public class playercontroller {
     private Button btnBlockPlay;
     @FXML
     private Button btnCut;
+    @FXML
+    private Button btnDel;
+    @FXML
+    private Button btnUndo;
+
+    ObservableList<String> styleList = FXCollections.observableArrayList("None", "Low Pass", "High Pass", "Rock");
+
+    @FXML
+    private ComboBox styleComboBox;
 
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
@@ -97,30 +131,61 @@ public class playercontroller {
 
     // wavfile
     // private WavFile wf;
-    private ArrayList<Double>[] signal;
-    private ArrayList<Double>[] signal_modify;
-    private ArrayList<Double>[] signal_temp;
-    private ArrayList<Double>[] signal_cut;
+    protected ArrayList<Double>[] signal;
+    protected ArrayList<Double>[] signal_modify;
+    protected ArrayList<Double>[] signal_temp;
+    protected ArrayList<Double>[] signal_cut;
+    protected ArrayList<Double>[] signal_EQ_save;
+    protected ArrayList<Double>[] signal_del;
+    protected ArrayList<Double>[] signal_undo;
     // some useful signal properties
-    private int sampleRate;
-    private int interval;
+    // private int sampleRate;
     private double blockstarttime = 0;
     private double blockendtime = 100;
+
+    // play by signal sample flag
+    // private boolean platBySampleFlag = false;
+    private static Thread td;
+    private double pauseTime;
+    // private Play player;
 
     public void start(Stage primarytStage) {
         mView.fitWidthProperty().bind(pane.widthProperty());
         mView.fitHeightProperty().bind(pane.heightProperty());
+
+        mplayer.setOnEndOfMedia(() -> {
+            mplayer.stop();
+            btnPlay.setText("Play");
+        });
+
+        primarytStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                td.stop();
+            }
+        });
+        
+
     }
 
-    int vol = 50;
+    double vol = 50;
+    double last_vol = 1;
     double speed = 1;
 
+    /*
+     * initialize function is used to create our listener (speed, volumn)
+     */
     public void initialize() {
+        // player = new Play();
+        styleComboBox.setItems(styleList);
         slVolume.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                 // show changes
-                vol = newValue.intValue();
+                vol = (double) newValue.intValue() / 50;
+                if (vol == 0) {
+                    vol = 1;
+                }
                 lbVolume.setText(String.valueOf(vol));
 
                 // modify signal
@@ -129,9 +194,11 @@ public class playercontroller {
                 for (int channel = 0; channel < signal.length; channel++) {
                     signal_temp[channel] = new ArrayList(signal_modify[channel]);
                     for (int x = 0; x < signal_temp[channel].size(); x++) {
-                        signal_temp[channel].set(x, signal[channel].get(x * (int) constant) * ((double) vol / 50));
+                        // use original signal to modify sound
+                        signal_temp[channel].set(x, signal_modify[channel].get(x * (int) constant) * (vol / last_vol));
                     }
                 }
+                last_vol = vol;
                 drawWaveform(signal_temp);
                 signal_modify = signal_temp;
             }
@@ -152,7 +219,12 @@ public class playercontroller {
             }
         });
 
+        File file = new File(".");
+        String path = file.getAbsolutePath();
+        path = file.getPath();
+
         fileChooser.setTitle("Open Media...");
+        fileChooser.setInitialDirectory(new File(path));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Music", "*.wav"),
                 new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
                 new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
@@ -178,87 +250,73 @@ public class playercontroller {
             }
         });
 
+        styleComboBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                if (t1.equals("Low Pass")) {
+                    // copy
+                    signal_modify = signal_EQ_save;
+                    signal_modify = EQ.lowPass(signal_modify);
+                    drawWaveform(signal_modify);
+                } else if (t1.equals("High Pass")) {
+                    signal_modify = signal_EQ_save;
+                    signal_modify = EQ.highPass(signal_modify);
+                    drawWaveform(signal_modify);
+                } else if (t1.equals("None")) {
+                    signal_modify = signal_EQ_save;
+                    drawWaveform(signal_modify);
+                } else if (t1.equals("Rock")) {
+                    signal_modify = signal_EQ_save;
+                    signal_modify = EQ.rockStyle(signal_modify);
+                    drawWaveform(signal_modify);
+                }
+
+            }
+        });
+
     }
 
     @FXML
     void PlayClick(ActionEvent event) {
         if (btnPlay.getText().equals("Play")) {
             btnPlay.setText("Pause");
-            mplayer.play();
+            // playBySample(signal_modify, 0, signal_modify[0].size() /
+            // WavFile.getSampleRate());
+            // mplayer.play();
+            // player.play();
+            playBySample(signal_modify, pauseTime, signal_modify[0].size() / WavFile.getSampleRate());
         } else {
             btnPlay.setText("Play");
-            mplayer.pause();
+            td.stop();
+            // mplayer.pause();
         }
     }
 
+    /* this function is used to stop the music and put timeline back to t = 0 */
     @FXML
     void StopClick(final ActionEvent event) {
-        mplayer.stop();
+        // mplayer.stop();
+        // player.stop();
+        pauseTime = 0;
+        td.stop();
         btnPlay.setText("Play");
+        drawCurrentTimeLine(0);
     }
 
+    /* this funciton is is used to open file */
     @FXML
     void btnOpenClick(ActionEvent event) throws IOException {
         double sp = slSpeed.getValue();
         file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
-            mplayer.stop();
-            btnPlay.setText("Pause");
-            media = new Media(file.toURI().toString());
-            mplayer = new MediaPlayer(media);
-            mView.setMediaPlayer(mplayer);
-            mplayer.setOnReady(() -> {
-                endTime = mplayer.getStopTime().toSeconds();
-            });
-            mplayer.setOnEndOfMedia(() -> {
-                mplayer.stop();
-                mplayer.seek(Duration.ZERO);
-                btnPlay.setText("Play");
-            });
-
-            mplayer.setOnStopped(() -> {
-                mplayer.setStopTime(mplayer.getMedia().getDuration());
-                mplayer.setStartTime(Duration.ZERO);
-            });
-
-            mplayer.setOnPaused(() -> {
-                mplayer.setStopTime(mplayer.getMedia().getDuration());
-                mplayer.setStartTime(mplayer.getCurrentTime());
-            });
-
-            mplayer.currentTimeProperty().addListener(ov -> {
-                currentTime = mplayer.getCurrentTime().toSeconds();
-                lbCurrentTime.setText(Seconds2Str(currentTime) + "/" + Seconds2Str(endTime));
-                // draw current time line
-                drawCurrentTimeLine(currentTime);
-                slTime.setValue(currentTime / endTime * 100);
-            });
-            slTime.valueProperty().addListener(ov -> {
-                if (slTime.isValueChanging()) {
-                    mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
-                }
-            });
-            mplayer.volumeProperty().bind(slVolume.valueProperty().divide(100));
-            mplayer.setRate(1);
-            slSpeed.valueProperty().addListener(ov -> {
-                if (slSpeed.isValueChanging()) {
-                    mplayer.setRate(slSpeed.getValue());
-                }
-            });
-
-            // read wav file and draw waveform
-            // save in signal arraylist(for original soundtrack) and signal_modify
-            // arraylist(for modify)
-
-            // wf = new WavFile();
             WavFile.read(file.getAbsolutePath());
             signal = WavFile.getSignal();
-            interval = signal[0].size() / (int) waveformCanvas1.getWidth();
-            sampleRate = WavFile.getSampleRate();
-            // modifyArrayList();
+            // sampleRate = WavFile.getSampleRate();
+            modifyArrayList();
+            signal_EQ_save = makeModifyArrayList();
             drawWaveform(signal);
 
-            mplayer.play();
+            // mplayer.play();
 
             // pass to FFTController now
             // FFTController.set(wf);
@@ -266,22 +324,49 @@ public class playercontroller {
         }
     }
 
-    // timeline canvas
+    /* this fumction is used to put timeline on the spot where user click on */
     @FXML
     void sp_paneMousePressed(MouseEvent event) {
-        double x = event.getX();
-        // find the time correspond to the x
-        double timeClick = (x * interval) / WavFile.getSampleRate();
-        slTime.setValue(timeClick / endTime * 100);
-        drawCurrentTimeLine(timeClick);
-        mplayer.seek(mplayer.getTotalDuration().multiply(slTime.getValue() / 100));
+        int interval;
+        double x, timeClick;
+        if (btnPlay.getText().equals("Play")) {
+            interval = signal_modify[0].size() / (int) waveformCanvas1.getWidth();
+            x = event.getX();
+            // find the time correspond to the x
+            timeClick = (x * interval) / WavFile.getSampleRate();
+            pauseTime = timeClick;
+            drawCurrentTimeLine(timeClick);
+        } else {
+            td.stop();
+            interval = signal_modify[0].size() / (int) waveformCanvas1.getWidth();
+            x = event.getX();
+            // find the time correspond to the x
+            timeClick = (x * interval) / WavFile.getSampleRate();
+            pauseTime = timeClick;
+            drawCurrentTimeLine(timeClick);
+            playBySample(signal_modify, pauseTime, signal_modify[0].size() / WavFile.getSampleRate());
+        }
 
     }
 
+    /*
+     * create another fxml and controller, need to pass our own
+     * controller(this),too, or the reference might be lost create two function,
+     * passSignal & callbackSignal to pass signal_modify
+     */
     @FXML
     void fftClick(ActionEvent event) throws Exception {
-        FFTDisplay fd = new FFTDisplay();
-        fd.start(new Stage());
+        td.stop();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("tenEQ.fxml"));
+        Parent root = (BorderPane) loader.load();
+        // get TenEQcontroller
+        TenEQController tenEQController = loader.<TenEQController>getController();
+        tenEQController.passSignal(this, signal_modify);
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("EQ"); // displayed in window's title bar
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML
@@ -290,37 +375,50 @@ public class playercontroller {
         vp.start(new Stage());
     }
 
+    /* this function is used to save the signal that we edit */
     @FXML
     void saveButtonClick(ActionEvent event) {
-        WavFile.saveAsWav(signal);
+        WavFile.saveAsWav(signal_modify);
     }
 
+    /*
+     * this function is used to playe the segment that the user choose by the
+     * sliders
+     */
     @FXML
     void btnBlockPlayClick(ActionEvent event) {
-        // mplayer.setStartTime(mplayer.getTotalDuration().multiply(blockstarttime /
-        // 100));
         // more accurate(?)
+        // td.stop();
         double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
-        mplayer.setStartTime(Duration.seconds(start));
-        mplayer.play();
-        btnPlay.setText("Pause");
 
-        // mplayer.setStopTime(mplayer.getTotalDuration().multiply(blockendtime / 100));
-        mplayer.setStopTime(Duration.seconds(end));
+        btnPlay.setText("Pause");
+        playBySample(signal_modify, start, end);
+
     }
 
+    /* this funciton is used to save the segment that user choose and edit */
     @FXML
     void CutClick(ActionEvent event) {
 
-        // int start = (int) ((blockstarttime / 100) * signal[0].size());
-        int start = (int) (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
-        // int end = (int) ((blockendtime / 100) * signal[0].size());
-        int end = (int) (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+        double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
+        double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
 
         WavCut(start, end);
-        WavFile.saveAsWav(signal_cut);
+    }
 
+    @FXML
+    void DelClick(ActionEvent event) {
+        double start = (signal[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
+        double end = (signal[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+
+        WavDel(start, end);
+    }
+
+    @FXML
+    void UndoClick(ActionEvent event) {
+        signal_modify=signal_undo;
+        drawWaveform(signal_modify);
     }
 
     private String Seconds2Str(Double seconds) {
@@ -333,34 +431,43 @@ public class playercontroller {
         return str;
     }
 
-    // use to draw waveform
+    /*
+     * this funciton is used to draw wavform on the canvas by signal
+     * ArrayList<Double>[]
+     */
     private void drawWaveform(ArrayList<Double>[] input) {
         // clean canvas
+        double normalizeConstant = Math.pow(2, WavFile.getBitsPerSample() - 1);
+        int interval_temp = input[0].size() / (int) waveformCanvas1.getWidth();
         GraphicsContext gc1 = waveformCanvas1.getGraphicsContext2D();
         GraphicsContext gc2 = waveformCanvas2.getGraphicsContext2D();
         gc1.clearRect(0, 0, waveformCanvas1.getWidth(), waveformCanvas1.getHeight());
         gc2.clearRect(0, 0, waveformCanvas2.getWidth(), waveformCanvas2.getHeight());
-        int max = 100;
+        double max = 100;
         int y_base = (int) waveformCanvas1.getHeight() / 2;
         gc1.strokeLine(0, y_base, waveformCanvas1.getWidth(), y_base);
         gc2.strokeLine(0, y_base, waveformCanvas2.getWidth(), y_base);
         for (int x = 0; x < waveformCanvas1.getWidth(); x++) {
             for (int channel = 0; channel < input.length; channel++) {
                 if (channel % 2 == 0) {
-                    gc1.strokeLine(x, y_base - (int) (input[channel].get(x * interval) * max), x + 1,
-                            y_base - (int) (input[channel].get((x + 1) * interval) * max));
+                    gc1.strokeLine(x, y_base - (int) (input[channel].get(x * interval_temp) * max / normalizeConstant),
+                            x + 1,
+                            y_base - (int) (input[channel].get((x + 1) * interval_temp) * max / normalizeConstant));
                 } else if (channel % 2 != 0) {
-                    gc2.strokeLine(x, y_base - (int) (input[channel].get(x * interval) * max), x + 1,
-                            y_base - (int) (input[channel].get((x + 1) * interval) * max));
+                    gc2.strokeLine(x, y_base - (int) (input[channel].get(x * interval_temp) * max / normalizeConstant),
+                            x + 1,
+                            y_base - (int) (input[channel].get((x + 1) * interval_temp) * max / normalizeConstant));
                 }
             }
         }
     }
 
-    // use to draw current timeline
-    private void drawCurrentTimeLine(double time) {
+    /* use to draw current timeline */
+    public synchronized void drawCurrentTimeLine(double time) {
         // static double lastTime;
+
         int sampleRate = WavFile.getSampleRate();
+        int interval = signal_modify[0].size() / (int) waveformCanvas1.getWidth();
         double x = ((double) sampleRate * time) / (double) interval;
         sp_pane1.getChildren().clear();
         sp_pane2.getChildren().clear();
@@ -375,6 +482,11 @@ public class playercontroller {
         Line newTimeline2 = new Line(x, 0, x, sp2.getHeight());
         sp_pane1.getChildren().add(newTimeline1);
         sp_pane2.getChildren().add(newTimeline2);
+
+        // set slider label
+        lbCurrentTime.setText(
+                Seconds2Str(time) + "/" + Seconds2Str((double) signal_modify[0].size() / WavFile.getSampleRate()));
+        slTime.setValue(100 * time * WavFile.getSampleRate() / signal_modify[0].size());
     }
 
     private void drawFromTimeLine(double time) {
@@ -391,6 +503,26 @@ public class playercontroller {
         Rfromline.setEndY(sp_pane2.getHeight() + 3);
     }
 
+    public void modifyArrayList() {
+        signal_modify = new ArrayList[signal.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_modify[channel] = new ArrayList(signal[channel]);
+        }
+    }
+
+    /*
+     * make a copy of signal_modify on other signal arraylist, used to recover the
+     * signal_modify after some modification
+     */
+    public ArrayList<Double>[] makeModifyArrayList() {
+        ArrayList<Double>[] temp;
+        temp = new ArrayList[signal_modify.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            temp[channel] = new ArrayList(signal_modify[channel]);
+        }
+        return temp;
+    }
+
     private void drawToTimeLine(double time) {
         Ltoline.setVisible(true);
         Ltoline.setStartX(time);
@@ -405,33 +537,114 @@ public class playercontroller {
         Rtoline.setEndY(sp_pane2.getHeight() + 3);
     }
 
-    public void tempArrayList() {
-        signal_modify = new ArrayList[signal.length];
-
-        for (int channel = 0; channel < signal.length; channel++) {
-            signal_cut[channel] = new ArrayList<Double>(signal[channel]);
-        }
-    }
-
-    public void WavCut(int start, int end) {
+    public void WavCut(double start, double end) {
         signal_cut = new ArrayList[signal.length];
-
-        // for (int channel = 0; channel < signal.length; channel++) {
-        // signal_cut[channel] = new ArrayList<Double>();
-        // for (int y = 0; y < (end - start); y++) {
-        // signal_cut[channel].add(signal[channel].get(save));
-        // save++;
-        // }
-        // save = start;
-        // }
-
-        int startPos = start * WavFile.getSampleRate();
-        int endPos = end * WavFile.getSampleRate();
+        int startPos = (int) start * WavFile.getSampleRate();
+        int endPos = (int) end * WavFile.getSampleRate();
         for (int channel = 0; channel < signal.length; channel++) {
             signal_cut[channel] = new ArrayList<Double>();
             for (int x = startPos; x <= endPos; x++) {
-                signal_cut[channel].add(signal[channel].get(x));
+                signal_cut[channel].add(signal_modify[channel].get(x));
             }
         }
+        signal_undo = new ArrayList[signal.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_undo[channel] = new ArrayList<Double>();
+        }
+        signal_undo=signal_modify;
+        signal_modify = signal_cut;
+        drawWaveform(signal_modify);
     }
+
+    public void WavDel(double start, double end) {
+        signal_del = new ArrayList[signal.length];
+        int startPos = (int) start * WavFile.getSampleRate();
+        int endPos = (int) end * WavFile.getSampleRate();
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_del[channel] = new ArrayList<Double>();
+            for (int x = 0; x < signal_modify[channel].size(); x++) {
+                if (x > startPos && x < endPos) {
+                } else {
+                    signal_del[channel].add(signal_modify[channel].get(x));
+                }
+            }
+        }
+        signal_undo = new ArrayList[signal.length];
+        for (int channel = 0; channel < signal.length; channel++) {
+            signal_undo[channel] = new ArrayList<Double>();
+        }
+        signal_undo=signal_modify;
+        signal_modify = signal_del;
+        drawWaveform(signal_modify);
+    }
+
+    /*
+     * this funciton is used to play by sample which stored in the
+     * ArrayList<Double>[], replacing the use of media player. This function is very
+     * important
+     */
+    public void playBySample(ArrayList<Double>[] input, double startTime, double endTime) {
+        td = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                try {
+                    int bufferSize = 2200;
+                    byte[] data_write;
+                    AudioFormat audioFormat = new AudioFormat(WavFile.getSampleRate(), WavFile.getBitsPerSample(),
+                            WavFile.getNumChannels(), true, true);
+                    DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+                    SourceDataLine soundLine = (SourceDataLine) AudioSystem.getLine(info);
+                    soundLine.open(audioFormat, bufferSize);
+                    soundLine.start();
+                    // byte counter = 0;
+                    int index = 0;
+                    double start = WavFile.getSampleRate() * startTime;
+                    double end = WavFile.getSampleRate() * endTime;
+                    int x = (int) start;
+                    byte[] buffer = new byte[bufferSize];
+                    int normalizeConstant = (int) Math.pow(2, WavFile.getBitsPerSample() - 1);
+
+                    while (x < end) {
+                        while (index < bufferSize) {
+                            for (int channel = 0; channel < WavFile.getNumChannels(); channel++) {
+                                // int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
+                                int temp = input[channel].get(x).intValue();
+                                data_write = ByteBuffer.allocate(4).putInt(temp).array();
+                                buffer[index] = data_write[2];
+                                buffer[index + 1] = data_write[3];
+                                index += WavFile.getNumChannels();
+                            }
+                            x++;
+                        }
+
+                        index = 0;
+                        soundLine.write(buffer, 0, bufferSize);
+                        // double temp = x;
+                        pauseTime = (double) x / WavFile.getSampleRate();
+                        Platform.runLater(() -> {
+                            drawCurrentTimeLine(pauseTime);
+                            if (pauseTime >= endTime) {
+                                btnPlay.setText("Play");
+                                drawCurrentTimeLine(endTime);
+                            }
+                        });
+                    }
+                } catch (LineUnavailableException e) {
+                    System.out.println(e.getMessage());
+                }
+
+            }
+
+        });
+        td.start();
+    }
+
+    /* this funciton receive the signal_modify which modified in TenEQController */
+    public void callbackSignal(ArrayList<Double>[] input) {
+        System.out.println("call back");
+        signal_modify = input;
+        drawWaveform(signal_modify);
+    }
+
 }

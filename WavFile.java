@@ -14,10 +14,7 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.*;
-
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import java.nio.ByteBuffer;
+import java.io.File;
 
 public class WavFile {
 
@@ -39,12 +36,16 @@ public class WavFile {
         return fileName;
     }
 
-    public static int getnumChannel() {
+    public static int getNumChannels() {
         return fmt.getNumChannels();
     }
 
     public static ArrayList<Double>[] getSignal() {
         return signal;
+    }
+
+    public static int getBitsPerSample() {
+        return fmt.getBitsPerSample();
     }
 
     public static void read(String fileNameInput) throws IOException {
@@ -145,7 +146,7 @@ public class WavFile {
                         }
                     }
 
-                    temp = (temp / normalizeConstant);
+                    // temp = (temp / normalizeConstant);
                     signal[i].add(Double.valueOf(temp));
                 }
                 count++;
@@ -164,8 +165,13 @@ public class WavFile {
         // file chooser
 
         Stage stage = new Stage();
+        File file1=new File(".");
+        String path=file1.getAbsolutePath();
+        path=file1.getPath();   
+        
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("save");
+        fileChooser.setInitialDirectory(new File(path));
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("WAV file", "*.wav");
         fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showSaveDialog(stage);
@@ -178,12 +184,13 @@ public class WavFile {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             int sampleCount = 0;
             int index = 0;
-            int normalizeConstant = (int) Math.pow(2, fmt.getBitsPerSample() - 1);
             byte[] buffer = new byte[bufferSize];
             while (sampleCount < input[0].size()) {
                 while (index < bufferSize) {
                     for (int channel = 0; channel < fmt.getNumChannels(); channel++) {
-                        int temp = (int) (input[channel].get(sampleCount) * (double) normalizeConstant);
+                        // int temp = (int) (input[channel].get(sampleCount) * (double)
+                        // normalizeConstant);
+                        int temp = input[channel].get(sampleCount).intValue();
                         data_write = ByteBuffer.allocate(4).putInt(temp).array();
                         buffer[index] = data_write[2];
                         buffer[index + 1] = data_write[3];
@@ -207,6 +214,7 @@ public class WavFile {
             System.out.println(e.getStackTrace());
 
         }
+
     }
 
 }
