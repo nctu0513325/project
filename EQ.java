@@ -1,9 +1,13 @@
 import java.util.*;
 
 public class EQ extends FFTImplement {
-    private static ArrayList<Double>[] signal_modify;
+    // private ArrayList<Double>[] signal_modify;
 
-    public static ArrayList<Double>[] lowPass(ArrayList<Double>[] input) {
+    public EQ() {
+        super((int) Math.pow(2, 16));
+    }
+
+    public ArrayList<Double>[] lowPass(ArrayList<Double>[] input) {
         fft_signal_arr = new Complex[input[0].size()][];
         part_signal_arr = new Complex[input[0].size()][];
         // clone signal arraylist to another list (don't change original one)
@@ -75,7 +79,7 @@ public class EQ extends FFTImplement {
         return signal_modify;
     }
 
-    public static ArrayList<Double>[] highPass(ArrayList<Double>[] input) {
+    public ArrayList<Double>[] highPass(ArrayList<Double>[] input) {
         fft_signal_arr = new Complex[input[0].size()][];
         part_signal_arr = new Complex[input[0].size()][];
         // clone signal arraylist to another list (don't change original one)
@@ -142,7 +146,7 @@ public class EQ extends FFTImplement {
         return signal_modify;
     }
 
-    public static ArrayList<Double>[] rockStyle(ArrayList<Double>[] input) {
+    public ArrayList<Double>[] rockStyle(ArrayList<Double>[] input) {
         fft_signal_arr = new Complex[input[0].size()][];
         part_signal_arr = new Complex[input[0].size()][];
         // clone signal arraylist to another list (don't change original one)

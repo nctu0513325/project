@@ -1,4 +1,6 @@
 import javafx.fxml.FXML;
+import java.io.File;
+import java.nio.file.Paths;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -21,6 +23,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 import java.security.PublicKey;
@@ -212,6 +215,8 @@ public class PlayerController {
                 new FileChooser.ExtensionFilter("MP3 Music", "*.mp3"),
                 new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
+        String currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
+        fileChooser.setInitialDirectory(new File(currentPath));
 
         slfrom.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -236,23 +241,23 @@ public class PlayerController {
         styleComboBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                if (t1.equals("Low Pass")) {
-                    // copy
-                    signal_modify = signal_EQ_save;
-                    signal_modify = EQ.lowPass(signal_modify);
-                    drawWaveform(signal_modify);
-                } else if (t1.equals("High Pass")) {
-                    signal_modify = signal_EQ_save;
-                    signal_modify = EQ.highPass(signal_modify);
-                    drawWaveform(signal_modify);
-                } else if (t1.equals("None")) {
-                    signal_modify = signal_EQ_save;
-                    drawWaveform(signal_modify);
-                } else if (t1.equals("Rock")) {
-                    signal_modify = signal_EQ_save;
-                    signal_modify = EQ.rockStyle(signal_modify);
-                    drawWaveform(signal_modify);
-                }
+                // if (t1.equals("Low Pass")) {
+                // // copy
+                // signal_modify = signal_EQ_save;
+                // signal_modify = EQ.lowPass(signal_modify);
+                // drawWaveform(signal_modify);
+                // } else if (t1.equals("High Pass")) {
+                // signal_modify = signal_EQ_save;
+                // signal_modify = EQ.highPass(signal_modify);
+                // drawWaveform(signal_modify);
+                // } else if (t1.equals("None")) {
+                // signal_modify = signal_EQ_save;
+                // drawWaveform(signal_modify);
+                // } else if (t1.equals("Rock")) {
+                // signal_modify = signal_EQ_save;
+                // signal_modify = EQ.rockStyle(signal_modify);
+                // drawWaveform(signal_modify);
+                // }
 
             }
         });
@@ -308,10 +313,25 @@ public class PlayerController {
     }
 
     @FXML
-    void btnChordFindClick(ActionEvent event) throws Exception {
-        FFTDisplay fd = new FFTDisplay();
-        fd.setSignal(signal_modify);
-        fd.start(new Stage());
+    void btnChordFindClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("frequencyAnalysis.fxml"));
+            Parent root = (AnchorPane) loader.load();
+            // get TenEQcontroller
+            FrequencyAnalysisController frequencyAnalysisController = loader
+                    .<FrequencyAnalysisController>getController();
+            frequencyAnalysisController.passSignal(this, signal_modify);
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setTitle("Frequency Analysis"); // displayed in window's title bar
+            stage.setScene(scene);
+            stage.show();
+        } catch (NullPointerException e) {
+            System.out.println(e);
+        } catch (IOException ioe) {
+            System.out.println(ioe);
+        }
+
     }
 
     /* this fumction is used to put timeline on the spot where user click on */

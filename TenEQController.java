@@ -16,7 +16,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.util.*;
 
-public class TenEQController {
+public class TenEQController extends FFTImplement {
 
     @FXML
     private Slider sl31;
@@ -100,7 +100,7 @@ public class TenEQController {
     private double dBGain8k = 0;
     private double dBGain16k = 0;
 
-    private ArrayList<Double>[] signal_modify; // use to modify signal
+    // private ArrayList<Double>[] signal_modify; // use to modify signal
     private ArrayList<Double>[] signal_EQ_save; // for save origin signal,restore later
     private ArrayList<Double>[] temp;
     private PlayerController PlayerController;
@@ -108,7 +108,10 @@ public class TenEQController {
      * we change sampleNum corresponding to size of signal_modify[] that pass in,
      * try to cover whole signal_modify[].size()
      */
-    private int sampleNum;
+
+    public TenEQController() {
+        super((int) Math.pow(2, 16));
+    }
 
     /*
      * this function is used to apply user's EQ parameters on signal_modify and pass
