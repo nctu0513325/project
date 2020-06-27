@@ -16,10 +16,35 @@ public class FrequencyAnalysisController extends FFTImplement {
     protected ArrayList<double[][]> fft_signal = new ArrayList<double[][]>();
     protected int index[][]; // WavFileeform
     private PlayerController PlayerController;
+    private final double C_2 = 65.41;
+    private final double Csharp_2 = 69.30;
+    private final double D_2 = 73.42;
+    private final double Dsharp_2 = 77.78;
+    private final double E_2 = 82.41;
+    private final double F_2 = 87.31;
+    private final double Fsharp_2 = 92.50;
+    private final double G_2 = 98;
+    private final double Gsharp_2 = 103.83;
+    private final double A_2 = 110;
+    private final double Asharp_2 = 116.54;
+    private final double B_2 = 123;
+
+    private double C_sum = 0;
+    private double Csharp_sum = 0;
+    private double D_sum = 0;
+    private double Dsharp_sum = 0;
+    private double E_sum = 0;
+    private double F_sum = 0;
+    private double Fsharp_sum = 0;
+    private double G_sum = 0;
+    private double Gsharp_sum = 0;
+    private double A_sum = 0;
+    private double Asharp_sum = 0;
+    private double B_sum = 0;
 
     // self constructor
     public FrequencyAnalysisController() {
-        super((int) Math.pow(2, 13));
+        super((int) Math.pow(2, 15));
     }
 
     // get signal form playerController
@@ -37,60 +62,7 @@ public class FrequencyAnalysisController extends FFTImplement {
     }
 
     public void signalAnalysis(ArrayList<Double>[] input) {
-        // part_signal_arr = new Complex[WavFile.getNumChannels()][];
-        // fft_signal_arr = new Complex[WavFile.getNumChannels()][];
 
-        // double duration = ((double) sampleNum / WavFile.getSampleRate());
-        // // System.out.println("fft every: " + duration + " sec");
-        // // build new complex array to store sample point
-
-        // for (int row = 0; row < WavFile.getNumChannels(); row++) {
-        // part_signal_arr[row] = new Complex[sampleNum];
-        // fft_signal_arr[row] = new Complex[sampleNum];
-        // }
-        // int count = 0;
-        // double time = 0;
-        // // number of frequency we get in
-        // int n = 10;
-        // for (count = 0; count < signal[0].size() - sampleNum; count += sampleNum) {
-        // for (int col = 0; col < sampleNum; col++) {
-        // for (int row = 0; row < WavFile.getNumChannels(); row++) {
-        // part_signal_arr[row][col] = new Complex(signal[row].get(count + col), 0);
-        // fft_signal_arr[row][col] = new Complex(0, 0);
-        // }
-        // }
-
-        // for (int row = 0; row < WavFile.getNumChannels(); row++) {
-        // fft_signal_arr[row] = FFT.fft(part_signal_arr[row]);
-        // }
-
-        // index = new int[WavFile.getNumChannels()][];
-        // for (int row = 0; row < WavFile.getNumChannels(); row++) {
-        // index[row] = getNLargestFrequencyIndex(fft_signal_arr[row], n);
-        // }
-        // time += duration;
-        // // System.out.printf("at time %.2f:\t", time);
-        // // initialize arraylist array
-
-        // double fre[][] = new double[WavFile.getNumChannels()][n];
-        // for (int col = 0; col < n; col++) {
-        // for (int row = 0; row < WavFile.getNumChannels(); row++) {
-        // if (index[row][col] >= sampleNum / 2) {
-        // index[row][col] = sampleNum - index[row][col];
-        // }
-        // // System.out.println((double) index[row][col] * (double)
-        // // WavFile.getSampleRate() / sampleNum);
-        // fre[row][col] = (double) index[row][col] * (double) WavFile.getSampleRate() /
-        // sampleNum;
-        // }
-        // }
-        // fft_signal.add(fre);
-        // // System.out.println(fft_signal.size());
-
-        // }
-        // // return fft_signal;
-
-        /* try it again plzzzz */
         part_signal_arr = new Complex[WavFile.getNumChannels()][sampleNum];
         fft_signal_arr = new Complex[WavFile.getNumChannels()][];
         for (int count = 0; count < input[0].size() - sampleNum; count += sampleNum) {
@@ -108,8 +80,6 @@ public class FrequencyAnalysisController extends FFTImplement {
             Map<Integer, Double> map = new HashMap<Integer, Double>();
             for (int col = 0; col < sampleNum; col++) {
                 map.put(col, Math.abs(fft_signal_arr[0][col].re()));
-                // System.out.println(col * WavFile.getSampleRate() / sampleNum + ":\t" +
-                // fft_signal_arr[0][col]);
             }
             List<Map.Entry<Integer, Double>> list_Data = new ArrayList<Map.Entry<Integer, Double>>(map.entrySet());
             Collections.sort(list_Data, new Comparator<Map.Entry<Integer, Double>>() {
@@ -125,7 +95,7 @@ public class FrequencyAnalysisController extends FFTImplement {
             int k = 0;
             for (Map.Entry e : list_Data) {
                 if (k == 5) {
-                    System.out.println();
+                    // System.out.println();
                     break;
                 }
                 linkedHashMap.put((Integer) e.getKey(), (Double) e.getValue());
@@ -133,13 +103,111 @@ public class FrequencyAnalysisController extends FFTImplement {
                 if (temp >= sampleNum / 2) {
                     temp = sampleNum - temp;
                 }
-                System.out.print(temp * WavFile.getSampleRate() / sampleNum + ": " + (Double) e.getValue() + "\t");
+                // System.out.print(temp * WavFile.getSampleRate() / sampleNum + ": " + (Double)
+                // e.getValue() + "\t");
                 k++;
             }
+            // make another map
+            getScalePower(list_Data);
+            Map<String, Double> scaleMap = new HashMap<String, Double>();
+            scaleMap.put("C", C_sum);
+            scaleMap.put("C#", Csharp_sum);
+            scaleMap.put("D", D_sum);
+            scaleMap.put("D#", Dsharp_sum);
+            scaleMap.put("E", E_sum);
+            scaleMap.put("F", F_sum);
+            scaleMap.put("F#", Fsharp_sum);
+            scaleMap.put("G", G_sum);
+            scaleMap.put("G#", Gsharp_sum);
+            scaleMap.put("A", A_sum);
+            scaleMap.put("A#", Asharp_sum);
+            scaleMap.put("B", B_sum);
+            List<Map.Entry<String, Double>> list_scaleData = new ArrayList<Map.Entry<String, Double>>(
+                    scaleMap.entrySet());
+            Collections.sort(list_scaleData, new Comparator<Map.Entry<String, Double>>() {
+                public int compare(Map.Entry<String, Double> entry1, Map.Entry<String, Double> entry2) {
+                    if ((Double) entry1.getValue() > (Double) entry2.getValue()) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                }
+            });
+            k = 0;
+            Map<String, Double> linkedScaleHashMap = new LinkedHashMap<>();
+            for (Map.Entry e : list_scaleData) {
+                if (k == 5) {
+                    // System.out.println();
+                    break;
+                }
+                linkedScaleHashMap.put((String) e.getKey(), (Double) e.getValue());
+                k++;
+            }
+            System.out.println(linkedScaleHashMap);
 
-            // System.out.println("linkedHashMap : " + linkedHashMap);
+            // System.out.println(C_sum + "\t" + Csharp_sum + "\t" + D_sum + "\t" +
+            // Dsharp_sum + "\t" + E_sum + "\t"
+            // + F_sum + "\n" + Fsharp_sum + "\t" + G_sum + "\t" + Gsharp_sum + "\t" + A_sum
+            // + "\t" + Asharp_sum
+            // + "\t" + B_sum);
+            System.out.println("============================================================================");
+            C_sum = 0;
+            Csharp_sum = 0;
+            D_sum = 0;
+            Dsharp_sum = 0;
+            E_sum = 0;
+            F_sum = 0;
+            Fsharp_sum = 0;
+            G_sum = 0;
+            Gsharp_sum = 0;
+            A_sum = 0;
+            Asharp_sum = 0;
+            B_sum = 0;
         }
 
+    }
+
+    public void getScalePower(List<Map.Entry<Integer, Double>> input) {
+        int index = 0;
+        int fre = 0;
+        int range = 2;
+        for (Map.Entry e : input) {
+            index = (int) e.getKey();
+            if (index >= sampleNum / range) {
+                index = sampleNum - index;
+            }
+            fre = (int) (index * WavFile.getSampleRate() / sampleNum);
+            if ((fre % (int) Math.round(C_2)) <= range || (fre % (int) Math.round(C_2)) >= (C_2 - range)) {
+                C_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(Csharp_2)) <= range
+                    || (fre % (int) Math.round(Csharp_2)) >= (Csharp_2 - range)) {
+                Csharp_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(D_2)) <= range || (fre % (int) Math.round(D_2)) >= (D_2 - range)) {
+                D_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(Dsharp_2)) <= range
+                    || (fre % (int) Math.round(Dsharp_2)) >= (Dsharp_2 - range)) {
+                Dsharp_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(E_2)) <= range || (fre % (int) Math.round(E_2)) >= (E_2 - range)) {
+                E_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(F_2)) <= range || (fre % (int) Math.round(F_2)) >= (F_2 - range)) {
+                F_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(Fsharp_2)) <= range
+                    || (fre % (int) Math.round(F_2)) >= (Fsharp_2 - range)) {
+                Fsharp_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(G_2)) <= range || (fre % (int) Math.round(F_2)) >= (G_2 - range)) {
+                G_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(Gsharp_2)) <= range
+                    || (fre % (int) Math.round(F_2)) >= (Gsharp_2 - range)) {
+                Gsharp_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(A_2)) <= range || (fre % (int) Math.round(F_2)) >= (A_2 - range)) {
+                A_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(Asharp_2)) <= range
+                    || (fre % (int) Math.round(F_2)) >= (Asharp_2 - range)) {
+                Asharp_sum += (Double) e.getValue();
+            } else if ((fre % (int) Math.round(B_2)) <= range || (fre % (int) Math.round(F_2)) >= (B_2 - range)) {
+                B_sum += (Double) e.getValue();
+            }
+        }
     }
 
     @FXML
@@ -200,23 +268,36 @@ public class FrequencyAnalysisController extends FFTImplement {
     private void drawFT() {
         GraphicsContext gc1 = canvas1.getGraphicsContext2D();
         gc1.clearRect(0, 0, canvas1.getWidth(), canvas1.getHeight());
+        /* f = 2*f for every octive */
+        double C_2 = 65.41;
+        double Csharp_2 = 69.30;
+        double D_2s = 73.42;
+        double Dsharp_2 = 77.78;
         double E_2 = 82.41;
         double F_2 = 87.31;
         double Fsharp_2 = 92.50;
         double G_2 = 98;
+        double Gsharp_2 = 103.83;
         double A_2 = 110;
+        double Asharp_2 = 116.54;
         double B_2 = 123;
-        double C_3 = 129;
-        double D_3 = 146;
-        double E_3 = 164;
-        double F_3 = 174;
-        double G_3 = 196;
-        double A_3 = 220;
-        double B_3 = 247;
-        double C_4 = 261;
-        double D_4 = 293;
-        double E_4 = 329;
-        double G_4 = 392;
+
+        // double E_3 = 164;
+        // double F_3 = 174;
+        // double Fsharp_3 = 185;
+        // double G_3 = 196;
+        // double Gsharp_3 = 207.65;
+        // double A_3 = 220;
+        // double Asharp_3 = 233.08;
+        // double B_3 = 247;
+        // double C_4 = 261;
+        // double Csharp_4 = 277.18;
+        // double D_4 = 293;
+        // double Dsharp_4 = 311.13;
+        // double E_4 = 329;
+        // double F_4 = 349.23;
+        // double Fsharp_4 = 269.99;
+        // double G_4 = 392;
         // C_major
         // gc1.setStroke(Color.GREEN);
         // gc1.strokeLine(0, canvas1.getHeight() - C_note3, canvas1.getWidth(),
@@ -235,15 +316,24 @@ public class FrequencyAnalysisController extends FFTImplement {
         // gc1.strokeLine(0, canvas1.getHeight() - D_note3, canvas1.getWidth(),
         // canvas1.getHeight() - D_note3);
         gc1.setStroke(Color.RED);
-        gc1.strokeLine(0, canvas1.getHeight() - E_2, canvas1.getWidth(), canvas1.getHeight() - E_2);
-        gc1.strokeLine(0, canvas1.getHeight() - F_2, canvas1.getWidth(), canvas1.getHeight() - F_2);
-        gc1.strokeLine(0, canvas1.getHeight() - G_2, canvas1.getWidth(), canvas1.getHeight() - G_2);
-        gc1.strokeLine(0, canvas1.getHeight() - A_3, canvas1.getWidth(), canvas1.getHeight() - A_3);
-        gc1.strokeLine(0, canvas1.getHeight() - B_3, canvas1.getWidth(), canvas1.getHeight() - B_3);
-        gc1.strokeLine(0, canvas1.getHeight() - C_3, canvas1.getWidth(), canvas1.getHeight() - C_3);
-        gc1.strokeLine(0, canvas1.getHeight() - D_3, canvas1.getWidth(), canvas1.getHeight() - D_3);
-        gc1.strokeLine(0, canvas1.getHeight() - F_3, canvas1.getWidth(), canvas1.getHeight() - F_3);
-        gc1.strokeLine(0, canvas1.getHeight() - G_3, canvas1.getWidth(), canvas1.getHeight() - G_3);
+        // gc1.strokeLine(0, canvas1.getHeight() - E_2, canvas1.getWidth(),
+        // canvas1.getHeight() - E_2);
+        // gc1.strokeLine(0, canvas1.getHeight() - F_2, canvas1.getWidth(),
+        // canvas1.getHeight() - F_2);
+        // gc1.strokeLine(0, canvas1.getHeight() - G_2, canvas1.getWidth(),
+        // canvas1.getHeight() - G_2);
+        // gc1.strokeLine(0, canvas1.getHeight() - A_3, canvas1.getWidth(),
+        // canvas1.getHeight() - A_3);
+        // gc1.strokeLine(0, canvas1.getHeight() - B_3, canvas1.getWidth(),
+        // canvas1.getHeight() - B_3);
+        // gc1.strokeLine(0, canvas1.getHeight() - C_3, canvas1.getWidth(),
+        // canvas1.getHeight() - C_3);
+        // gc1.strokeLine(0, canvas1.getHeight() - D_3, canvas1.getWidth(),
+        // canvas1.getHeight() - D_3);
+        // gc1.strokeLine(0, canvas1.getHeight() - F_3, canvas1.getWidth(),
+        // canvas1.getHeight() - F_3);
+        // gc1.strokeLine(0, canvas1.getHeight() - G_3, canvas1.getWidth(),
+        // canvas1.getHeight() - G_3);
 
         gc1.setFill(Color.BLACK);
         for (int time = 0; time < fft_signal.size(); time++) {
