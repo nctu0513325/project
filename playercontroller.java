@@ -167,6 +167,7 @@ public class PlayerController {
     double vol = 50;
     double last_vol = 1;
     double speed = 1;
+    double BPS = WavFile.getBitsPerSample();
 
     /*
      * initialize function is used to create our listener (speed, volumn)
@@ -384,7 +385,7 @@ public class PlayerController {
     @FXML
     void btnBlockPlayClick(ActionEvent event) {
         // more accurate(?)
-        td.stop();
+
         double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
 
@@ -396,6 +397,7 @@ public class PlayerController {
     /* this funciton is used to save the segment that user choose and edit */
     @FXML
     void CutClick(ActionEvent event) {
+
         double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
 
@@ -404,6 +406,7 @@ public class PlayerController {
 
     @FXML
     void DelClick(ActionEvent event) {
+        td.stop();
         double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
 
@@ -413,15 +416,23 @@ public class PlayerController {
     @FXML
     void UndoClick(ActionEvent event) {
         signal_modify=signal_undo;
+
         drawWaveform(signal_modify);
     }
 
     @FXML
     void SpeedClick(ActionEvent event) {
+
         double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
         double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
 
         SpeedUp(start,end);
+    }
+
+    @FXML
+    void RecordClick(ActionEvent event) throws Exception {
+        Recording rd = new Recording();
+        rd.start(new Stage());
     }
 
     private String Seconds2Str(Double seconds) {
@@ -569,7 +580,7 @@ public class PlayerController {
                 }
             }
         }
-        signal_undo = new ArrayList[signal.length];
+        signal_undo = new ArrayList[signal_modify.length];
         signal_undo=signal_modify;
         signal_modify = signal_del;
         drawWaveform(signal_modify);
@@ -583,9 +594,8 @@ public class PlayerController {
         for(int channel =0; channel < signal_modify.length; channel++){
             signal_speed[channel]= new ArrayList<Double>();
             signal_speed[channel]= signal_modify[channel];
-            for(int x= startPos; x < endPos; x++){
-                signal_speed[channel].remove(x);
-            }
+
+
         }
 
         signal_undo = new ArrayList[signal.length];

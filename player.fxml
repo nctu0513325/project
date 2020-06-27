@@ -76,6 +76,7 @@
             <MenuItem fx:id="menubtnSpeed" mnemonicParsing="false" onAction="#SpeedClick" text="cut" />
         </items>
       </MenuButton>
+      <Button fx:id="btnRecord" layoutX="606.0" layoutY="6.0" mnemonicParsing="false" onAction="#RecordClick" text="record" />
 
    </children>
 </AnchorPane>
