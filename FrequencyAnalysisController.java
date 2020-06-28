@@ -54,6 +54,7 @@ public class FrequencyAnalysisController extends FFTImplement {
     private double Bb_sum = 0;
     private double B_sum = 0;
     private String rootString;
+    private String chordName;
 
     // self constructor
     public FrequencyAnalysisController() {
@@ -162,13 +163,14 @@ public class FrequencyAnalysisController extends FFTImplement {
             for (int i = 0; i < 3; i++) {
                 list_scaleData.remove(list_scaleData.size() - 1);
             }
-            String str = ChordComposition.findChord(list_scaleData, rootString);
+            chordName = ChordComposition.findChord(list_scaleData, rootString);
 
             // System.out.println(C_sum + "\t" + Db_sum + "\t" + D_sum + "\t" +
             // Eb_sum + "\t" + E_sum + "\t"
             // + F_sum + "\n" + Gb_sum + "\t" + G_sum + "\t" + Ab_sum + "\t" + A_sum
             // + "\t" + Bb_sum
             // + "\t" + B_sum);
+            System.out.println(chordName);
             System.out.println("============================================================================");
             C_sum = 0;
             Db_sum = 0;
@@ -189,7 +191,7 @@ public class FrequencyAnalysisController extends FFTImplement {
     public void getScalePower(List<Map.Entry<Integer, Double>> input) {
         int index = 0;
         int fre = 0;
-        int range = 2;
+        double range = 0.5;
         for (Map.Entry e : input) {
             index = (int) e.getKey();
             if (index >= sampleNum / range) {
@@ -221,50 +223,14 @@ public class FrequencyAnalysisController extends FFTImplement {
             } else if ((fre % (int) Math.round(B_2)) <= range || (fre % (int) Math.round(B_2)) >= (B_2 - range)) {
                 B_sum += (Double) e.getValue();
             }
-            // if ((fre % (int) Math.round(C_3)) <= range || (fre % (int) Math.round(C_3))
-            // >= (C_3 - range)) {
-            // C_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(Db_3)) <= range || (fre % (int)
-            // Math.round(Db_3)) >= (Db_3 - range)) {
-            // Db_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(D_3)) <= range || (fre % (int)
-            // Math.round(D_3)) >= (D_3 - range)) {
-            // D_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(Eb_3)) <= range || (fre % (int)
-            // Math.round(Eb_3)) >= (Eb_3 - range)) {
-            // Eb_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(E_3)) <= range || (fre % (int)
-            // Math.round(E_3)) >= (E_3 - range)) {
-            // E_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(F_3)) <= range || (fre % (int)
-            // Math.round(F_3)) >= (F_3 - range)) {
-            // F_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(Gb_3)) <= range || (fre % (int)
-            // Math.round(Gb_3)) >= (Gb_3 - range)) {
-            // Gb_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(G_3)) <= range || (fre % (int)
-            // Math.round(G_3)) >= (G_3 - range)) {
-            // G_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(Ab_3)) <= range || (fre % (int)
-            // Math.round(Ab_3)) >= (Ab_3 - range)) {
-            // Ab_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(A_3)) <= range || (fre % (int)
-            // Math.round(A_3)) >= (A_3 - range)) {
-            // A_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(Bb_3)) <= range || (fre % (int)
-            // Math.round(Bb_3)) >= (Bb_3 - range)) {
-            // Bb_sum += (Double) e.getValue();
-            // } else if ((fre % (int) Math.round(B_3)) <= range || (fre % (int)
-            // Math.round(B_3)) >= (B_3 - range)) {
-            // B_sum += (Double) e.getValue();
-            // }
         }
     }
 
     public String getRoot(List<Map.Entry<Integer, Double>> input) {
         int index = 0;
         int fre = 0;
-        int range = 3;
+        // int range = 3;
+        double range = 0.5;
         String result = "";
         double max = 0;
         double temp_power = 0;
