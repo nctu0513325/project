@@ -54,6 +54,7 @@ public class FrequencyAnalysisController extends FFTImplement {
     private double Bb_sum = 0;
     private double B_sum = 0;
     private String rootString;
+    private String lastRootString = "";
     private String chordName;
 
     // self constructor
@@ -75,8 +76,11 @@ public class FrequencyAnalysisController extends FFTImplement {
         }
     }
 
-    public void signalAnalysis(ArrayList<Double>[] input) {
-
+    /*
+     * return List< location(time) where chord locate and,chor chord string itself>
+     */
+    public List<Map.Entry<Double, String>> signalAnalysis(ArrayList<Double>[] input) {
+        Map<Double, String> result_map = new LinkedHashMap<Double, String>();
         part_signal_arr = new Complex[WavFile.getNumChannels()][sampleNum];
         fft_signal_arr = new Complex[WavFile.getNumChannels()][];
         for (int count = 0; count < input[0].size() - sampleNum; count += sampleNum / 3) {
@@ -160,18 +164,27 @@ public class FrequencyAnalysisController extends FFTImplement {
                 k++;
             }
             // System.out.println(sorted_list.size());
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 6; i++) {
                 list_scaleData.remove(list_scaleData.size() - 1);
             }
-            chordName = ChordComposition.findChord(list_scaleData, rootString);
+            if (rootString.compareTo(lastRootString) == 0) {
+                chordName = "";
+            } else {
+                chordName = ChordComposition.findChord(list_scaleData, rootString);
+            }
+            lastRootString = new String(rootString);
 
             // System.out.println(C_sum + "\t" + Db_sum + "\t" + D_sum + "\t" +
             // Eb_sum + "\t" + E_sum + "\t"
             // + F_sum + "\n" + Gb_sum + "\t" + G_sum + "\t" + Ab_sum + "\t" + A_sum
             // + "\t" + Bb_sum
             // + "\t" + B_sum);
-            System.out.println(chordName);
-            System.out.println("============================================================================");
+            // add count(location point) and ChordName into List
+            if (chordName.compareTo("") != 0) {
+                result_map.put((double) (count + sampleNum / 3) / WavFile.getSampleRate(), chordName);
+            }
+            // System.out.println(chordName);
+            // System.out.println("============================================================================");
             C_sum = 0;
             Db_sum = 0;
             D_sum = 0;
@@ -185,6 +198,18 @@ public class FrequencyAnalysisController extends FFTImplement {
             Bb_sum = 0;
             B_sum = 0;
         }
+        List<Map.Entry<Double, String>> result = new ArrayList<Map.Entry<Double, String>>(result_map.entrySet());
+        /* delete those duplcate */
+        Map.Entry<Double, String> a, b;
+        for (int i = 1; i < result.size(); i++) {
+            a = result.get(i - 1);
+            b = result.get(i);
+            if (a.getValue().compareTo(b.getValue()) == 0) {
+                result.remove(i--);
+            }
+        }
+        // System.out.println(result);
+        return result;
 
     }
 

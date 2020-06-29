@@ -7,12 +7,73 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.media.MediaView?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="929.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PlayerController">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="929.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PlayerController">
    <children>
+      <BorderPane prefHeight="436.3333333333333" prefWidth="929.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <center>
+            <GridPane prefHeight="315.0" prefWidth="929.0" BorderPane.alignment="CENTER">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="459.66668701171875" minWidth="10.0" prefWidth="45.66668065388997" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="918.6666666666667" minWidth="10.0" prefWidth="870.6666768391927" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="882.9999860127767" minWidth="0.0" prefWidth="47.999989827473996" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="200.0" minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="180.0" minHeight="10.0" prefHeight="180.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <ScrollPane fx:id="sp1" prefHeight="171.0" prefWidth="835.0" GridPane.columnIndex="1">
+                     <content>
+                        <GridPane prefHeight="163.0" prefWidth="1200.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="71.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="180.0" minHeight="10.0" prefHeight="180.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Pane fx:id="sp_pane1" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1200.0" GridPane.rowIndex="1">
+                                 <children>
+                                    <Line fx:id="Lfromline" stroke="RED" visible="false" />
+                                    <Canvas fx:id="waveformCanvas1" height="180.0" width="1200.0" />
+                                    <Line fx:id="Ltoline" endX="-193.0" endY="17.0" stroke="RED" visible="false" />
+                                 </children>
+                              </Pane>
+                              <Pane fx:id="chordPane" prefHeight="20.0" prefWidth="1200.0" style="-fx-background-color: LIGHTGRAY;" />
+                           </children>
+                        </GridPane>
+                     </content>
+                  </ScrollPane>
+                  <ScrollPane fx:id="sp2" prefHeight="275.0" prefWidth="800.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <content>
+                        <Pane fx:id="sp_pane2" onMousePressed="#sp_paneMousePressed" prefHeight="145.0" prefWidth="1200.0">
+                           <children>
+                              <Line fx:id="Rtoline" endX="100.0" startX="6.0" startY="6.0" stroke="RED" visible="false" />
+                              <Canvas fx:id="waveformCanvas2" height="180.0" width="1200.0" />
+                              <Line fx:id="Rfromline" endX="100.0" startX="19.0" startY="42.0" stroke="RED" visible="false" />
+                           </children>
+                        </Pane>
+                     </content>
+                  </ScrollPane>
+               </children>
+            </GridPane>
+         </center>
+         <top>
+            <BorderPane prefHeight="51.0" prefWidth="929.0" BorderPane.alignment="CENTER" />
+         </top>
+         <bottom>
+            <BorderPane prefHeight="44.0" prefWidth="929.0" BorderPane.alignment="CENTER" />
+         </bottom>
+      </BorderPane>
 
       <Pane fx:id="pane" layoutX="21.0" layoutY="14.0" prefHeight="23.0" prefWidth="22.0" AnchorPane.bottomAnchor="399.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="886.0" AnchorPane.topAnchor="14.0">
          <children>
@@ -32,28 +93,6 @@
       <Label layoutX="649.0" layoutY="392.0" text="speed" AnchorPane.bottomAnchor="29.0" />
       <Slider fx:id="slSpeed" blockIncrement="0.1" layoutX="722.0" layoutY="389.0" majorTickUnit="0.2" max="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" value="1.0" AnchorPane.bottomAnchor="6.600000000000012" />
       <Label fx:id="lbSpeed" layoutX="698.0" layoutY="402.0" text="1" AnchorPane.bottomAnchor="29.0" />
-      <ScrollPane fx:id="sp1" layoutX="60.0" layoutY="8.0" prefHeight="170.0" prefWidth="839.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">
-         <content>
-            <Pane fx:id="sp_pane1" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1000.0">
-               <children>
-                  <Line fx:id="Lfromline" stroke="RED" visible="false" />
-                  <Canvas fx:id="waveformCanvas1" height="150.0" width="1000.0" />
-                  <Line fx:id="Ltoline" endX="-193.0" endY="17.0" stroke="RED" visible="false" />
-               </children>
-            </Pane>
-         </content>
-      </ScrollPane>
-      <ScrollPane fx:id="sp2" prefHeight="170.0" prefWidth="839.0" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="10.0">
-         <content>
-            <Pane fx:id="sp_pane2" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1000.0">
-               <children>
-                  <Line fx:id="Rtoline" endX="100.0" startX="6.0" startY="6.0" stroke="RED" visible="false" />
-                  <Canvas fx:id="waveformCanvas2" height="150.0" width="1000.0" />
-                  <Line fx:id="Rfromline" endX="100.0" startX="19.0" startY="42.0" stroke="RED" visible="false" />
-               </children>
-            </Pane>
-         </content>
-      </ScrollPane>
       <Label layoutX="10.0" layoutY="105.0" text="Left" AnchorPane.leftAnchor="10.0" />
       <Label layoutX="10.0" layoutY="287.0" text="Right" AnchorPane.leftAnchor="10.0" />
       <Button fx:id="btnEQ" layoutX="853.0" layoutY="2.0" mnemonicParsing="false" onAction="#eqClick" text="EQ" AnchorPane.rightAnchor="10.0" />

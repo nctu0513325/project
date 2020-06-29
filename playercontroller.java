@@ -34,7 +34,7 @@ import javafx.scene.paint.Color;
 import java.util.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
-
+import javafx.scene.text.Font;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -85,6 +85,8 @@ public class PlayerController {
     private Canvas waveformCanvas1;
     @FXML
     private Canvas waveformCanvas2;
+    @FXML
+    private Pane chordPane;
     @FXML
     private ScrollPane sp1;
     @FXML
@@ -241,23 +243,24 @@ public class PlayerController {
         styleComboBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                // if (t1.equals("Low Pass")) {
-                // // copy
-                // signal_modify = signal_EQ_save;
-                // signal_modify = EQ.lowPass(signal_modify);
-                // drawWaveform(signal_modify);
-                // } else if (t1.equals("High Pass")) {
-                // signal_modify = signal_EQ_save;
-                // signal_modify = EQ.highPass(signal_modify);
-                // drawWaveform(signal_modify);
-                // } else if (t1.equals("None")) {
-                // signal_modify = signal_EQ_save;
-                // drawWaveform(signal_modify);
-                // } else if (t1.equals("Rock")) {
-                // signal_modify = signal_EQ_save;
-                // signal_modify = EQ.rockStyle(signal_modify);
-                // drawWaveform(signal_modify);
-                // }
+                EQ eq = new EQ();
+                if (t1.equals("Low Pass")) {
+                    // copy
+                    signal_modify = signal_EQ_save;
+                    signal_modify = eq.lowPass(signal_modify);
+                    drawWaveform(signal_modify);
+                } else if (t1.equals("High Pass")) {
+                    signal_modify = signal_EQ_save;
+                    signal_modify = eq.highPass(signal_modify);
+                    drawWaveform(signal_modify);
+                } else if (t1.equals("None")) {
+                    signal_modify = signal_EQ_save;
+                    drawWaveform(signal_modify);
+                } else if (t1.equals("Rock")) {
+                    signal_modify = signal_EQ_save;
+                    signal_modify = eq.rockStyle(signal_modify);
+                    drawWaveform(signal_modify);
+                }
 
             }
         });
@@ -312,6 +315,7 @@ public class PlayerController {
         }
     }
 
+    /* call chord finding function, return Map that contain second and Chord name */
     @FXML
     void btnChordFindClick(ActionEvent event) {
         try {
@@ -321,11 +325,18 @@ public class PlayerController {
             FrequencyAnalysisController frequencyAnalysisController = loader
                     .<FrequencyAnalysisController>getController();
             frequencyAnalysisController.passSignal(this, signal_modify);
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setTitle("Frequency Analysis"); // displayed in window's title bar
-            stage.setScene(scene);
-            stage.show();
+            List<Map.Entry<Double, String>> chordTimeList = frequencyAnalysisController.signalAnalysis(signal_modify);
+            double interval = signal_modify[0].size() / waveformCanvas1.getWidth();
+            chordPane.getChildren().clear();
+            for (Map.Entry<Double, String> e : chordTimeList) {
+                Label chordLabel = new Label(e.getValue());
+                Line chordLine = new Line(e.getKey(), 0, e.getKey(), 20);
+                chordLabel.setFont(new Font("Arial", 8));
+                chordLabel.setLayoutX(e.getKey() * WavFile.getSampleRate() / interval);
+                chordLabel.setLayoutY(0);
+                chordPane.getChildren().add(chordLabel);
+            }
+
         } catch (NullPointerException e) {
             System.out.println(e);
         } catch (IOException ioe) {

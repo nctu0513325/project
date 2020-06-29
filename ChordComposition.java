@@ -46,11 +46,11 @@ public class ChordComposition {
                 if (thirdMajorIndex == 0 && thirdMinIndex == 0) {
                     if (((Double) n.getIndex() - rootIndex) == 2 || ((Double) n.getIndex() - rootIndex) == -4) {
                         thirdMajorIndex = n.getIndex();
-                        result += " Major";
+                        result += "";
                     } else if (((Double) n.getIndex() - rootIndex) == 1.5
                             || ((Double) n.getIndex() - rootIndex) == -4.5) {
                         thirdMinIndex = n.getIndex();
-                        result += " minor";
+                        result += "m";
                     }
                 }
                 // Octvae
@@ -61,7 +61,7 @@ public class ChordComposition {
                     } else if ((((Double) n.getIndex() - rootIndex) == 3 || ((Double) n.getIndex() - rootIndex) == -3)
                             && thirdMinIndex != 0) {
                         octaveDimIndex = n.getIndex();
-                        result = (rootString + " dim");
+                        result = (rootString + "dim");
                     }
                 }
 

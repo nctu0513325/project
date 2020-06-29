@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
 import java.util.*;
 
 public class TenEQController extends FFTImplement {
@@ -123,6 +124,8 @@ public class TenEQController extends FFTImplement {
 
         // double[] fm = makeFrequencyMap();
         signal_modify = signal_EQ_save;
+        int length = signal_modify[0].size();
+
         temp = new ArrayList[signal_modify.length];
         for (int channel = 0; channel < signal_modify.length; channel++) {
             temp[channel] = new ArrayList<Double>();
@@ -131,28 +134,38 @@ public class TenEQController extends FFTImplement {
         fft_signal_arr = new Complex[signal_modify[0].size()][];
         part_signal_arr = new Complex[signal_modify[0].size()][];
         // clone signal arraylist to another list (don't change original one)
-        for (int row = 0; row < signal_modify.length; row++) {
-            part_signal_arr[row] = new Complex[sampleNum];
-            fft_signal_arr[row] = new Complex[sampleNum];
-        }
 
         /* find thd gain in each frequency band */
-        dBGain31 = Math.pow(10, (double) sl31.getValue() / 10);
-        dBGain62 = Math.pow(10, (double) sl62.getValue() / 10);
-        dBGain125 = Math.pow(10, (double) sl125.getValue() / 10);
-        dBGain250 = Math.pow(10, (double) sl250.getValue() / 10);
-        dBGain500 = Math.pow(10, (double) sl500.getValue() / 10);
-        dBGain1k = Math.pow(10, (double) sl1k.getValue() / 10);
-        dBGain2k = Math.pow(10, (double) sl2k.getValue() / 10);
-        dBGain4k = Math.pow(10, (double) sl4k.getValue() / 10);
-        dBGain8k = Math.pow(10, (double) sl8k.getValue() / 10);
-        dBGain16k = Math.pow(10, (double) sl16k.getValue() / 10);
+        dBGain31 = Math.pow(10, (double) sl31.getValue() / 8.0);
+        dBGain62 = Math.pow(10, (double) sl62.getValue() / 8.0);
+        dBGain125 = Math.pow(10, (double) sl125.getValue() / 8.0);
+        dBGain250 = Math.pow(10, (double) sl250.getValue() / 8.0);
+        dBGain500 = Math.pow(10, (double) sl500.getValue() / 8.0);
+        dBGain1k = Math.pow(10, (double) sl1k.getValue() / 8.0);
+        dBGain2k = Math.pow(10, (double) sl2k.getValue() / 8.0);
+        dBGain4k = Math.pow(10, (double) sl4k.getValue() / 8.0);
+        dBGain8k = Math.pow(10, (double) sl8k.getValue() / 8.0);
+        dBGain16k = Math.pow(10, (double) sl16k.getValue() / 8.0);
         System.out.println(dBGain31 + "\t" + dBGain62);
 
         /* start to do some adjustments */
         int count = 0;
         double time = 0;
-        for (count = 0; count < signal_modify[0].size() - sampleNum; count += sampleNum) {
+        while (length > WavFile.getSampleRate()) {
+            // find sampleRate
+            int pow = 0;
+            while (Math.pow(2, pow) < length) {
+                pow++;
+            }
+            pow--;
+            sampleNum = (int) Math.pow(2, pow);
+            // System.out.println(x);
+            for (int row = 0; row < signal_modify.length; row++) {
+                part_signal_arr[row] = new Complex[sampleNum];
+                fft_signal_arr[row] = new Complex[sampleNum];
+            }
+            // for (count = 0; count < signal_modify[0].size() - sampleNum; count +=
+            // sampleNum / 3) {
 
             // put arraylist into complex 2d array
             for (int col = 0; col < sampleNum; col++) {
@@ -227,10 +240,12 @@ public class TenEQController extends FFTImplement {
                     // }
                 }
             }
-
+            count += sampleNum;
+            length -= sampleNum;
         }
         signal_modify = temp;
         PlayerController.callbackSignal(signal_modify);
+
     }
 
     /* this function is used to make frequency map for signal_ */
