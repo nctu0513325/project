@@ -43,65 +43,64 @@ public class RecordController {
     }
 
     @FXML
-    void StopClick(ActionEvent event) throws IOException{
+    void StopClick(ActionEvent event) throws IOException {
         label.setText("Press 'start' to start recording");
         btnStart.setText("start");
-        closeCaptureAudio();  
+        closeCaptureAudio();
     }
 
-    public void closeCaptureAudio() throws IOException{
+    public void closeCaptureAudio() throws IOException {
         targetDataLine.stop();
         targetDataLine.close();
     }
- 
-    public void captureAudio(){
+
+    public void captureAudio() {
         try {
-            
+
             audioFormat = getAudioFormat();
-            name=tfName.getText();
-            
+            name = tfName.getText();
+
             DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
-            
+
             targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-            
+
             new CaptureThread().start();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
         }
     }
- 
+
     private AudioFormat getAudioFormat() {
-       
-        float sampleRate = 8000F;
-        
+
+        float sampleRate = 44000F;
+
         int sampleSizeInBits = 16;
-        
+
         int channels = 2;
         // true,false
         boolean signed = true;
-        
+
         boolean bigEndian = false;
-        
-        return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed,
-                bigEndian);
+
+        return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
     }
- 
+
     class CaptureThread extends Thread {
         public void run() {
-            
+
             AudioFileFormat.Type fileType = null;
-            
+
             File audioFile = null;
             fileType = AudioFileFormat.Type.WAVE;
-            audioFile = new File(name+".wav");
+            audioFile = new File(name + ".wav");
             try {
-                
+
                 targetDataLine.open(audioFormat);
-                
+
                 targetDataLine.start();
-                
-                AudioSystem.write(new AudioInputStream(targetDataLine),fileType, audioFile);
+
+                AudioSystem.write(new AudioInputStream(targetDataLine), fileType, audioFile);
             } catch (Exception e) {
                 e.printStackTrace();
             }
