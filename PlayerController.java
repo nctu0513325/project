@@ -281,8 +281,7 @@ public class PlayerController {
             signal_EQ_save = makeModifyArrayList();
             drawWaveform(signal);
             chordPane.getChildren().clear();
-            // pass to FFTController now
-            // FFTController.set(wf);
+            slVolume.setValue(50);
 
         }
     }
@@ -668,5 +667,6 @@ public class PlayerController {
         System.out.println("call back");
         signal_modify = input;
         drawWaveform(signal_modify);
+        slVolume.setValue(50);
     }
 }
