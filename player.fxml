@@ -3,6 +3,9 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,7 +21,7 @@
    <children>
       <BorderPane prefHeight="436.3333333333333" prefWidth="929.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <center>
-            <GridPane prefHeight="315.0" prefWidth="929.0" BorderPane.alignment="CENTER">
+            <GridPane prefHeight="423.0" prefWidth="929.0" BorderPane.alignment="CENTER">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="459.66668701171875" minWidth="10.0" prefWidth="45.66668065388997" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="918.6666666666667" minWidth="10.0" prefWidth="870.6666768391927" />
@@ -29,9 +32,9 @@
                 <RowConstraints maxHeight="180.0" minHeight="10.0" prefHeight="180.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ScrollPane fx:id="sp1" prefHeight="171.0" prefWidth="835.0" GridPane.columnIndex="1">
+                  <ScrollPane fx:id="sp1" prefHeight="180.0" prefWidth="835.0" GridPane.columnIndex="1">
                      <content>
-                        <GridPane prefHeight="163.0" prefWidth="1200.0">
+                        <GridPane prefHeight="183.0" prefWidth="1198.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                           </columnConstraints>
@@ -43,7 +46,7 @@
                               <Pane fx:id="sp_pane1" onMousePressed="#sp_paneMousePressed" prefHeight="150.0" prefWidth="1200.0" GridPane.rowIndex="1">
                                  <children>
                                     <Line fx:id="Lfromline" stroke="RED" visible="false" />
-                                    <Canvas fx:id="waveformCanvas1" height="180.0" width="1200.0" />
+                                    <Canvas fx:id="waveformCanvas1" height="179.0" width="1200.0" />
                                     <Line fx:id="Ltoline" endX="-193.0" endY="17.0" stroke="RED" visible="false" />
                                  </children>
                               </Pane>
@@ -54,10 +57,10 @@
                   </ScrollPane>
                   <ScrollPane fx:id="sp2" prefHeight="275.0" prefWidth="800.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <content>
-                        <Pane fx:id="sp_pane2" onMousePressed="#sp_paneMousePressed" prefHeight="145.0" prefWidth="1200.0">
+                        <Pane fx:id="sp_pane2" onMousePressed="#sp_paneMousePressed" prefHeight="160.0" prefWidth="1200.0">
                            <children>
                               <Line fx:id="Rtoline" endX="100.0" startX="6.0" startY="6.0" stroke="RED" visible="false" />
-                              <Canvas fx:id="waveformCanvas2" height="180.0" width="1200.0" />
+                              <Canvas fx:id="waveformCanvas2" height="163.0" width="1200.0" />
                               <Line fx:id="Rfromline" endX="100.0" startX="19.0" startY="42.0" stroke="RED" visible="false" />
                            </children>
                         </Pane>
@@ -67,43 +70,101 @@
             </GridPane>
          </center>
          <top>
-            <BorderPane prefHeight="51.0" prefWidth="929.0" BorderPane.alignment="CENTER" />
+            <GridPane BorderPane.alignment="CENTER">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <MenuBar>
+                    <menus>
+                      <Menu mnemonicParsing="false" text="File">
+                        <items>
+                              <Menu mnemonicParsing="false" text="Import">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#menuOpenClick" text="Wav" />
+                                    <MenuItem mnemonicParsing="false" onAction="#menuVedioClick" text="mp4" />
+                                </items>
+                              </Menu>
+                              <Menu mnemonicParsing="false" text="Export">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#menuSaveClick" text="Wav" />
+                                </items>
+                              </Menu>
+                        </items>
+                      </Menu>
+                      <Menu mnemonicParsing="false" text="Edit">
+                        <items>
+                          <MenuItem mnemonicParsing="false" onAction="#menuEQClick" text="Equalizer" />
+                              <Menu mnemonicParsing="false" text="選取區段">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#CutClick" text="Cut" />
+                                    <MenuItem mnemonicParsing="false" text="刪除選取區段" />
+                                    <MenuItem mnemonicParsing="false" onAction="#SpeedClick" text="區段加速" />
+                                    <MenuItem mnemonicParsing="false" onAction="#UndoClick" text="Undo" />
+                                </items>
+                              </Menu>
+                        </items>
+                      </Menu>
+                      <Menu mnemonicParsing="false" text="Help">
+                        <items>
+                          <MenuItem mnemonicParsing="false" text="About" />
+                        </items>
+                      </Menu>
+                    </menus>
+                  </MenuBar>
+                  <Pane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                     <children>
+                        <Button fx:id="btnPlay" layoutX="35.0" layoutY="3.0" mnemonicParsing="false" onAction="#PlayClick" text="Play" />
+                  
+                        <Button fx:id="btnStop" layoutX="87.0" layoutY="2.0" mnemonicParsing="false" onAction="#StopClick" text="Stop" />
+                        <Label fx:id="lbCurrentTime" layoutX="138.0" layoutY="6.0" prefHeight="15.0" prefWidth="91.0" text="0:00:00/0:00:00" />
+                        <Slider fx:id="slTime" layoutX="238.0" layoutY="7.0" />
+                        <Button fx:id="btnRecord" layoutX="391.0" layoutY="4.0" mnemonicParsing="false" onAction="#RecordClick" text="record" />
+                        <Button fx:id="btnChordFind" layoutX="793.0" layoutY="3.0" mnemonicParsing="false" onAction="#btnChordFindClick" text="Chord Identify" />
+                     </children>
+                  </Pane>
+               </children>
+            </GridPane>
          </top>
          <bottom>
-            <BorderPane prefHeight="44.0" prefWidth="929.0" BorderPane.alignment="CENTER" />
+            <GridPane prefHeight="57.0" prefWidth="929.0" BorderPane.alignment="CENTER">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Pane prefHeight="79.0" prefWidth="929.0">
+                     <children>
+                        <Slider fx:id="slfrom" layoutX="77.0" layoutY="12.0" />
+                        <Slider fx:id="slto" layoutX="77.0" layoutY="30.0" value="100.0" />
+                        <Button fx:id="btnBlockPlay" layoutX="228.0" layoutY="16.0" mnemonicParsing="false" onAction="#btnBlockPlayClick" text="區間播放" />
+                        <Label layoutX="37.0" layoutY="12.0" text="From" />
+                        <Label layoutX="52.0" layoutY="30.0" text="To" />
+                        <Label layoutX="594.0" layoutY="12.0" text="speed" />
+                        <Slider fx:id="slSpeed" blockIncrement="0.1" layoutX="667.0" layoutY="12.0" majorTickUnit="0.2" max="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" value="1.0" />
+                        <Label fx:id="lbSpeed" layoutX="643.0" layoutY="12.0" text="1" />
+                        <Label layoutX="339.0" layoutY="11.0" text="Volume" />
+                        <Slider fx:id="slVolume" blockIncrement="1.0" layoutX="412.0" layoutY="12.0" showTickLabels="true" showTickMarks="true" value="50.0" />
+                        <Label fx:id="lbVolume" layoutX="390.0" layoutY="12.0" text="50" />
+                     </children>
+                  </Pane>
+               </children>
+            </GridPane>
          </bottom>
       </BorderPane>
+      <Label layoutX="69.0" layoutY="421.0" />
 
-      <Pane fx:id="pane" layoutX="21.0" layoutY="14.0" prefHeight="23.0" prefWidth="22.0" AnchorPane.bottomAnchor="399.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="886.0" AnchorPane.topAnchor="14.0">
+                        <Pane fx:id="pane" prefHeight="23.0" prefWidth="22.0">
          <children>
             <MediaView fx:id="mView" fitHeight="${pane.height}" fitWidth="${pane.width}" layoutX="1.0" />
          </children>
       </Pane>
-      <Slider fx:id="slTime" layoutX="160.0" layoutY="396.0" AnchorPane.bottomAnchor="26.0" />
-
-      <Button fx:id="btnStop" layoutX="302.0" layoutY="417.0" mnemonicParsing="false" onAction="#StopClick" text="Stop" AnchorPane.bottomAnchor="25.600000000000023" />
-      <Button fx:id="btnPlay" layoutX="355.0" layoutY="398.0" mnemonicParsing="false" onAction="#PlayClick" text="Play" AnchorPane.bottomAnchor="25.600000000000023" />
-      <Label layoutX="416.0" layoutY="402.0" text="Volume" AnchorPane.bottomAnchor="29.600000000000023" />
-      <Label layoutX="69.0" layoutY="421.0" />
-      <Slider fx:id="slVolume" blockIncrement="1.0" layoutX="489.0" layoutY="410.0" showTickLabels="true" showTickMarks="true" value="50.0" AnchorPane.bottomAnchor="6.600000000000012" />
-      <Label fx:id="lbVolume" layoutX="467.0" layoutY="403.0" text="50" AnchorPane.bottomAnchor="28.600000000000023" />
-      <Button fx:id="btnOpen" layoutX="14.0" layoutY="402.0" mnemonicParsing="false" onAction="#btnOpenClick" text="open" AnchorPane.bottomAnchor="21.600000000000023" />
-      <Label fx:id="lbCurrentTime" layoutX="69.0" layoutY="406.0" prefHeight="15.0" prefWidth="91.0" text="0:00:00/0:00:00" AnchorPane.bottomAnchor="25.600000000000023" />
-      <Label layoutX="649.0" layoutY="392.0" text="speed" AnchorPane.bottomAnchor="29.0" />
-      <Slider fx:id="slSpeed" blockIncrement="0.1" layoutX="722.0" layoutY="389.0" majorTickUnit="0.2" max="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" value="1.0" AnchorPane.bottomAnchor="6.600000000000012" />
-      <Label fx:id="lbSpeed" layoutX="698.0" layoutY="402.0" text="1" AnchorPane.bottomAnchor="29.0" />
-      <Label layoutX="10.0" layoutY="105.0" text="Left" AnchorPane.leftAnchor="10.0" />
-      <Label layoutX="10.0" layoutY="287.0" text="Right" AnchorPane.leftAnchor="10.0" />
-      <Button fx:id="btnEQ" layoutX="853.0" layoutY="2.0" mnemonicParsing="false" onAction="#eqClick" text="EQ" AnchorPane.rightAnchor="10.0" />
-      <Button fx:id="btnvedio" layoutX="769.0" layoutY="2.0" mnemonicParsing="false" onAction="#btnVedioClick" text="vedio play" AnchorPane.rightAnchor="56.0" />
-      <Button fx:id="saveButton" layoutX="750.0" layoutY="2.0" mnemonicParsing="false" onAction="#saveButtonClick" text="save" />
-      <Slider fx:id="slfrom" layoutX="94.0" layoutY="10.0" />
-      <Slider fx:id="slto" layoutX="334.0" layoutY="10.0" value="100.0" />
-      <Button fx:id="btnBlockPlay" layoutX="244.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnBlockPlayClick" text="區間播放" />
-      <Label layoutX="54.0" layoutY="10.0" text="From" />
-      <Label layoutX="316.0" layoutY="9.0" text="To" />
-      <Button fx:id="btnCut" layoutX="485.0" layoutY="6.0" mnemonicParsing="false" onAction="#CutClick" text="cut" />
-      <Button fx:id="btnChordFind" layoutX="526.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnChordFindClick" text="Chord Identify" />
 
    </children>
 </AnchorPane>

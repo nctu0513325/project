@@ -17,7 +17,8 @@ import javafx.scene.layout.Pane;
 import java.io.*;
 import java.awt.*;
 import javax.swing.*;
-
+import javafx.stage.WindowEvent;
+import javafx.event.EventHandler;
 
 public class vediocontroller{
 
@@ -51,7 +52,12 @@ public class vediocontroller{
             btnPlay.setText("Play");
         });
         
+        File file = new File(".");
+        String path = file.getAbsolutePath();
+        path = file.getPath();
+
         fileChooser.setTitle("Open Media...");
+        fileChooser.setInitialDirectory(new File(path));
         fileChooser.getExtensionFilters().addAll(
             new FileChooser.ExtensionFilter("MP4 Video", "*.mp4"),
             new FileChooser.ExtensionFilter("All Files", "*.*")
@@ -75,7 +81,7 @@ public class vediocontroller{
                     lbSpeed.setText(String.valueOf(speed));
                 }
             }
-        );
+        );       
     }    
 
     @FXML
@@ -144,5 +150,10 @@ public class vediocontroller{
         count = count % 60;
         String str = Hours.toString()+":"+Minutes.toString()+":"+count.toString();
         return str;
+    }
+
+    public void PlayStop(){
+        mplayer.stop();
+        file = null ;        
     }
 }
