@@ -4,17 +4,22 @@ first: get the signal form playController
 second: do fft after pressing apply, and pass back to playcontroller in order to preview  */
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import java.util.*;
 
 public class TenEQController extends FFTImplement {
@@ -79,6 +84,13 @@ public class TenEQController extends FFTImplement {
     @FXML
     private TextField tf16k;
 
+    @FXML
+    private Button btnReset;
+
+    @FXML
+    private ComboBox styleComboBox;
+    ObservableList<String> styleList = FXCollections.observableArrayList("Low Pass", "High Pass", "Rock");
+
     private int band31 = 31;
     private int band62 = 62;
     private int band125 = 125;
@@ -136,17 +148,16 @@ public class TenEQController extends FFTImplement {
         // clone signal arraylist to another list (don't change original one)
 
         /* find thd gain in each frequency band */
-        dBGain31 = Math.pow(10, (double) sl31.getValue() / 8.0);
-        dBGain62 = Math.pow(10, (double) sl62.getValue() / 8.0);
-        dBGain125 = Math.pow(10, (double) sl125.getValue() / 8.0);
-        dBGain250 = Math.pow(10, (double) sl250.getValue() / 8.0);
-        dBGain500 = Math.pow(10, (double) sl500.getValue() / 8.0);
-        dBGain1k = Math.pow(10, (double) sl1k.getValue() / 8.0);
-        dBGain2k = Math.pow(10, (double) sl2k.getValue() / 8.0);
-        dBGain4k = Math.pow(10, (double) sl4k.getValue() / 8.0);
-        dBGain8k = Math.pow(10, (double) sl8k.getValue() / 8.0);
-        dBGain16k = Math.pow(10, (double) sl16k.getValue() / 8.0);
-        System.out.println(dBGain31 + "\t" + dBGain62);
+        dBGain31 = Math.pow(10, (double) sl31.getValue() / 10.0);
+        dBGain62 = Math.pow(10, (double) sl62.getValue() / 10.0);
+        dBGain125 = Math.pow(10, (double) sl125.getValue() / 10.0);
+        dBGain250 = Math.pow(10, (double) sl250.getValue() / 10.0);
+        dBGain500 = Math.pow(10, (double) sl500.getValue() / 10.0);
+        dBGain1k = Math.pow(10, (double) sl1k.getValue() / 10.0);
+        dBGain2k = Math.pow(10, (double) sl2k.getValue() / 10.0);
+        dBGain4k = Math.pow(10, (double) sl4k.getValue() / 10.0);
+        dBGain8k = Math.pow(10, (double) sl8k.getValue() / 10.0);
+        dBGain16k = Math.pow(10, (double) sl16k.getValue() / 10.0);
 
         /* start to do some adjustments */
         int count = 0;
@@ -248,6 +259,22 @@ public class TenEQController extends FFTImplement {
 
     }
 
+    @FXML
+    public void btnResetClick(ActionEvent event) {
+        sl31.setValue(0);
+        sl62.setValue(0);
+        sl125.setValue(0);
+        sl250.setValue(0);
+        sl500.setValue(0);
+        sl1k.setValue(0);
+        sl2k.setValue(0);
+        sl4k.setValue(0);
+        sl8k.setValue(0);
+        sl16k.setValue(0);
+        PlayerController.callbackSignal(signal_EQ_save);
+
+    }
+
     /* this function is used to make frequency map for signal_ */
     /* this function is used to catch reference that passed from PlayerController */
     public void passSignal(PlayerController PlayerController, ArrayList<Double>[] input) {
@@ -298,6 +325,49 @@ public class TenEQController extends FFTImplement {
         tf16k.textProperty().bind(sl16k.valueProperty().asString("%.0f"));
         // get signal data
         // signal_modify = TenEQ.getSignal();
+        styleComboBox.setItems(styleList);
+        styleComboBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                EQ eq = new EQ();
+                if (t1.equals("Low Pass")) {
+                    // copy
+                    sl31.setValue(0);
+                    sl62.setValue(0);
+                    sl125.setValue(0);
+                    sl250.setValue(-100);
+                    sl500.setValue(-100);
+                    sl1k.setValue(-100);
+                    sl2k.setValue(-100);
+                    sl4k.setValue(-100);
+                    sl8k.setValue(-100);
+                    sl16k.setValue(-100);
+                } else if (t1.equals("High Pass")) {
+                    sl31.setValue(-100);
+                    sl62.setValue(-100);
+                    sl125.setValue(-100);
+                    sl250.setValue(-100);
+                    sl500.setValue(-100);
+                    sl1k.setValue(-100);
+                    sl2k.setValue(-100);
+                    sl4k.setValue(0);
+                    sl8k.setValue(0);
+                    sl16k.setValue(0);
+                } else if (t1.equals("Rock")) {
+                    sl31.setValue(0);
+                    sl62.setValue(2);
+                    sl125.setValue(5);
+                    sl250.setValue(0);
+                    sl500.setValue(-2);
+                    sl1k.setValue(2);
+                    sl2k.setValue(-2);
+                    sl4k.setValue(5);
+                    sl8k.setValue(4);
+                    sl16k.setValue(4);
+                }
+
+            }
+        });
 
     }
 

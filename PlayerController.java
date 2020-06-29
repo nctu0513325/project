@@ -119,11 +119,6 @@ public class PlayerController {
     @FXML
     private Button btnCut;
 
-    ObservableList<String> styleList = FXCollections.observableArrayList("None", "Low Pass", "High Pass", "Rock");
-
-    @FXML
-    private ComboBox styleComboBox;
-
     private Double endTime = new Double(0);
     private Double currentTime = new Double(0);
     private java.io.File file = new java.io.File("init.mp3");
@@ -170,7 +165,6 @@ public class PlayerController {
      */
     public void initialize() {
         // player = new Play();
-        styleComboBox.setItems(styleList);
         slVolume.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
@@ -237,31 +231,6 @@ public class PlayerController {
                 // System.out.println("end: " + x);
                 blockendtime = x;
                 drawToTimeLine(waveformCanvas1.getWidth() * (x / 100));
-            }
-        });
-
-        styleComboBox.valueProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue ov, String t, String t1) {
-                EQ eq = new EQ();
-                if (t1.equals("Low Pass")) {
-                    // copy
-                    signal_modify = signal_EQ_save;
-                    signal_modify = eq.lowPass(signal_modify);
-                    drawWaveform(signal_modify);
-                } else if (t1.equals("High Pass")) {
-                    signal_modify = signal_EQ_save;
-                    signal_modify = eq.highPass(signal_modify);
-                    drawWaveform(signal_modify);
-                } else if (t1.equals("None")) {
-                    signal_modify = signal_EQ_save;
-                    drawWaveform(signal_modify);
-                } else if (t1.equals("Rock")) {
-                    signal_modify = signal_EQ_save;
-                    signal_modify = eq.rockStyle(signal_modify);
-                    drawWaveform(signal_modify);
-                }
-
             }
         });
 
