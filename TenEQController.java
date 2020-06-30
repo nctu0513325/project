@@ -4,16 +4,22 @@ first: get the signal form playController
 second: do fft after pressing apply, and pass back to playcontroller in order to preview  */
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import java.util.*;
 
 public class TenEQController extends FFTImplement {
@@ -59,6 +65,13 @@ public class TenEQController extends FFTImplement {
     @FXML
     private TextField tf16k;
 
+    @FXML
+    private Button btnReset;
+
+    @FXML
+    private ComboBox styleComboBox;
+    ObservableList<String> styleList = FXCollections.observableArrayList("Low Pass", "High Pass", "Rock");
+
     private int band31 = 31;
     private int band62 = 62;
     private int band125 = 125;
@@ -81,10 +94,18 @@ public class TenEQController extends FFTImplement {
     private double dBGain8k = 0;
     private double dBGain16k = 0;
 
-    private ArrayList<Double>[] signal_modify; // use to modify signal
+    // private ArrayList<Double>[] signal_modify; // use to modify signal
     private ArrayList<Double>[] signal_EQ_save; // for save origin signal,restore later
     private ArrayList<Double>[] temp;
     private PlayerController PlayerController;
+    /*
+     * we change sampleNum corresponding to size of signal_modify[] that pass in,
+     * try to cover whole signal_modify[].size()
+     */
+
+    public TenEQController() {
+        super((int) Math.pow(2, 16));
+    }
 
     /*
      * this function is used to apply user's EQ parameters on signal_modify and pass
@@ -96,6 +117,8 @@ public class TenEQController extends FFTImplement {
 
         // double[] fm = makeFrequencyMap();
         signal_modify = signal_EQ_save;
+        int length = signal_modify[0].size();
+
         temp = new ArrayList[signal_modify.length];
         for (int channel = 0; channel < signal_modify.length; channel++) {
             temp[channel] = new ArrayList<Double>();
@@ -104,28 +127,37 @@ public class TenEQController extends FFTImplement {
         fft_signal_arr = new Complex[signal_modify[0].size()][];
         part_signal_arr = new Complex[signal_modify[0].size()][];
         // clone signal arraylist to another list (don't change original one)
-        for (int row = 0; row < signal_modify.length; row++) {
-            part_signal_arr[row] = new Complex[sampleNum];
-            fft_signal_arr[row] = new Complex[sampleNum];
-        }
 
         /* find thd gain in each frequency band */
-        dBGain31 = Math.pow(10, (double) sl31.getValue() / 10);
-        dBGain62 = Math.pow(10, (double) sl62.getValue() / 10);
-        dBGain125 = Math.pow(10, (double) sl125.getValue() / 10);
-        dBGain250 = Math.pow(10, (double) sl250.getValue() / 10);
-        dBGain500 = Math.pow(10, (double) sl500.getValue() / 10);
-        dBGain1k = Math.pow(10, (double) sl1k.getValue() / 10);
-        dBGain2k = Math.pow(10, (double) sl2k.getValue() / 10);
-        dBGain4k = Math.pow(10, (double) sl4k.getValue() / 10);
-        dBGain8k = Math.pow(10, (double) sl8k.getValue() / 10);
-        dBGain16k = Math.pow(10, (double) sl16k.getValue() / 10);
-        System.out.println(dBGain31 + "\t" + dBGain62);
+        dBGain31 = Math.pow(10, (double) sl31.getValue() / 10.0);
+        dBGain62 = Math.pow(10, (double) sl62.getValue() / 10.0);
+        dBGain125 = Math.pow(10, (double) sl125.getValue() / 10.0);
+        dBGain250 = Math.pow(10, (double) sl250.getValue() / 10.0);
+        dBGain500 = Math.pow(10, (double) sl500.getValue() / 10.0);
+        dBGain1k = Math.pow(10, (double) sl1k.getValue() / 10.0);
+        dBGain2k = Math.pow(10, (double) sl2k.getValue() / 10.0);
+        dBGain4k = Math.pow(10, (double) sl4k.getValue() / 10.0);
+        dBGain8k = Math.pow(10, (double) sl8k.getValue() / 10.0);
+        dBGain16k = Math.pow(10, (double) sl16k.getValue() / 10.0);
 
         /* start to do some adjustments */
         int count = 0;
         double time = 0;
-        for (count = 0; count < signal_modify[0].size() - sampleNum; count += sampleNum) {
+        while (length > WavFile.getSampleRate()) {
+            // find sampleRate
+            int pow = 0;
+            while (Math.pow(2, pow) < length) {
+                pow++;
+            }
+            pow--;
+            sampleNum = (int) Math.pow(2, pow);
+            // System.out.println(x);
+            for (int row = 0; row < signal_modify.length; row++) {
+                part_signal_arr[row] = new Complex[sampleNum];
+                fft_signal_arr[row] = new Complex[sampleNum];
+            }
+            // for (count = 0; count < signal_modify[0].size() - sampleNum; count +=
+            // sampleNum / 3) {
 
             // put arraylist into complex 2d array
             for (int col = 0; col < sampleNum; col++) {
@@ -142,15 +174,13 @@ public class TenEQController extends FFTImplement {
             // filter
             for (int col_filter = 0; col_filter < sampleNum; col_filter++) {
                 for (int row_filter = 0; row_filter < signal_modify.length; row_filter++) {
-                    double fre = ((double) col_filter * (double) WavFile.getSampleRate() / sampleNum);
-                    if (col_filter > sampleNum / 2) {
+                    double fre = ((double) (col_filter) * (double) WavFile.getSampleRate() / sampleNum);
+                    if (col_filter >= sampleNum / 2) {
                         fre = ((double) (sampleNum - col_filter) * (double) WavFile.getSampleRate() / sampleNum);
                     }
                     /* ============================== */
                     /* modify signal by frquency here */
                     /* ============================== */
-                    // fft_signal_arr[row_filter][col_filter] =
-                    // fft_signal_arr[row_filter][col_filter].scale(2);
                     double k = 0;
                     if (fre < band31) {
                         fft_signal_arr[row_filter][col_filter] = fft_signal_arr[row_filter][col_filter].scale(0);
@@ -187,12 +217,6 @@ public class TenEQController extends FFTImplement {
                     }
                     // System.out.println(k);
 
-                    /*
-                     * handle each band step by step, Let Q (quality factor) = 1.5, each frequency
-                     * label indicates the center frequency
-                     */
-                    double q = 1.5;
-
                 }
             }
             // ifft
@@ -203,13 +227,33 @@ public class TenEQController extends FFTImplement {
             // add into signal modify
             for (int col = 0; col < sampleNum; col++) {
                 for (int row = 0; row < signal_modify.length; row++) {
+                    // if (col != (sampleNum - 2) / 2) {
                     temp[row].add(part_signal_arr[row][col].re());
+                    // }
                 }
             }
-
+            count += sampleNum;
+            length -= sampleNum;
         }
         signal_modify = temp;
         PlayerController.callbackSignal(signal_modify);
+
+    }
+
+    @FXML
+    public void btnResetClick(ActionEvent event) {
+        sl31.setValue(0);
+        sl62.setValue(0);
+        sl125.setValue(0);
+        sl250.setValue(0);
+        sl500.setValue(0);
+        sl1k.setValue(0);
+        sl2k.setValue(0);
+        sl4k.setValue(0);
+        sl8k.setValue(0);
+        sl16k.setValue(0);
+        PlayerController.callbackSignal(signal_EQ_save);
+
     }
 
     /* this function is used to make frequency map for signal_ */
@@ -232,107 +276,79 @@ public class TenEQController extends FFTImplement {
     /* inititalize */
     public void initialize() {
         // 31Hz band slider and textfield binding
-        sl31.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain31 = newValue.intValue();
-                tf31.setText(String.valueOf(dBGain31));
-                // tf31.setText(String.format("%.1f", dBGain31));
-            }
-        });
-        // tf31.textProperty().bind(sl31.valueProperty().asString("%.1f"));
+        tf31.textProperty().bind(sl31.valueProperty().asString("%.0f"));
 
         // 62Hz band slider and textfield binding
-        sl62.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain62 = newValue.intValue();
-                tf62.setText(String.valueOf(dBGain62));
-            }
-        });
-        // tf62.textProperty().bind(sl62.valueProperty().asString("%.1f"));
+        tf62.textProperty().bind(sl62.valueProperty().asString("%.0f"));
 
         // 125Hz band slider and textfield binding
-        sl125.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain125 = newValue.intValue();
-                tf125.setText(String.valueOf(dBGain125));
-            }
-        });
-        // tf125.textProperty().bind(sl125.valueProperty().asString("%.1f"));
+        tf125.textProperty().bind(sl125.valueProperty().asString("%.0f"));
 
         // 250Hz band slider and textfield binding
-        sl250.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain250 = newValue.intValue();
-                tf250.setText(String.valueOf(dBGain250));
-            }
-        });
-        // tf250.textProperty().bind(sl250.valueProperty().asString("%.1f"));
+        tf250.textProperty().bind(sl250.valueProperty().asString("%.0f"));
 
         // 500Hz band slider and textfield binding
-        sl500.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain500 = newValue.intValue();
-                tf500.setText(String.valueOf(dBGain500));
-            }
-        });
-        // tf500.textProperty().bind(sl500.valueProperty().asString("%.1f"));
+        tf500.textProperty().bind(sl500.valueProperty().asString("%.0f"));
 
         // 1kHz band slider and textfield binding
-        sl1k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain1k = newValue.intValue();
-                tf1k.setText(String.valueOf(dBGain1k));
-            }
-        });
-        // tf1k.textProperty().bind(sl1k.valueProperty().asString("%.1f"));
+        tf1k.textProperty().bind(sl1k.valueProperty().asString("%.0f"));
 
         // 2kHz band slider and textfield binding
-        sl2k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain2k = newValue.intValue();
-                tf2k.setText(String.valueOf(dBGain2k));
-            }
-        });
-        // tf2k.textProperty().bind(sl2k.valueProperty().asString("%.1f"));
+        tf2k.textProperty().bind(sl2k.valueProperty().asString("%.0f"));
 
         // 4kHz band slider and textfield binding
-        sl4k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain4k = newValue.intValue();
-                tf4k.setText(String.valueOf(dBGain4k));
-            }
-        });
-        // tf4k.textProperty().bind(sl4k.valueProperty().asString("%.1f"));
+        tf4k.textProperty().bind(sl4k.valueProperty().asString("%.0f"));
 
         // 8kHz band slider and textfield binding
-        sl8k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain8k = newValue.intValue();
-                tf8k.setText(String.valueOf(dBGain8k));
-            }
-        });
-        // tf8k.textProperty().bind(sl31.valueProperty().asString("%.1f"));
+        tf8k.textProperty().bind(sl8k.valueProperty().asString("%.0f"));
 
         // 16kHz band slider and textfield binding
-        sl16k.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                dBGain16k = newValue.intValue();
-                tf16k.setText(String.valueOf(dBGain16k));
-            }
-        });
-        // tf16k.textProperty().bind(sl16k.valueProperty().asString("%.1f"));
+        tf16k.textProperty().bind(sl16k.valueProperty().asString("%.0f"));
         // get signal data
         // signal_modify = TenEQ.getSignal();
+        styleComboBox.setItems(styleList);
+        styleComboBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                EQ eq = new EQ();
+                if (t1.equals("Low Pass")) {
+                    // copy
+                    sl31.setValue(0);
+                    sl62.setValue(0);
+                    sl125.setValue(0);
+                    sl250.setValue(-100);
+                    sl500.setValue(-100);
+                    sl1k.setValue(-100);
+                    sl2k.setValue(-100);
+                    sl4k.setValue(-100);
+                    sl8k.setValue(-100);
+                    sl16k.setValue(-100);
+                } else if (t1.equals("High Pass")) {
+                    sl31.setValue(-100);
+                    sl62.setValue(-100);
+                    sl125.setValue(-100);
+                    sl250.setValue(-100);
+                    sl500.setValue(-100);
+                    sl1k.setValue(-100);
+                    sl2k.setValue(-100);
+                    sl4k.setValue(0);
+                    sl8k.setValue(0);
+                    sl16k.setValue(0);
+                } else if (t1.equals("Rock")) {
+                    sl31.setValue(0);
+                    sl62.setValue(2);
+                    sl125.setValue(5);
+                    sl250.setValue(0);
+                    sl500.setValue(-2);
+                    sl1k.setValue(2);
+                    sl2k.setValue(-2);
+                    sl4k.setValue(5);
+                    sl8k.setValue(4);
+                    sl16k.setValue(4);
+                }
+
+            }
+        });
 
     }
 
